@@ -1,0 +1,3 @@
+[submodule "pg_tpch"]
+	path = pg_tpch
+	url = https://github.com/tvondra/pg_tpch.git
