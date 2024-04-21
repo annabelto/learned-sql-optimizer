@@ -1,0 +1,39 @@
+ERROR:  column o.c_custkey does not exist
+LINE 15:     customer c ON o.c_custkey = c.c_custkey
+                           ^
+HINT:  Perhaps you meant to reference the column "o.o_custkey" or the column "c.c_custkey".
+ERROR:  column o.c_custkey does not exist
+LINE 15:     customer c ON o.c_custkey = c.c_custkey
+                           ^
+HINT:  Perhaps you meant to reference the column "o.o_custkey" or the column "c.c_custkey".
+ERROR:  column "o_orderkey" does not exist
+LINE 12: ...uppkey = l_suppkey AND ps_partkey = l_partkey AND o_orderkey...
+                                                              ^
+HINT:  Perhaps you meant to reference the column "lineitem.l_orderkey".
+ERROR:  column "o_orderkey" does not exist
+LINE 12: ...uppkey = l_suppkey AND ps_partkey = l_partkey AND o_orderkey...
+                                                              ^
+HINT:  Perhaps you meant to reference the column "lineitem.l_orderkey".
+ERROR:  column l.o_orderkey does not exist
+LINE 15:     lineitem l ON o.o_orderkey = l.o_orderkey
+                                          ^
+HINT:  Perhaps you meant to reference the column "o.o_orderkey" or the column "l.l_orderkey".
+ERROR:  column l.o_orderkey does not exist
+LINE 15:     lineitem l ON o.o_orderkey = l.o_orderkey
+                                          ^
+HINT:  Perhaps you meant to reference the column "o.o_orderkey" or the column "l.l_orderkey".
+ERROR:  syntax error at or near "explain"
+LINE 12: explain select ps_partkey, SUM(ps_supplycost * ps_availqty) ...
+         ^
+ERROR:  syntax error at or near "explain"
+LINE 13: explain select 
+         ^
+ERROR:  column "lineitem.l_quantity" must appear in the GROUP BY clause or be used in an aggregate function
+LINE 8:       HAVING l_quantity < (SELECT 0.2 * avg(l_quantity) FROM...
+                     ^
+ERROR:  column "lineitem.l_quantity" must appear in the GROUP BY clause or be used in an aggregate function
+LINE 8:       HAVING l_quantity < (SELECT 0.2 * avg(l_quantity) FROM...
+                     ^
+ERROR:  syntax error at or near "explain"
+LINE 7: explain select cntrycode, COUNT(*) AS numcust, SUM(c_acctbal...
+        ^

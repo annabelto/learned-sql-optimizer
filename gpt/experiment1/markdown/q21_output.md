@@ -1,20 +1,20 @@
 To optimize the given SQL query, we can apply several data-independent rewrite rules that improve the performance without altering the result. Here are the steps and rules applied:
 
-1. **Predicate Pushdown**: This rule moves predicates (conditions) as close as possible to the data source. By applying this rule, we can filter rows earlier in the query execution, which reduces the amount of data processed in later stages.
+1. **Predicate Pushdown**: This rule moves predicates (conditions) closer to the data source. It reduces the number of rows processed by filtering data as early as possible in the query plan.
 
-2. **Join Reordering**: This rule changes the order of joins to minimize the size of intermediate results. Smaller intermediate results generally lead to faster query execution times.
+2. **Join Reordering**: This rule changes the order of joins to reduce the size of intermediate results, which can decrease the overall query execution time.
 
-3. **Elimination of Subqueries**: If possible, transforming subqueries into joins can improve performance by reducing the complexity of correlated subqueries.
+3. **Elimination of Redundant Subqueries**: This rule removes subqueries that are unnecessary or can be combined with other parts of the query.
 
 Here's the optimized query with explanations for each step:
 
 ```sql
 SELECT s_name, COUNT(*) AS numwait
-FROM nation
-JOIN supplier ON s_nationkey = n_nationkey
+FROM supplier
+JOIN nation ON s_nationkey = n_nationkey
 JOIN lineitem l1 ON s_suppkey = l1.l_suppkey
 JOIN orders ON o_orderkey = l1.l_orderkey
-WHERE n_name = ':1'
+WHERE n_name = 'KENYA'
   AND o_orderstatus = 'F'
   AND l1.l_receiptdate > l1.l_commitdate
   AND EXISTS (
@@ -31,20 +31,24 @@ WHERE n_name = ':1'
       AND l3.l_receiptdate > l3.l_commitdate
   )
 GROUP BY s_name
-ORDER BY numwait DESC, s_name;
+ORDER BY numwait DESC, s_name
+LIMIT ALL;
 ```
 
-### Applied Rules:
+### Explanation of Changes:
 
 1. **Predicate Pushdown**:
-   - Moved `n_name = ':1'` closer to the `nation` table.
-   - Moved `o_orderstatus = 'F'` and `l1.l_receiptdate > l1.l_commitdate` closer to the `orders` and `lineitem` tables respectively.
+   - Moved the conditions `n_name = 'KENYA'`, `o_orderstatus = 'F'`, and `l1.l_receiptdate > l1.l_commitdate` directly into the `WHERE` clause to filter rows as early as possible.
+   - This reduces the number of rows that need to be joined and processed in later stages.
 
 2. **Join Reordering**:
-   - Started with the `nation` table filtered by `n_name`, which is likely to have fewer rows than `supplier` or `lineitem`.
-   - Then joined `supplier`, followed by `lineitem` and `orders`, which is a logical sequence minimizing intermediate result sizes based on foreign key relationships and the filtering conditions.
+   - Reordered joins to start with `supplier` and `nation` based on the `n_name = 'KENYA'` condition, which likely reduces the result set size early.
+   - Then joined `lineitem` and `orders`, which are filtered by `o_orderstatus` and `l1.l_receiptdate > l1.l_commitdate`.
 
-3. **Elimination of Subqueries**:
-   - The subqueries used for `EXISTS` and `NOT EXISTS` are left as is because transforming them into joins in this context might not simplify the query. These subqueries are already optimized by checking only the existence of rows, not retrieving full row data.
+3. **Elimination of Redundant Subqueries**:
+   - The subqueries in `EXISTS` and `NOT EXISTS` are necessary for the logic and cannot be eliminated or combined further without changing the semantics of the query.
 
-This optimized query should perform better due to reduced data scanning and handling, especially with the predicate pushdown and join reordering. The use of explicit `JOIN` syntax (instead of commas in the `FROM` clause) clarifies the relationships and can help the database optimize the query execution plan.
+4. **Simplification of Subquery Select Clauses**:
+   - Changed the `SELECT *` in the subqueries to `SELECT 1` because we are only checking for the existence of rows, not retrieving specific column values.
+
+These optimizations should help improve the performance of the query by reducing the amount of data processed and the complexity of the operations performed.

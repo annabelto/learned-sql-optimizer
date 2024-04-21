@@ -1,76 +1,44 @@
 To optimize the given SQL query, we can apply several data-independent rewrite rules that improve the performance without altering the result. Here are the steps and rules applied:
 
-1. **Predicate Pushdown**: This rule moves predicates into subqueries to reduce the number of rows processed in the outer query and joins.
-2. **Join Reordering**: This rule changes the order of joins based on the size of the tables and the selectivity of the join conditions to reduce the intermediate result size.
-3. **Projection Pushdown**: This rule moves the projection of columns as close as possible to their base tables to reduce the amount of data being carried through the query plan.
+1. **Predicate Pushdown**: This rule moves filters as close as possible to the data source. By applying this rule, we can reduce the number of rows processed in the joins by filtering data earlier in the query execution.
 
-### Original Query
+2. **Join Reordering**: This rule changes the order of joins to minimize the size of intermediate results. It's beneficial to join smaller tables or the most restrictive tables earlier.
+
+3. **Use of Explicit Joins**: Changing implicit joins (comma-separated in the FROM clause) to explicit JOIN syntax can improve readability and often performance, as it makes the join conditions clearer and allows the database more flexibility in execution planning.
+
+Here's the optimized query with the rules applied:
+
 ```sql
-SELECT supp_nation, cust_nation, l_year, sum(volume) AS revenue
-FROM (
-    SELECT 
-        n1.n_name AS supp_nation, 
-        n2.n_name AS cust_nation, 
-        EXTRACT(year FROM l_shipdate) AS l_year, 
-        l_extendedprice * (1 - l_discount) AS volume
-    FROM 
-        supplier, 
-        lineitem, 
-        orders, 
-        customer, 
-        nation n1, 
-        nation n2
-    WHERE 
-        s_suppkey = l_suppkey AND 
-        o_orderkey = l_orderkey AND 
-        c_custkey = o_custkey AND 
-        s_nationkey = n1.n_nationkey AND 
-        c_nationkey = n2.n_nationkey AND 
-        (
-            (n1.n_name = ':1' AND n2.n_name = ':2') OR 
-            (n1.n_name = ':2' AND n2.n_name = ':1')
-        ) AND 
-        l_shipdate BETWEEN DATE '1995-01-01' AND DATE '1996-12-31'
-) AS shipping
-GROUP BY supp_nation, cust_nation, l_year
-ORDER BY supp_nation, cust_nation, l_year;
+SELECT 
+    n1.n_name AS supp_nation, 
+    n2.n_name AS cust_nation, 
+    EXTRACT(year FROM l.l_shipdate) AS l_year, 
+    SUM(l.l_extendedprice * (1 - l.l_discount)) AS revenue
+FROM 
+    supplier s
+JOIN 
+    nation n1 ON s.s_nationkey = n1.n_nationkey
+JOIN 
+    lineitem l ON s.s_suppkey = l.l_suppkey
+JOIN 
+    orders o ON l.l_orderkey = o.o_orderkey
+JOIN 
+    customer c ON o.c_custkey = c.c_custkey
+JOIN 
+    nation n2 ON c.c_nationkey = n2.n_nationkey
+WHERE 
+    ((n1.n_name = 'CANADA' AND n2.n_name = 'MOZAMBIQUE') OR (n1.n_name = 'MOZAMBIQUE' AND n2.n_name = 'CANADA'))
+    AND l.l_shipdate BETWEEN DATE '1995-01-01' AND DATE '1996-12-31'
+GROUP BY 
+    n1.n_name, n2.n_name, EXTRACT(year FROM l.l_shipdate)
+ORDER BY 
+    n1.n_name, n2.n_name, EXTRACT(year FROM l.l_shipdate)
+LIMIT ALL;
 ```
 
-### Optimized Query
-```sql
-SELECT supp_nation, cust_nation, l_year, sum(volume) AS revenue
-FROM (
-    SELECT 
-        n1.n_name AS supp_nation, 
-        n2.n_name AS cust_nation, 
-        EXTRACT(year FROM l_shipdate) AS l_year, 
-        l_extendedprice * (1 - l_discount) AS volume
-    FROM 
-        nation n1
-    JOIN 
-        supplier ON s_nationkey = n1.n_nationkey
-    JOIN 
-        lineitem ON s_suppkey = l_suppkey
-    JOIN 
-        orders ON o_orderkey = l_orderkey
-    JOIN 
-        customer ON c_custkey = o_custkey
-    JOIN 
-        nation n2 ON c_nationkey = n2.n_nationkey
-    WHERE 
-        (
-            (n1.n_name = ':1' AND n2.n_name = ':2') OR 
-            (n1.n_name = ':2' AND n2.n_name = ':1')
-        ) AND 
-        l_shipdate BETWEEN DATE '1995-01-01' AND DATE '1996-12-31'
-) AS shipping
-GROUP BY supp_nation, cust_nation, l_year
-ORDER BY supp_nation, cust_nation, l_year;
-```
+### Explanation of Changes:
+- **Predicate Pushdown**: The conditions on `l_shipdate` and the nations' names are pushed down into the WHERE clause before the joins occur. This reduces the number of rows being joined.
+- **Join Reordering**: The joins are reordered to start with `supplier` and `nation`, which are filtered by nation keys and then connected to `lineitem`, `orders`, and `customer`. This order might be more efficient depending on the distribution and indexing of the keys.
+- **Use of Explicit Joins**: The query now uses explicit JOIN syntax, which is generally clearer and can be more efficient.
 
-### Explanation of Changes
-- **Predicate Pushdown**: Moved the date range filter and the nation name conditions into the subquery to reduce the number of rows processed early in the query execution.
-- **Join Reordering**: Reordered joins to start with the `nation` tables, which are filtered by nation names, likely reducing the size of the result set early in the join sequence.
-- **Projection Pushdown**: Kept only necessary columns in the subquery, which are used in the outer query.
-
-These changes should help in reducing the computational overhead and improve the query execution time by minimizing the amount of data shuffled between operations and focusing on relevant data early in the execution plan.
+These changes should help in optimizing the query execution by reducing the amount of data being processed and clarifying the join conditions for the query planner.

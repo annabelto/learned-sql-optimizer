@@ -1,0 +1,4 @@
+ERROR:  column l.o_orderkey does not exist
+LINE 15:     lineitem l ON o.o_orderkey = l.o_orderkey
+                                          ^
+HINT:  Perhaps you meant to reference the column "o.o_orderkey" or the column "l.l_orderkey".

@@ -1,10 +1,10 @@
-To optimize the given SQL query, we can apply several data-independent rewrite rules that help in reducing the complexity and improving the performance of the query. Here are the steps and rules applied:
+To optimize the given SQL query, we can apply several data-independent rewrite rules that improve performance without altering the result. Here are the steps and rules applied:
 
 1. **Predicate Pushdown**: This rule moves predicates (filters) closer to the data source. It is beneficial to apply filters as early as possible to reduce the size of intermediate results.
 
-2. **Common Sub-expression Elimination**: This rule identifies and eliminates redundancy by computing common expressions once and reusing the result.
+2. **Common Sub-expression Elimination**: This rule identifies and eliminates redundancy by calculating common expressions once and reusing the result.
 
-3. **Join Elimination**: If a join does not contribute additional columns or rows to the final result, it can be eliminated.
+3. **Join Elimination**: If a join does not contribute to the final result beyond filtering, and if the filtering can be achieved by other means (e.g., using a subquery with an EXISTS clause), the join can be eliminated.
 
 Here's the optimized query with explanations for each step:
 
@@ -12,51 +12,51 @@ Here's the optimized query with explanations for each step:
 ```sql
 SELECT ps_partkey, SUM(ps_supplycost * ps_availqty) AS value
 FROM partsupp, supplier, nation
-WHERE ps_suppkey = s_suppkey AND s_nationkey = n_nationkey AND n_name = ':1'
+WHERE ps_suppkey = s_suppkey AND s_nationkey = n_nationkey AND n_name = 'FRANCE'
 GROUP BY ps_partkey
 HAVING SUM(ps_supplycost * ps_availqty) > (
-    SELECT SUM(ps_supplycost * ps_availqty) * :2
+    SELECT SUM(ps_supplycost * ps_availqty) * 0.0001000000
     FROM partsupp, supplier, nation
-    WHERE ps_suppkey = s_suppkey AND s_nationkey = n_nationkey AND n_name = ':1'
+    WHERE ps_suppkey = s_suppkey AND s_nationkey = n_nationkey AND n_name = 'FRANCE'
 )
-ORDER BY value DESC;
+ORDER BY value DESC
+LIMIT ALL;
 ```
 
 ### Step 1: Predicate Pushdown
-Move the filter `n_name = ':1'` closer to the table `nation` to reduce the number of rows joined with `partsupp` and `supplier`.
+Move the filter `n_name = 'FRANCE'` closer to the table `nation` to reduce the number of rows joined.
 
 ### Step 2: Common Sub-expression Elimination
-The subquery in the `HAVING` clause is recalculating the sum for the same conditions. We can calculate this once and reuse it.
+The subquery in the `HAVING` clause is recalculating the sum for all qualifying rows for every group. Calculate it once and reuse.
 
 ### Step 3: Join Elimination
-After applying predicate pushdown, if certain joins are not contributing to additional columns used in SELECT or WHERE, consider their elimination. However, in this case, all joins seem necessary due to the conditions and the columns used in calculations.
+We can't eliminate any joins because all tables contribute to the final result.
 
 ### Optimized Query
 ```sql
-WITH filtered_nation AS (
-    SELECT n_nationkey
-    FROM nation
-    WHERE n_name = ':1'
+WITH france_suppliers AS (
+    SELECT s_suppkey
+    FROM supplier
+    JOIN nation ON s_nationkey = n_nationkey
+    WHERE n_name = 'FRANCE'
 ),
-aggregated_value AS (
-    SELECT ps_partkey, SUM(ps_supplycost * ps_availqty) AS total_value
+total_value AS (
+    SELECT SUM(ps_supplycost * ps_availqty) * 0.0001000000 AS threshold
     FROM partsupp
-    JOIN supplier ON ps_suppkey = s_suppkey
-    JOIN filtered_nation ON s_nationkey = filtered_nation.n_nationkey
-    GROUP BY ps_partkey
-),
-total_aggregate AS (
-    SELECT SUM(total_value) * :2 AS threshold
-    FROM aggregated_value
+    JOIN france_suppliers ON ps_suppkey = france_suppliers.s_suppkey
 )
-SELECT ps_partkey, total_value AS value
-FROM aggregated_value
-WHERE total_value > (SELECT threshold FROM total_aggregate)
-ORDER BY value DESC;
+SELECT ps_partkey, SUM(ps_supplycost * ps_availqty) AS value
+FROM partsupp
+JOIN france_suppliers ON ps_suppkey = france_suppliers.s_suppkey
+GROUP BY ps_partkey
+HAVING SUM(ps_supplycost * ps_availqty) > (SELECT threshold FROM total_value)
+ORDER BY value DESC
+LIMIT ALL;
 ```
 
-### Explanation:
-- **WITH Clauses**: Used to define `filtered_nation` which filters nations by name early. `aggregated_value` computes the sum of `ps_supplycost * ps_availqty` grouped by `ps_partkey`. `total_aggregate` computes the threshold value from the aggregated values.
-- **Main SELECT**: Uses the results from the `WITH` clauses to filter and order the final output based on the computed values.
+### Explanation
+- **france_suppliers**: This CTE filters out suppliers from France, reducing the number of rows for subsequent joins.
+- **total_value**: This CTE calculates the threshold value once, which is used in the `HAVING` clause.
+- The main query now uses these CTEs, reducing redundancy and improving performance by focusing only on relevant data.
 
-This optimized query reduces redundant calculations and leverages common sub-expressions, improving performance by minimizing the amount of data processed in later stages of the query.
+This optimized query should perform better due to reduced data processing and elimination of redundant calculations.
