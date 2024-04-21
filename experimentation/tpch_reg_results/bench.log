@@ -1,47 +1,47 @@
-2024-04-20 16:04:27 [1713647067] : running TPC-H benchmark
-2024-04-20 16:04:28 [1713647068] : running queries defined in TPC-H benchmark
-2024-04-20 16:04:28 [1713647068] :   running query 1
-2024-04-20 16:04:31 [1713647071] :     query 1 finished OK (2 seconds)
-2024-04-20 16:04:31 [1713647071] :   running query 2
-2024-04-20 16:04:32 [1713647072] :     query 2 finished OK (1 seconds)
-2024-04-20 16:04:32 [1713647072] :   running query 3
-2024-04-20 16:04:33 [1713647073] :     query 3 finished OK (1 seconds)
-2024-04-20 16:04:33 [1713647073] :   running query 4
-2024-04-20 16:04:35 [1713647075] :     query 4 finished OK (1 seconds)
-2024-04-20 16:04:35 [1713647075] :   running query 5
-2024-04-20 16:04:36 [1713647076] :     query 5 finished OK (1 seconds)
-2024-04-20 16:04:36 [1713647076] :   running query 6
-2024-04-20 16:04:37 [1713647077] :     query 6 finished OK (1 seconds)
-2024-04-20 16:04:37 [1713647077] :   running query 7
-2024-04-20 16:04:38 [1713647078] :     query 7 finished OK (1 seconds)
-2024-04-20 16:04:38 [1713647079] :   running query 8
-2024-04-20 16:04:40 [1713647080] :     query 8 finished OK (1 seconds)
-2024-04-20 16:04:40 [1713647080] :   running query 9
-2024-04-20 16:04:42 [1713647082] :     query 9 finished OK (1 seconds)
-2024-04-20 16:04:42 [1713647082] :   running query 10
-2024-04-20 16:04:43 [1713647083] :     query 10 finished OK (1 seconds)
-2024-04-20 16:04:43 [1713647083] :   running query 11
-2024-04-20 16:04:44 [1713647084] :     query 11 finished OK (1 seconds)
-2024-04-20 16:04:44 [1713647084] :   running query 12
-2024-04-20 16:04:45 [1713647085] :     query 12 finished OK (1 seconds)
-2024-04-20 16:04:45 [1713647085] :   running query 13
-2024-04-20 16:04:47 [1713647087] :     query 13 finished OK (1 seconds)
-2024-04-20 16:04:47 [1713647087] :   running query 14
-2024-04-20 16:04:48 [1713647088] :     query 14 finished OK (1 seconds)
-2024-04-20 16:04:48 [1713647088] :   running query 15
-2024-04-20 16:04:49 [1713647089] :     query 15 finished OK (1 seconds)
-2024-04-20 16:04:49 [1713647089] :   running query 16
-2024-04-20 16:04:50 [1713647090] :     query 16 finished OK (1 seconds)
-2024-04-20 16:04:50 [1713647090] :   running query 17
-2024-04-20 16:04:54 [1713647094] :     query 17 finished OK (2 seconds)
-2024-04-20 16:04:54 [1713647094] :   running query 18
-2024-04-20 16:04:58 [1713647098] :     query 18 finished OK (3 seconds)
-2024-04-20 16:04:58 [1713647098] :   running query 19
-2024-04-20 16:04:59 [1713647099] :     query 19 finished OK (1 seconds)
-2024-04-20 16:04:59 [1713647099] :   running query 20
-2024-04-20 16:05:01 [1713647101] :     query 20 finished OK (1 seconds)
-2024-04-20 16:05:01 [1713647101] :   running query 21
-2024-04-20 16:05:03 [1713647103] :     query 21 finished OK (1 seconds)
-2024-04-20 16:05:03 [1713647103] :   running query 22
-2024-04-20 16:05:04 [1713647104] :     query 22 finished OK (1 seconds)
-2024-04-20 16:05:04 [1713647104] : finished TPC-H benchmark
+2024-04-20 21:45:00 [1713667500] : running TPC-H benchmark
+2024-04-20 21:45:00 [1713667500] : running queries defined in TPC-H benchmark
+2024-04-20 21:45:00 [1713667500] :   running query 1
+2024-04-20 21:45:04 [1713667504] :     query 1 finished OK (2 seconds)
+2024-04-20 21:45:04 [1713667504] :   running query 2
+2024-04-20 21:45:05 [1713667505] :     query 2 finished OK (1 seconds)
+2024-04-20 21:45:05 [1713667505] :   running query 3
+2024-04-20 21:45:06 [1713667506] :     query 3 finished OK (1 seconds)
+2024-04-20 21:45:06 [1713667506] :   running query 4
+2024-04-20 21:45:08 [1713667508] :     query 4 finished OK (1 seconds)
+2024-04-20 21:45:08 [1713667508] :   running query 5
+2024-04-20 21:45:09 [1713667509] :     query 5 finished OK (1 seconds)
+2024-04-20 21:45:09 [1713667509] :   running query 6
+2024-04-20 21:45:10 [1713667510] :     query 6 finished OK (1 seconds)
+2024-04-20 21:45:10 [1713667510] :   running query 7
+2024-04-20 21:45:11 [1713667511] :     query 7 finished OK (1 seconds)
+2024-04-20 21:45:11 [1713667511] :   running query 8
+2024-04-20 21:45:13 [1713667513] :     query 8 finished OK (1 seconds)
+2024-04-20 21:45:13 [1713667513] :   running query 9
+2024-04-20 21:45:15 [1713667515] :     query 9 finished OK (1 seconds)
+2024-04-20 21:45:15 [1713667515] :   running query 10
+2024-04-20 21:45:16 [1713667516] :     query 10 finished OK (1 seconds)
+2024-04-20 21:45:16 [1713667516] :   running query 11
+2024-04-20 21:45:17 [1713667517] :     query 11 finished OK (1 seconds)
+2024-04-20 21:45:17 [1713667517] :   running query 12
+2024-04-20 21:45:18 [1713667518] :     query 12 finished OK (1 seconds)
+2024-04-20 21:45:18 [1713667518] :   running query 13
+2024-04-20 21:45:20 [1713667520] :     query 13 finished OK (1 seconds)
+2024-04-20 21:45:20 [1713667520] :   running query 14
+2024-04-20 21:45:21 [1713667521] :     query 14 finished OK (1 seconds)
+2024-04-20 21:45:21 [1713667521] :   running query 15
+2024-04-20 21:45:22 [1713667522] :     query 15 finished OK (1 seconds)
+2024-04-20 21:45:22 [1713667522] :   running query 16
+2024-04-20 21:45:24 [1713667524] :     query 16 finished OK (1 seconds)
+2024-04-20 21:45:24 [1713667524] :   running query 17
+2024-04-20 21:45:27 [1713667527] :     query 17 finished OK (2 seconds)
+2024-04-20 21:45:27 [1713667527] :   running query 18
+2024-04-20 21:45:31 [1713667531] :     query 18 finished OK (2 seconds)
+2024-04-20 21:45:31 [1713667531] :   running query 19
+2024-04-20 21:45:32 [1713667532] :     query 19 finished OK (1 seconds)
+2024-04-20 21:45:32 [1713667532] :   running query 20
+2024-04-20 21:45:34 [1713667534] :     query 20 finished OK (1 seconds)
+2024-04-20 21:45:34 [1713667534] :   running query 21
+2024-04-20 21:45:35 [1713667535] :     query 21 finished OK (1 seconds)
+2024-04-20 21:45:35 [1713667535] :   running query 22
+2024-04-20 21:45:36 [1713667536] :     query 22 finished OK (1 seconds)
+2024-04-20 21:45:36 [1713667536] : finished TPC-H benchmark

@@ -16,7 +16,9 @@ WHERE p_size = 16
     WHERE r_name = 'EUROPE'
   )
 ORDER BY s_acctbal DESC, n_name, s_name, p_partkey
-LIMIT ALL;SELECT s_acctbal, s_name, n_name, p_partkey, p_mfgr, s_address, s_phone, s_comment
+LIMIT ALL;
+
+SELECT s_acctbal, s_name, n_name, p_partkey, p_mfgr, s_address, s_phone, s_comment
 FROM part
 JOIN partsupp ON p_partkey = ps_partkey
 JOIN supplier ON s_suppkey = ps_suppkey

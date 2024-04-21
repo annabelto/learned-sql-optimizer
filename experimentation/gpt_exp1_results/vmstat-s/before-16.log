@@ -1,26 +1,26 @@
      32530992 K total memory
-      4104176 K used memory
-      5345608 K active memory
-      5273336 K inactive memory
-     20531360 K free memory
-       182792 K buffer memory
-      7712664 K swap cache
+      5493360 K used memory
+      6709592 K active memory
+      6125476 K inactive memory
+     18134300 K free memory
+       292140 K buffer memory
+      8611192 K swap cache
       2097148 K total swap
             0 K used swap
       2097148 K free swap
-      1064564 non-nice user cpu ticks
-         1194 nice user cpu ticks
-       407499 system cpu ticks
-     35873150 idle cpu ticks
-         8595 IO-wait cpu ticks
+      1943645 non-nice user cpu ticks
+         1340 nice user cpu ticks
+       762826 system cpu ticks
+     69568430 idle cpu ticks
+        15317 IO-wait cpu ticks
             0 IRQ cpu ticks
-         7219 softirq cpu ticks
+        14157 softirq cpu ticks
             0 stolen cpu ticks
-      5449169 pages paged in
-      6242537 pages paged out
+      5762580 pages paged in
+     12924969 pages paged out
             0 pages swapped in
             0 pages swapped out
-     53416965 interrupts
-    143512885 CPU context switches
+    100796486 interrupts
+    262439041 CPU context switches
    1713631013 boot time
-       707110 forks
+      1345939 forks

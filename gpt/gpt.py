@@ -11,7 +11,7 @@ if api_key is None:
 client = OpenAI()
 # openai.api_key = api_key
 
-def send_request(prompt, model="gpt-4-turbo", temperature=0):
+def send_request(prompt, model="gpt-4", temperature=0):
     response = client.chat.completions.create(
         model=model,
         messages=[{"role": "user", "content": prompt}],
