@@ -1,45 +1,45 @@
-To optimize the given SQL query, we can apply several data-independent rewrite rules that improve the performance by reducing the amount of data processed and the complexity of operations. Here are the steps and rules applied:
+To optimize the given SQL query, we can apply several data-independent rewrite rules that help in reducing the amount of data processed and the complexity of the operations. Here are the steps and rules applied:
 
-1. **Predicate Pushdown**: This rule moves predicates (filters) as close as possible to the data source. By applying filters early, especially before joins, we reduce the number of rows and hence the cost of the join operation.
+1. **Predicate Pushdown**: This rule moves predicates (filters) closer to the data source. By applying filters as early as possible, we reduce the number of rows and hence the amount of data that needs to be processed in later stages of the query.
 
-2. **Join Elimination**: If a join does not contribute to the final result beyond filtering, and if the filtering can be achieved through a subquery or an IN clause, the join can sometimes be eliminated.
+2. **Use of JOIN Instead of Subquery**: Convert the subquery used with `NOT IN` into a `LEFT JOIN` and check for `NULL` values. This can be more efficient as it allows the database to better optimize the execution plan, especially when indexes are available.
 
-3. **Subquery Flattening**: This rule transforms correlated subqueries into joins or applies optimizations that make the subquery execute more efficiently.
+3. **Elimination of Redundant Columns**: Remove columns from the SELECT clause that are not necessary for the final output or for the computations of aggregates.
 
 Here's the optimized query with explanations for each step:
 
 ```sql
-SELECT p.p_brand, p.p_type, p.p_size, COUNT(DISTINCT ps.ps_suppkey) AS supplier_cnt
-FROM part p
-JOIN partsupp ps ON p.p_partkey = ps.ps_partkey
-WHERE p.p_brand <> ':1'
-  AND p.p_type NOT LIKE ':2%'
-  AND p.p_size IN (:3, :4, :5, :6, :7, :8, :9, :10)
-  AND ps.ps_suppkey NOT IN (
-    SELECT s.s_suppkey
-    FROM supplier s
-    WHERE s.s_comment LIKE '%Customer%Complaints%'
-  )
-GROUP BY p.p_brand, p.p_type, p.p_size
-ORDER BY supplier_cnt DESC, p.p_brand, p.p_type, p.p_size;
+SELECT 
+    p.p_brand, 
+    p.p_type, 
+    p.p_size, 
+    COUNT(DISTINCT ps.ps_suppkey) AS supplier_cnt
+FROM 
+    part p
+JOIN 
+    partsupp ps ON p.p_partkey = ps.ps_partkey
+LEFT JOIN 
+    supplier s ON ps.ps_suppkey = s.s_suppkey AND s.s_comment LIKE '%Customer%Complaints%'
+WHERE 
+    p.p_brand <> 'Brand#24'
+    AND p.p_type NOT LIKE 'STANDARD BURNISHED%'
+    AND p.p_size IN (44, 6, 46, 36, 42, 17, 26, 18)
+    AND s.s_suppkey IS NULL
+GROUP BY 
+    p.p_brand, 
+    p.p_type, 
+    p.p_size
+ORDER BY 
+    supplier_cnt DESC, 
+    p.p_brand, 
+    p.p_type, 
+    p.p_size
+LIMIT ALL;
 ```
 
-### Applied Rules:
+### Explanation of Changes:
+- **Predicate Pushdown**: Filters on `p_brand`, `p_type`, and `p_size` are applied directly in the `WHERE` clause of the main query, reducing the number of rows joined with `partsupp`.
+- **Use of JOIN Instead of Subquery**: The subquery checking for `ps_suppkey` not in certain suppliers is replaced by a `LEFT JOIN` with the `supplier` table where `s_comment` matches a pattern, and then checking for `s.s_suppkey IS NULL` in the `WHERE` clause. This effectively filters out `partsupp` entries linked to the unwanted suppliers.
+- **Elimination of Redundant Columns**: Only necessary columns for grouping and final output are included in the `SELECT` and `GROUP BY` clauses.
 
-1. **Predicate Pushdown**:
-   - Filters on `p_brand`, `p_type`, and `p_size` are pushed down before the join operation. This reduces the number of rows from the `part` table that need to be joined with `partsupp`.
-   - The subquery filter on `ps_suppkey` is also evaluated early in the process.
-
-2. **Subquery Flattening**:
-   - Although the subquery for `ps_suppkey` is not flattened into a join, it is optimized to execute as an anti-join, which is generally more efficient than executing a correlated subquery for each row.
-
-3. **Join Elimination**:
-   - In this case, the join cannot be eliminated because `ps_suppkey` is required from `partsupp` for the count distinct operation. However, the join is made more efficient by reducing the number of rows from both tables before they are joined.
-
-### Execution Order:
-- First, the filters on the `part` table are applied.
-- Next, the `partsupp` table is joined with the filtered results from the `part` table.
-- The subquery used in the `NOT IN` clause is likely executed once and used to filter `ps_suppkey` from `partsupp`.
-- Finally, the aggregation and ordering are applied.
-
-This optimized query should perform better than the original by reducing the amount of data processed at each step and utilizing efficient join and subquery strategies.
+These optimizations should make the query more efficient by reducing the amount of data processed and leveraging joins and indexes more effectively.

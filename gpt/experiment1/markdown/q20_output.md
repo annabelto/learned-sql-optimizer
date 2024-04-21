@@ -1,8 +1,8 @@
-To optimize the given SQL query, we can apply several data-independent rewrite rules that improve the performance without altering the result. The rules we'll use include:
+To optimize the given SQL query, we can apply several data-independent rewrite rules that help in reducing the complexity and potentially improving the performance of the query. Here are the steps and rules applied:
 
-1. **Predicate Pushdown**: This rule moves predicates closer to where the data originates, reducing the amount of data that needs to be processed in the upper levels of the query.
-2. **Subquery Flattening**: This rule transforms correlated subqueries into joins or applies other transformations to simplify the query structure.
-3. **Join Reordering**: This rule changes the order of joins to reduce the size of intermediate results.
+1. **Predicate Pushdown**: This rule moves predicates into subqueries to reduce the number of rows processed in the subqueries or joins.
+2. **Join Elimination**: If a join does not affect the result because it does not filter any rows or contribute to the output, it can be eliminated.
+3. **Subquery Flattening**: This rule transforms correlated subqueries into joins or applies transformations to make the query more efficient.
 
 ### Original Query
 ```sql
@@ -10,99 +10,62 @@ SELECT s_name, s_address
 FROM supplier, nation 
 WHERE s_suppkey IN (
     SELECT ps_suppkey 
-    FROM partsupp 
-    WHERE ps_partkey IN (
+    FROM partsupp, (
+        SELECT l_partkey AS agg_partkey, l_suppkey AS agg_suppkey, 0.5 * SUM(l_quantity) AS agg_quantity 
+        FROM lineitem 
+        WHERE l_shipdate >= DATE '1995-01-01' 
+        AND l_shipdate < DATE '1995-01-01' + INTERVAL '1' YEAR 
+        GROUP BY l_partkey, l_suppkey
+    ) agg_lineitem 
+    WHERE agg_partkey = ps_partkey 
+    AND agg_suppkey = ps_suppkey 
+    AND ps_partkey IN (
         SELECT p_partkey 
         FROM part 
-        WHERE p_name LIKE ':1%'
+        WHERE p_name LIKE 'linen%'
     ) 
-    AND ps_availqty > (
-        SELECT 0.5 * SUM(l_quantity) 
-        FROM lineitem 
-        WHERE l_partkey = ps_partkey 
-        AND l_suppkey = ps_suppkey 
-        AND l_shipdate >= DATE ':2' 
-        AND l_shipdate < DATE ':2' + INTERVAL '1' year
-    )
+    AND ps_availqty > agg_quantity
 ) 
 AND s_nationkey = n_nationkey 
-AND n_name = ':3' 
-ORDER BY s_name;
+AND n_name = 'FRANCE' 
+ORDER BY s_name 
+LIMIT ALL;
 ```
 
 ### Step-by-Step Optimization
 
 #### Step 1: Predicate Pushdown
-Push predicates into the subqueries to reduce the amount of data processed and joined.
-
-```sql
-SELECT s_name, s_address 
-FROM supplier
-JOIN nation ON s_nationkey = n_nationkey
-WHERE n_name = ':3'
-AND s_suppkey IN (
-    SELECT ps_suppkey 
-    FROM partsupp 
-    JOIN (
-        SELECT p_partkey 
-        FROM part 
-        WHERE p_name LIKE ':1%'
-    ) AS filtered_parts ON ps_partkey = filtered_parts.p_partkey
-    WHERE ps_availqty > (
-        SELECT 0.5 * SUM(l_quantity) 
-        FROM lineitem 
-        WHERE l_partkey = ps_partkey 
-        AND l_suppkey = ps_suppkey 
-        AND l_shipdate >= DATE ':2' 
-        AND l_shipdate < DATE ':2' + INTERVAL '1' year
-    )
-)
-ORDER BY s_name;
-```
+Push conditions on `part` and `lineitem` tables into the subquery to reduce the size of the join and the number of rows processed.
 
 #### Step 2: Subquery Flattening
-Flatten the subquery for `partsupp` by converting it into a join.
+Flatten the subquery that calculates `agg_quantity` to join directly with `partsupp` and `part`, reducing the depth of subqueries and potentially allowing more efficient execution plans.
 
+#### Optimized Query
 ```sql
 SELECT s_name, s_address 
 FROM supplier
-JOIN nation ON s_nationkey = n_nationkey
-JOIN partsupp ON s_suppkey = ps_suppkey
-JOIN part ON ps_partkey = p_partkey
-WHERE n_name = ':3'
-AND p_name LIKE ':1%'
-AND ps_availqty > (
-    SELECT 0.5 * SUM(l_quantity) 
-    FROM lineitem 
-    WHERE l_partkey = ps_partkey 
-    AND l_suppkey = ps_suppkey 
-    AND l_shipdate >= DATE ':2' 
-    AND l_shipdate < DATE ':2' + INTERVAL '1' year
+JOIN nation ON s_nationkey = n_nationkey 
+WHERE n_name = 'FRANCE'
+AND s_suppkey IN (
+    SELECT ps_suppkey 
+    FROM partsupp
+    JOIN (
+        SELECT l_partkey AS agg_partkey, l_suppkey AS agg_suppkey, 0.5 * SUM(l_quantity) AS agg_quantity 
+        FROM lineitem 
+        WHERE l_shipdate >= DATE '1995-01-01' 
+        AND l_shipdate < DATE '1995-01-01' + INTERVAL '1' YEAR 
+        GROUP BY l_partkey, l_suppkey
+    ) AS agg_lineitem ON agg_partkey = ps_partkey AND agg_suppkey = ps_suppkey
+    JOIN part ON ps_partkey = p_partkey
+    WHERE p_name LIKE 'linen%'
+    AND ps_availqty > agg_quantity
 )
 ORDER BY s_name;
 ```
 
-#### Step 3: Join Reordering
-Reorder joins to process the most restrictive conditions first (assuming `part` table filtering reduces the dataset significantly).
+### Explanation of Changes
+- **Join Conditions**: Moved join conditions from the WHERE clause to explicit JOIN syntax for clarity and potentially better optimization by the query planner.
+- **Subquery Flattening**: The subquery for `lineitem` is joined directly with `partsupp` and `part`, reducing the nesting of subqueries.
+- **Predicate Pushdown**: Conditions on `part` and `lineitem` are kept close to their respective tables to limit the number of rows early in the query processing.
 
-```sql
-SELECT s_name, s_address 
-FROM part
-JOIN partsupp ON p_partkey = ps_partkey
-JOIN supplier ON ps_suppkey = s_suppkey
-JOIN nation ON s_nationkey = n_nationkey
-WHERE p_name LIKE ':1%'
-AND n_name = ':3'
-AND ps_availqty > (
-    SELECT 0.5 * SUM(l_quantity) 
-    FROM lineitem 
-    WHERE l_partkey = ps_partkey 
-    AND l_suppkey = ps_suppkey 
-    AND l_shipdate >= DATE ':2' 
-    AND l_shipdate < DATE ':2' + INTERVAL '1' year
-)
-ORDER BY s_name;
-```
-
-### Final Optimized Query
-The final query uses joins instead of subqueries where possible, applies predicate pushdown to reduce the data volume early, and reorders joins to minimize intermediate result sizes. This should perform better than the original query, especially on large datasets.
+These changes should make the query more efficient by reducing the amount of data processed and by allowing the database engine to optimize the execution plan more effectively.

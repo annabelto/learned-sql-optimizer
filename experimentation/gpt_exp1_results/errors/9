@@ -1,0 +1,4 @@
+ERROR:  column "o_orderkey" does not exist
+LINE 12: ...uppkey = l_suppkey AND ps_partkey = l_partkey AND o_orderkey...
+                                                              ^
+HINT:  Perhaps you meant to reference the column "lineitem.l_orderkey".

@@ -1,0 +1,4 @@
+ERROR:  column o.c_custkey does not exist
+LINE 15:     customer c ON o.c_custkey = c.c_custkey
+                           ^
+HINT:  Perhaps you meant to reference the column "o.o_custkey" or the column "c.c_custkey".

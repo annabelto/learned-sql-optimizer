@@ -1,0 +1,26 @@
+     32530992 K total memory
+      4148504 K used memory
+      5391324 K active memory
+      5274628 K inactive memory
+     20481736 K free memory
+       182828 K buffer memory
+      7717924 K swap cache
+      2097148 K total swap
+            0 K used swap
+      2097148 K free swap
+      1066036 non-nice user cpu ticks
+         1194 nice user cpu ticks
+       407768 system cpu ticks
+     35885671 idle cpu ticks
+         8598 IO-wait cpu ticks
+            0 IRQ cpu ticks
+         7234 softirq cpu ticks
+            0 stolen cpu ticks
+      5449169 pages paged in
+      6252965 pages paged out
+            0 pages swapped in
+            0 pages swapped out
+     53467805 interrupts
+    143900763 CPU context switches
+   1713631013 boot time
+       707438 forks

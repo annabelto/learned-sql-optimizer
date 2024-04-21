@@ -1,0 +1,10 @@
+ checkpoints_timed | checkpoints_req | checkpoint_write_time | checkpoint_sync_time | buffers_checkpoint | buffers_clean | maxwritten_clean | buffers_backend | buffers_backend_fsync | buffers_alloc |         stats_reset          
+-------------------+-----------------+-----------------------+----------------------+--------------------+---------------+------------------+-----------------+-----------------------+---------------+------------------------------
+               490 |              11 |                835125 |                  352 |              18736 |          7960 |                7 |          489585 |                     0 |      27359051 | 2024-04-17 15:22:41.22588-05
+(1 row)
+
+ datid | datname | numbackends | xact_commit | xact_rollback | blks_read | blks_hit | tup_returned | tup_fetched | tup_inserted | tup_updated | tup_deleted | conflicts | temp_files | temp_bytes | deadlocks | checksum_failures | checksum_last_failure | blk_read_time | blk_write_time | session_time | active_time | idle_in_transaction_time | sessions | sessions_abandoned | sessions_fatal | sessions_killed |          stats_reset          
+-------+---------+-------------+-------------+---------------+-----------+----------+--------------+-------------+--------------+-------------+-------------+-----------+------------+------------+-----------+-------------------+-----------------------+---------------+----------------+--------------+-------------+--------------------------+----------+--------------------+----------------+-----------------+-------------------------------
+ 16427 | tpch    |           0 |        7280 |           309 |  39144216 | 62945332 |   1016140287 |   345301743 |      8662545 |        1938 |         442 |         0 |       4110 | 7326392380 |         0 |                   |                       |             0 |              0 |   364559.023 |  158394.988 |                    2.293 |      358 |                  0 |              0 |               0 | 2024-04-17 18:43:44.634634-05
+(1 row)
+

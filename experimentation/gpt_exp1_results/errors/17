@@ -1,0 +1,3 @@
+ERROR:  column "lineitem.l_quantity" must appear in the GROUP BY clause or be used in an aggregate function
+LINE 8:       HAVING l_quantity < (SELECT 0.2 * avg(l_quantity) FROM...
+                     ^

@@ -46,6 +46,8 @@ if __name__ == "__main__":
     # input_dir = input("Enter the path to the directory containing queries: ")
     # output_dir = input("Enter the path to the directory at which you want to output results: ")
     for filename in os.listdir(input_dir):
+        if "explain" in filename:
+            continue
         input_file = os.path.join(input_dir, filename)
         if os.path.isfile(input_file):
             prompt = "Using any combination or ordering of data-independent rewrite rules, correctly optimize the following query. Tell me which rules you applied and in what order, and make sure the output follows Postgres SQL syntax: " + parse_sql_query(input_file)

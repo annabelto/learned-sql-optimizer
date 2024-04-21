@@ -1,0 +1,45 @@
+                                                       QUERY PLAN                                                        
+-------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=29562.65..29562.65 rows=1 width=192)
+   Sort Key: supplier.s_acctbal DESC, nation.n_name, supplier.s_name, part.p_partkey
+   InitPlan 1 (returns $2)
+     ->  Aggregate  (cost=20374.38..20374.39 rows=1 width=32)
+           ->  Nested Loop  (cost=6.64..19974.38 rows=160000 width=6)
+                 ->  Nested Loop  (cost=6.22..225.99 rows=2000 width=4)
+                       ->  Hash Join  (cost=1.07..2.45 rows=5 width=4)
+                             Hash Cond: (nation_1.n_regionkey = region_1.r_regionkey)
+                             ->  Seq Scan on nation nation_1  (cost=0.00..1.25 rows=25 width=8)
+                             ->  Hash  (cost=1.06..1.06 rows=1 width=4)
+                                   ->  Seq Scan on region region_1  (cost=0.00..1.06 rows=1 width=4)
+                                         Filter: (r_name = 'EUROPE'::bpchar)
+                       ->  Bitmap Heap Scan on supplier supplier_1  (cost=5.14..40.71 rows=400 width=8)
+                             Recheck Cond: (s_nationkey = nation_1.n_nationkey)
+                             ->  Bitmap Index Scan on idx_supplier_nation_key  (cost=0.00..5.04 rows=400 width=0)
+                                   Index Cond: (s_nationkey = nation_1.n_nationkey)
+                 ->  Index Scan using idx_partsupp_suppkey on partsupp partsupp_1  (cost=0.42..9.07 rows=80 width=10)
+                       Index Cond: (ps_suppkey = supplier_1.s_suppkey)
+   ->  Gather  (cost=1000.85..9188.25 rows=1 width=192)
+         Workers Planned: 2
+         Params Evaluated: $2
+         ->  Nested Loop  (cost=0.85..8188.15 rows=1 width=192)
+               Join Filter: (nation.n_regionkey = region.r_regionkey)
+               ->  Nested Loop  (cost=0.85..8187.07 rows=1 width=196)
+                     ->  Nested Loop  (cost=0.71..8186.92 rows=1 width=170)
+                           ->  Nested Loop  (cost=0.42..8179.06 rows=1 width=34)
+                                 ->  Parallel Seq Scan on part  (cost=0.00..5347.00 rows=388 width=30)
+                                       Filter: (((p_type)::text ~~ '%NICKEL'::text) AND (p_size = 16))
+                                 ->  Index Scan using idx_partsupp_partkey on partsupp  (cost=0.42..7.29 rows=1 width=8)
+                                       Index Cond: (ps_partkey = part.p_partkey)
+                                       Filter: (ps_supplycost = $2)
+                           ->  Index Scan using supplier_pkey on supplier  (cost=0.29..7.86 rows=1 width=144)
+                                 Index Cond: (s_suppkey = partsupp.ps_suppkey)
+                     ->  Index Scan using nation_pkey on nation  (cost=0.14..0.16 rows=1 width=34)
+                           Index Cond: (n_nationkey = supplier.s_nationkey)
+               ->  Seq Scan on region  (cost=0.00..1.06 rows=1 width=4)
+                     Filter: (r_name = 'EUROPE'::bpchar)
+(37 rows)
+
+ s_acctbal | s_name | n_name | p_partkey | p_mfgr | s_address | s_phone | s_comment 
+-----------+--------+--------+-----------+--------+-----------+---------+-----------
+(0 rows)
+

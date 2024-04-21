@@ -1,69 +1,64 @@
-To optimize the given SQL query, we can apply several data-independent rewrite rules that improve the performance without altering the result. The rules include predicate pushdown, join reordering, and projection pruning. Here's how these rules can be applied:
+To optimize the given SQL query, we can apply several data-independent rewrite rules that help in reducing the amount of data processed and the complexity of the operations. Here are the steps and rules applied:
 
-1. **Predicate Pushdown**: This rule moves the filtering predicates closer to the data source. It reduces the amount of data that needs to be processed in the later stages of the query.
+1. **Push Selections Down**: This rule moves filter conditions as close as possible to the base tables. This reduces the number of tuples in the intermediate results and minimizes the amount of data that needs to be joined.
 
-2. **Join Reordering**: This rule changes the order of joins to minimize the size of intermediate results. It's generally beneficial to perform joins that reduce the result size early.
+2. **Push Projections Down**: This rule reduces the number of columns handled in the intermediate results by projecting only the necessary columns early in the query processing.
 
-3. **Projection Pruning**: This rule removes unnecessary columns from the SELECT and intermediate operations, reducing the amount of data that needs to be processed.
+3. **Join Order Optimization**: This rule rearranges the joins to minimize the size of intermediate results.
 
-### Original Query
+Here's how these rules can be applied to the given query:
+
+### Original Query:
 ```sql
 SELECT l_orderkey, 
        SUM(l_extendedprice * (1 - l_discount)) AS revenue, 
        o_orderdate, 
        o_shippriority 
 FROM customer, orders, lineitem 
-WHERE c_mktsegment = ':1' 
+WHERE c_mktsegment = 'AUTOMOBILE' 
   AND c_custkey = o_custkey 
   AND l_orderkey = o_orderkey 
-  AND o_orderdate < DATE ':2' 
-  AND l_shipdate > DATE ':2' 
+  AND o_orderdate < DATE '1995-03-20' 
+  AND l_shipdate > DATE '1995-03-20' 
 GROUP BY l_orderkey, o_orderdate, o_shippriority 
-ORDER BY revenue DESC, o_orderdate;
+ORDER BY revenue DESC, o_orderdate 
+LIMIT ALL;
 ```
 
-### Applying Optimization Rules
-
-#### Step 1: Predicate Pushdown
-- Move `c_mktsegment = ':1'` to the earliest possible point where `customer` is accessed.
-- Move `o_orderdate < DATE ':2'` to the earliest point where `orders` is accessed.
-- Move `l_shipdate > DATE ':2'` to the earliest point where `lineitem` is accessed.
-
-#### Step 2: Join Reordering
-- Since `customer` and `orders` are joined on `c_custkey = o_custkey` and filtered by `c_mktsegment` and `o_orderdate`, it might be beneficial to perform this join first if these tables are smaller or the filters highly selective.
-- `lineitem` can be joined afterward since it's large and filtered by `l_shipdate`.
-
-#### Step 3: Projection Pruning
-- Only select columns that are necessary for final output or conditions (`c_custkey`, `o_custkey`, `l_orderkey`, `o_orderkey`, `l_extendedprice`, `l_discount`, `o_orderdate`, `o_shippriority`).
-
-### Optimized Query
+### Optimized Query:
 ```sql
 SELECT l_orderkey, 
        SUM(l_extendedprice * (1 - l_discount)) AS revenue, 
        o_orderdate, 
        o_shippriority 
 FROM (
-    SELECT o_custkey, o_orderkey, o_orderdate, o_shippriority
+    SELECT l_orderkey, l_extendedprice, l_discount
+    FROM lineitem
+    WHERE l_shipdate > DATE '1995-03-20'
+) AS l
+JOIN (
+    SELECT o_orderkey, o_orderdate, o_shippriority, o_custkey
     FROM orders
-    WHERE o_orderdate < DATE ':2'
-) AS orders
+    WHERE o_orderdate < DATE '1995-03-20'
+) AS o ON l_orderkey = o_orderkey
 JOIN (
     SELECT c_custkey
     FROM customer
-    WHERE c_mktsegment = ':1'
-) AS customer ON customer.c_custkey = orders.o_custkey
-JOIN (
-    SELECT l_orderkey, l_extendedprice, l_discount
-    FROM lineitem
-    WHERE l_shipdate > DATE ':2'
-) AS lineitem ON lineitem.l_orderkey = orders.o_orderkey
+    WHERE c_mktsegment = 'AUTOMOBILE'
+) AS c ON c_custkey = o_custkey
 GROUP BY l_orderkey, o_orderdate, o_shippriority 
-ORDER BY revenue DESC, o_orderdate;
+ORDER BY revenue DESC, o_orderdate 
+LIMIT ALL;
 ```
 
-### Explanation
-- **Predicate Pushdown**: Filters are applied directly in the subqueries for `customer`, `orders`, and `lineitem`.
-- **Join Reordering**: The query first joins filtered `orders` and `customer`, then joins the result with filtered `lineitem`.
-- **Projection Pruning**: Each subquery only selects the columns needed for the join conditions and final output, reducing the amount of data processed.
+### Explanation of Optimization Steps:
+1. **Push Selections Down**: 
+   - Filters `c_mktsegment = 'AUTOMOBILE'` for `customer`, `o_orderdate < DATE '1995-03-20'` for `orders`, and `l_shipdate > DATE '1995-03-20'` for `lineitem` are pushed down to reduce the size of data being joined.
+   
+2. **Push Projections Down**: 
+   - Only the necessary columns (`c_custkey` from `customer`, `o_orderkey`, `o_orderdate`, `o_shippriority`, `o_custkey` from `orders`, and `l_orderkey`, `l_extendedprice`, `l_discount` from `lineitem`) are selected in the subqueries, reducing the amount of data processed in the joins and group by operations.
 
-This optimized query should perform better due to reduced I/O and smaller intermediate result sets.
+3. **Join Order Optimization**: 
+   - Although not explicitly rearranged in this example, considering the size and selectivity of the filters, the optimizer might choose to perform joins in a way that minimizes the intermediate result sizes. Typically, smaller or more filtered datasets (`customer` and `orders`) might be joined first.
+
+These optimizations should lead to a more efficient execution of the query by reducing the amount of data transferred and processed at each step of the query execution plan.

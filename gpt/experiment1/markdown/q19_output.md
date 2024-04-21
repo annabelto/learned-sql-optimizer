@@ -1,49 +1,54 @@
-To optimize the given SQL query, we can apply several data-independent rewrite rules that help in reducing the complexity and potentially improving the performance of the query. The rules we will apply include:
+To optimize the given SQL query, we can apply several data-independent rewrite rules that help in reducing the complexity and improving the performance of the query. Here are the steps and rules applied:
 
-1. **Predicate Pushdown**: This rule moves predicates as close as possible to the data source, which can reduce the number of rows processed early in the execution plan.
-2. **Conjunction Normal Form (CNF) Conversion**: This rule simplifies the logical structure of the query, making it easier for the query optimizer to apply further optimizations.
-3. **Join Condition Simplification**: This rule simplifies the join conditions between tables.
+1. **Predicate Pushdown**: This rule moves predicates as close as possible to the data source. It helps in reducing the number of rows early in the execution plan, which can significantly improve performance.
 
-Here's the original query:
+2. **Conjunction Splitting**: This rule splits complex predicates connected by OR into separate queries that can be independently optimized and then recombined, if necessary.
 
-```sql
-SELECT SUM(l_extendedprice * (1 - l_discount)) AS revenue
-FROM lineitem, part
-WHERE (p_partkey = l_partkey AND p_brand = ':1' AND p_container IN ('SM CASE', 'SM BOX', 'SM PACK', 'SM PKG')
-       AND l_quantity >= :4 AND l_quantity <= :4 + 10 AND p_size BETWEEN 1 AND 5
-       AND l_shipmode IN ('AIR', 'AIR REG') AND l_shipinstruct = 'DELIVER IN PERSON')
-   OR (p_partkey = l_partkey AND p_brand = ':2' AND p_container IN ('MED BAG', 'MED BOX', 'MED PKG', 'MED PACK')
-       AND l_quantity >= :5 AND l_quantity <= :5 + 10 AND p_size BETWEEN 1 AND 10
-       AND l_shipmode IN ('AIR', 'AIR REG') AND l_shipinstruct = 'DELIVER IN PERSON')
-   OR (p_partkey = l_partkey AND p_brand = ':3' AND p_container IN ('LG CASE', 'LG BOX', 'LG PACK', 'LG PKG')
-       AND l_quantity >= :6 AND l_quantity <= :6 + 10 AND p_size BETWEEN 1 AND 15
-       AND l_shipmode IN ('AIR', 'AIR REG') AND l_shipinstruct = 'DELIVER IN PERSON');
-```
+3. **Simplifying Expressions**: Simplify expressions where possible to make the query more readable and potentially optimize execution.
 
-### Applying Predicate Pushdown and Join Condition Simplification
-
-We can push the predicates related to the `part` table into a subquery and join it with `lineitem` based on `p_partkey = l_partkey`. This reduces the number of rows early in the query processing.
-
-### Optimized Query
+Here's the optimized query using PostgreSQL syntax:
 
 ```sql
 SELECT SUM(l_extendedprice * (1 - l_discount)) AS revenue
-FROM lineitem
-JOIN (
-    SELECT p_partkey
-    FROM part
-    WHERE (p_brand = ':1' AND p_container IN ('SM CASE', 'SM BOX', 'SM PACK', 'SM PKG') AND p_size BETWEEN 1 AND 5)
-       OR (p_brand = ':2' AND p_container IN ('MED BAG', 'MED BOX', 'MED PKG', 'MED PACK') AND p_size BETWEEN 1 AND 10)
-       OR (p_brand = ':3' AND p_container IN ('LG CASE', 'LG BOX', 'LG PACK', 'LG PKG') AND p_size BETWEEN 1 AND 15)
-) AS p ON p.p_partkey = lineitem.l_partkey
-WHERE (l_quantity >= :4 AND l_quantity <= :4 + 10 AND l_shipmode IN ('AIR', 'AIR REG') AND l_shipinstruct = 'DELIVER IN PERSON')
-   OR (l_quantity >= :5 AND l_quantity <= :5 + 10 AND l_shipmode IN ('AIR', 'AIR REG') AND l_shipinstruct = 'DELIVER IN PERSON')
-   OR (l_quantity >= :6 AND l_quantity <= :6 + 10 AND l_shipmode IN ('AIR', 'AIR REG') AND l_shipinstruct = 'DELIVER IN PERSON');
+FROM (
+    SELECT l_extendedprice, l_discount
+    FROM lineitem
+    JOIN part ON p_partkey = l_partkey
+    WHERE p_brand = 'Brand#53'
+      AND p_container IN ('SM CASE', 'SM BOX', 'SM PACK', 'SM PKG')
+      AND l_quantity BETWEEN 10 AND 20
+      AND p_size BETWEEN 1 AND 5
+      AND l_shipmode IN ('AIR', 'AIR REG')
+      AND l_shipinstruct = 'DELIVER IN PERSON'
+    UNION ALL
+    SELECT l_extendedprice, l_discount
+    FROM lineitem
+    JOIN part ON p_partkey = l_partkey
+    WHERE p_brand = 'Brand#32'
+      AND p_container IN ('MED BAG', 'MED BOX', 'MED PKG', 'MED PACK')
+      AND l_quantity BETWEEN 13 AND 23
+      AND p_size BETWEEN 1 AND 10
+      AND l_shipmode IN ('AIR', 'AIR REG')
+      AND l_shipinstruct = 'DELIVER IN PERSON'
+    UNION ALL
+    SELECT l_extendedprice, l_discount
+    FROM lineitem
+    JOIN part ON p_partkey = l_partkey
+    WHERE p_brand = 'Brand#41'
+      AND p_container IN ('LG CASE', 'LG BOX', 'LG PACK', 'LG PKG')
+      AND l_quantity BETWEEN 23 AND 33
+      AND p_size BETWEEN 1 AND 15
+      AND l_shipmode IN ('AIR', 'AIR REG')
+      AND l_shipinstruct = 'DELIVER IN PERSON'
+) AS subquery;
 ```
 
-### Explanation
+### Explanation of Applied Rules:
 
-- **Predicate Pushdown**: We moved the predicates related to the `part` table into a subquery, which is then joined with `lineitem`. This reduces the number of rows from `part` that need to be considered in the main query.
-- **Join Condition Simplification**: We simplified the join condition by pre-filtering `part` records in the subquery, thus potentially reducing the number of join operations in the main query.
+- **Predicate Pushdown**: Applied to move the conditions on `p_brand`, `p_container`, `l_quantity`, `p_size`, `l_shipmode`, and `l_shipinstruct` directly into the subqueries where the tables `lineitem` and `part` are joined. This reduces the amount of data that needs to be processed in the outer query.
 
-This optimized query should perform better than the original by reducing the amount of data that needs to be processed and simplifying the join conditions.
+- **Conjunction Splitting**: The original query had three separate conditions combined with OR. Each condition is now handled in its own subquery, allowing each to be optimized separately.
+
+- **Simplifying Expressions**: The range conditions for `l_quantity` were simplified from `l_quantity >= X AND l_quantity <= X + 10` to `l_quantity BETWEEN X AND X + 10`.
+
+This optimized query should perform better than the original by reducing the number of rows processed and by using `UNION ALL` to combine results from independently optimized subqueries. Each subquery can potentially use indexes effectively (if available) on the `part` and `lineitem` tables for the `JOIN` and `WHERE` clause conditions.
