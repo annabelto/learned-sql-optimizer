@@ -56,7 +56,7 @@ benchmark_run() {
 
 benchmark_tpch() {
 
-	mkdir -p $RESULTS
+	# mkdir -p $RESULTS
 
 	mkdir $RESULTS/vmstat-s $RESULTS/vmstat-d $RESULTS/explain $RESULTS/results $RESULTS/errors
 
