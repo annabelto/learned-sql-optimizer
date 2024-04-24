@@ -1,0 +1,41 @@
+ERROR:  syntax error at or near "explain"
+LINE 12: explain select 
+         ^
+ERROR:  column o.c_custkey does not exist
+LINE 9:     orders o ON c.c_custkey = o.c_custkey AND o.o_orderdate ...
+                                      ^
+HINT:  Perhaps you meant to reference the column "c.c_custkey" or the column "o.o_custkey".
+ERROR:  column o.c_custkey does not exist
+LINE 9:     orders o ON c.c_custkey = o.c_custkey AND o.o_orderdate ...
+                                      ^
+HINT:  Perhaps you meant to reference the column "c.c_custkey" or the column "o.o_custkey".
+ERROR:  missing FROM-clause entry for table "n2"
+LINE 10:             n2.n_name as nation 
+                     ^
+ERROR:  missing FROM-clause entry for table "n2"
+LINE 10:             n2.n_name as nation 
+                     ^
+ERROR:  syntax error at or near "explain"
+LINE 8: explain select ps_partkey, 
+        ^
+ERROR:  subquery uses ungrouped column "l.l_orderkey" from outer query
+LINE 3: ...ELECT COUNT(*) FROM orders o WHERE o.o_orderkey = l.l_orderk...
+                                                             ^
+ERROR:  subquery uses ungrouped column "l.l_orderkey" from outer query
+LINE 3: ...ELECT COUNT(*) FROM orders o WHERE o.o_orderkey = l.l_orderk...
+                                                             ^
+ERROR:  syntax error at or near "explain"
+LINE 12: explain select s.s_suppkey, 
+         ^
+ERROR:  syntax error at or near "SELECT"
+LINE 10: ...uantity) FROM lineitem WHERE l_partkey = p.p_partkey)SELECT 
+                                                                 ^
+ERROR:  syntax error at or near "explain"
+LINE 21: explain select s_name, COUNT(*) AS numwait
+         ^
+ERROR:  missing FROM-clause entry for table "l1"
+LINE 7:         WHERE l_orderkey = l1.l_orderkey
+                                   ^
+ERROR:  syntax error at or near "explain"
+LINE 18: explain select cntrycode, COUNT(*) AS numcust, SUM(c_acctbal...
+         ^

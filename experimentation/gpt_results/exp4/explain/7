@@ -1,0 +1,43 @@
+                                                                                         QUERY PLAN                                                                                          
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Finalize GroupAggregate  (cost=72799.70..73626.46 rows=6117 width=116)
+   Group Key: n1.n_name, n2.n_name, (EXTRACT(year FROM l.l_shipdate))
+   ->  Gather Merge  (cost=72799.70..73470.98 rows=5098 width=116)
+         Workers Planned: 2
+         ->  Partial GroupAggregate  (cost=71799.68..71882.52 rows=2549 width=116)
+               Group Key: n1.n_name, n2.n_name, (EXTRACT(year FROM l.l_shipdate))
+               ->  Sort  (cost=71799.68..71806.05 rows=2549 width=96)
+                     Sort Key: n1.n_name, n2.n_name, (EXTRACT(year FROM l.l_shipdate))
+                     ->  Hash Join  (cost=366.36..71655.46 rows=2549 width=96)
+                           Hash Cond: (l.l_suppkey = s.s_suppkey)
+                           Join Filter: (((n1.n_name = 'CANADA'::bpchar) AND (n2.n_name = 'MOZAMBIQUE'::bpchar)) OR ((n1.n_name = 'MOZAMBIQUE'::bpchar) AND (n2.n_name = 'CANADA'::bpchar)))
+                           ->  Nested Loop  (cost=2.26..70956.34 rows=61511 width=46)
+                                 ->  Nested Loop  (cost=1.83..12563.21 rows=50000 width=30)
+                                       ->  Hash Join  (cost=1.40..4403.27 rows=5000 width=30)
+                                             Hash Cond: (c.c_nationkey = n2.n_nationkey)
+                                             ->  Parallel Seq Scan on customer c  (cost=0.00..4210.00 rows=62500 width=8)
+                                             ->  Hash  (cost=1.38..1.38 rows=2 width=30)
+                                                   ->  Seq Scan on nation n2  (cost=0.00..1.38 rows=2 width=30)
+                                                         Filter: ((n_name = 'MOZAMBIQUE'::bpchar) OR (n_name = 'CANADA'::bpchar))
+                                       ->  Index Scan using idx_orders_custkey on orders o  (cost=0.43..1.46 rows=17 width=8)
+                                             Index Cond: (o_custkey = c.c_custkey)
+                                 ->  Index Scan using idx_lineitem_orderkey on lineitem l  (cost=0.43..1.12 rows=5 width=24)
+                                       Index Cond: (l_orderkey = o.o_orderkey)
+                                       Filter: ((l_shipdate >= '1995-01-01'::date) AND (l_shipdate <= '1996-12-31'::date))
+                           ->  Hash  (cost=354.10..354.10 rows=800 width=30)
+                                 ->  Hash Join  (cost=1.40..354.10 rows=800 width=30)
+                                       Hash Cond: (s.s_nationkey = n1.n_nationkey)
+                                       ->  Seq Scan on supplier s  (cost=0.00..322.00 rows=10000 width=8)
+                                       ->  Hash  (cost=1.38..1.38 rows=2 width=30)
+                                             ->  Seq Scan on nation n1  (cost=0.00..1.38 rows=2 width=30)
+                                                   Filter: ((n_name = 'CANADA'::bpchar) OR (n_name = 'MOZAMBIQUE'::bpchar))
+(31 rows)
+
+        supp_nation        |        cust_nation        | l_year |    revenue    
+---------------------------+---------------------------+--------+---------------
+ CANADA                    | MOZAMBIQUE                |   1995 | 56107203.6371
+ CANADA                    | MOZAMBIQUE                |   1996 | 56665127.0040
+ MOZAMBIQUE                | CANADA                    |   1995 | 57502458.0129
+ MOZAMBIQUE                | CANADA                    |   1996 | 54163955.0252
+(4 rows)
+

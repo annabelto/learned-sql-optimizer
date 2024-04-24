@@ -1,0 +1,6 @@
+ERROR:  syntax error at or near "explain"
+LINE 10: explain select ps_partkey, SUM(ps_supplycost * ps_availqty) ...
+         ^
+ERROR:  syntax error at or near "explain"
+LINE 14: explain select 
+         ^

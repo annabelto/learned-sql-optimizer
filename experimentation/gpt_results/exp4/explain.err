@@ -1,0 +1,26 @@
+ERROR:  syntax error at or near "explain"
+LINE 12: explain select ps_partkey, sum(ps_supplycost * ps_availqty) ...
+         ^
+ERROR:  syntax error at or near "explain"
+LINE 2: explain select 
+        ^
+ERROR:  relation "revenue0" does not exist
+LINE 10:     revenue0 r ON s.s_suppkey = r.supplier_no
+             ^
+ERROR:  view "revenue0" does not exist
+ERROR:  syntax error at or near "explain"
+LINE 33: explain select 
+         ^
+ERROR:  syntax error at or near "explain"
+LINE 12: explain select ps_partkey, sum(ps_supplycost * ps_availqty) ...
+         ^
+ERROR:  syntax error at or near "explain"
+LINE 2: explain select 
+        ^
+ERROR:  relation "revenue0" does not exist
+LINE 10:     revenue0 r ON s.s_suppkey = r.supplier_no
+             ^
+ERROR:  view "revenue0" does not exist
+ERROR:  syntax error at or near "explain"
+LINE 33: explain select 
+         ^

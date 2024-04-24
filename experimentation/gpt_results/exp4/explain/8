@@ -1,0 +1,46 @@
+                                                                      QUERY PLAN                                                                       
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+ Finalize GroupAggregate  (cost=75751.07..76099.77 rows=2406 width=64)
+   Group Key: (EXTRACT(year FROM orders.o_orderdate))
+   ->  Gather Merge  (cost=75751.07..76026.25 rows=2032 width=96)
+         Workers Planned: 2
+         ->  Partial GroupAggregate  (cost=74751.04..74791.68 rows=1016 width=96)
+               Group Key: (EXTRACT(year FROM orders.o_orderdate))
+               ->  Sort  (cost=74751.04..74753.58 rows=1016 width=70)
+                     Sort Key: (EXTRACT(year FROM orders.o_orderdate))
+                     ->  Hash Join  (cost=5.64..74700.30 rows=1016 width=70)
+                           Hash Cond: (supplier.s_nationkey = n2.n_nationkey)
+                           ->  Nested Loop  (cost=4.07..74693.07 rows=1016 width=20)
+                                 ->  Hash Join  (cost=3.79..74384.35 rows=1020 width=20)
+                                       Hash Cond: (customer.c_nationkey = n1.n_nationkey)
+                                       ->  Nested Loop  (cost=1.28..74352.51 rows=5102 width=24)
+                                             ->  Nested Loop  (cost=0.86..71943.61 rows=5102 width=24)
+                                                   ->  Nested Loop  (cost=0.43..64149.68 rows=16578 width=20)
+                                                         ->  Parallel Seq Scan on part  (cost=0.00..5138.67 rows=552 width=4)
+                                                               Filter: ((p_type)::text = 'PROMO BRUSHED BRASS'::text)
+                                                         ->  Index Scan using idx_lineitem_part_supp on lineitem  (cost=0.43..106.60 rows=30 width=24)
+                                                               Index Cond: (l_partkey = part.p_partkey)
+                                                   ->  Index Scan using orders_pkey on orders  (cost=0.43..0.47 rows=1 width=12)
+                                                         Index Cond: (o_orderkey = lineitem.l_orderkey)
+                                                         Filter: ((o_orderdate >= '1995-01-01'::date) AND (o_orderdate <= '1996-12-31'::date))
+                                             ->  Index Scan using customer_pkey on customer  (cost=0.42..0.47 rows=1 width=8)
+                                                   Index Cond: (c_custkey = orders.o_custkey)
+                                       ->  Hash  (cost=2.45..2.45 rows=5 width=4)
+                                             ->  Hash Join  (cost=1.07..2.45 rows=5 width=4)
+                                                   Hash Cond: (n1.n_regionkey = region.r_regionkey)
+                                                   ->  Seq Scan on nation n1  (cost=0.00..1.25 rows=25 width=8)
+                                                   ->  Hash  (cost=1.06..1.06 rows=1 width=4)
+                                                         ->  Seq Scan on region  (cost=0.00..1.06 rows=1 width=4)
+                                                               Filter: (r_name = 'AFRICA'::bpchar)
+                                 ->  Index Scan using supplier_pkey on supplier  (cost=0.29..0.30 rows=1 width=8)
+                                       Index Cond: (s_suppkey = lineitem.l_suppkey)
+                           ->  Hash  (cost=1.25..1.25 rows=25 width=30)
+                                 ->  Seq Scan on nation n2  (cost=0.00..1.25 rows=25 width=30)
+(36 rows)
+
+ o_year |       mkt_share        
+--------+------------------------
+   1995 | 0.03599204309965557519
+   1996 | 0.04408316026482131203
+(2 rows)
+

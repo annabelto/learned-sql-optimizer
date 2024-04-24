@@ -1,0 +1,27 @@
+                                                                                                                     QUERY PLAN                                                                                                                      
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Finalize GroupAggregate  (cost=210164.71..210409.06 rows=7 width=27)
+   Group Key: lineitem.l_shipmode
+   ->  Gather Merge  (cost=210164.71..210408.88 rows=14 width=27)
+         Workers Planned: 2
+         ->  Partial GroupAggregate  (cost=209164.69..209407.24 rows=7 width=27)
+               Group Key: lineitem.l_shipmode
+               ->  Sort  (cost=209164.69..209195.00 rows=12124 width=27)
+                     Sort Key: lineitem.l_shipmode
+                     ->  Parallel Hash Join  (cost=168915.57..208342.34 rows=12124 width=27)
+                           Hash Cond: (orders.o_orderkey = lineitem.l_orderkey)
+                           ->  Parallel Seq Scan on orders  (cost=0.00..32345.00 rows=625000 width=20)
+                           ->  Parallel Hash  (cost=168764.02..168764.02 rows=12124 width=15)
+                                 ->  Parallel Seq Scan on lineitem  (cost=0.00..168764.02 rows=12124 width=15)
+                                       Filter: ((l_shipmode = ANY ('{RAIL,TRUCK}'::bpchar[])) AND (l_commitdate < l_receiptdate) AND (l_shipdate < l_commitdate) AND (l_receiptdate >= '1995-01-01'::date) AND (l_receiptdate < '1996-01-01'::date))
+ JIT:
+   Functions: 21
+   Options: Inlining false, Optimization false, Expressions true, Deforming true
+(17 rows)
+
+ l_shipmode | high_line_count | low_line_count 
+------------+-----------------+----------------
+ RAIL       |            6252 |           9306
+ TRUCK      |            6284 |           9444
+(2 rows)
+

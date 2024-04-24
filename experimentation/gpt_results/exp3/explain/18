@@ -1,0 +1,46 @@
+                                                                            QUERY PLAN                                                                             
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=546731.24..547987.08 rows=502338 width=71)
+   Sort Key: o.o_totalprice DESC, o.o_orderdate
+   ->  Finalize GroupAggregate  (cost=415066.12..478559.60 rows=502338 width=71)
+         Group Key: c.c_custkey, o.o_orderkey
+         ->  Gather Merge  (cost=415066.12..468094.22 rows=418616 width=71)
+               Workers Planned: 2
+               ->  Partial GroupAggregate  (cost=414066.09..418775.52 rows=209308 width=71)
+                     Group Key: c.c_custkey, o.o_orderkey
+                     ->  Sort  (cost=414066.09..414589.36 rows=209308 width=44)
+                           Sort Key: c.c_custkey, o.o_orderkey
+                           ->  Nested Loop  (cost=284520.11..389128.22 rows=209308 width=44)
+                                 ->  Parallel Hash Join  (cost=284519.68..326459.64 rows=52317 width=43)
+                                       Hash Cond: (o.o_custkey = c.c_custkey)
+                                       ->  Hash Join  (cost=279528.43..321331.05 rows=52317 width=24)
+                                             Hash Cond: (o.o_orderkey = subq.l_orderkey)
+                                             ->  Parallel Seq Scan on orders o  (cost=0.00..32345.00 rows=625000 width=20)
+                                             ->  Hash  (cost=277467.93..277467.93 rows=125560 width=4)
+                                                   ->  Subquery Scan on subq  (cost=0.43..277467.93 rows=125560 width=4)
+                                                         ->  GroupAggregate  (cost=0.43..276212.33 rows=125560 width=36)
+                                                               Group Key: lineitem.l_orderkey
+                                                               Filter: (sum(lineitem.l_quantity) > '313'::numeric)
+                                                               ->  Index Scan using idx_lineitem_orderkey on lineitem  (cost=0.43..240556.23 rows=6001176 width=9)
+                                       ->  Parallel Hash  (cost=4210.00..4210.00 rows=62500 width=23)
+                                             ->  Parallel Seq Scan on customer c  (cost=0.00..4210.00 rows=62500 width=23)
+                                 ->  Index Scan using idx_lineitem_orderkey on lineitem l  (cost=0.43..1.04 rows=16 width=9)
+                                       Index Cond: (l_orderkey = o.o_orderkey)
+ JIT:
+   Functions: 35
+   Options: Inlining true, Optimization true, Expressions true, Deforming true
+(29 rows)
+
+       c_name       | c_custkey | o_orderkey | o_orderdate | o_totalprice |  sum   
+--------------------+-----------+------------+-------------+--------------+--------
+ Customer#000128120 |    128120 |    4722021 | 1994-04-07  |    544089.09 | 323.00
+ Customer#000144617 |    144617 |    3043270 | 1997-02-12  |    530604.44 | 317.00
+ Customer#000066790 |     66790 |    2199712 | 1996-09-30  |    515531.82 | 327.00
+ Customer#000015619 |     15619 |    3767271 | 1996-08-07  |    480083.96 | 318.00
+ Customer#000147197 |    147197 |    1263015 | 1997-02-02  |    467149.67 | 320.00
+ Customer#000117919 |    117919 |    2869152 | 1996-06-20  |    456815.92 | 317.00
+ Customer#000126865 |    126865 |    4702759 | 1994-11-07  |    447606.65 | 320.00
+ Customer#000036619 |     36619 |    4806726 | 1995-01-17  |    446704.09 | 328.00
+ Customer#000119989 |    119989 |    1544643 | 1997-09-20  |    434568.25 | 320.00
+(9 rows)
+
