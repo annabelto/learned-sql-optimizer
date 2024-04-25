@@ -1,0 +1,29 @@
+                                                           QUERY PLAN                                                            
+---------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=56457.62..56457.65 rows=11 width=87)
+   ->  Sort  (cost=56457.62..56457.65 rows=11 width=87)
+         Sort Key: (sum(store_sales.ss_ext_sales_price)) DESC, item.i_brand_id
+         ->  Finalize GroupAggregate  (cost=56456.43..56457.43 rows=11 width=87)
+               Group Key: item.i_brand, item.i_brand_id
+               ->  Gather Merge  (cost=56456.43..56457.24 rows=6 width=87)
+                     Workers Planned: 1
+                     ->  Partial GroupAggregate  (cost=55456.42..55456.55 rows=6 width=87)
+                           Group Key: item.i_brand, item.i_brand_id
+                           ->  Sort  (cost=55456.42..55456.43 rows=6 width=61)
+                                 Sort Key: item.i_brand, item.i_brand_id
+                                 ->  Nested Loop  (cost=6.07..55456.34 rows=6 width=61)
+                                       ->  Nested Loop  (cost=5.76..54480.02 rows=15909 width=65)
+                                             ->  Parallel Seq Scan on item  (cost=0.00..1362.35 rows=99 width=59)
+                                                   Filter: (i_manager_id = 52)
+                                             ->  Bitmap Heap Scan on store_sales  (cost=5.76..534.79 rows=175 width=14)
+                                                   Recheck Cond: (ss_item_sk = item.i_item_sk)
+                                                   ->  Bitmap Index Scan on store_sales_pkey  (cost=0.00..5.72 rows=175 width=0)
+                                                         Index Cond: (ss_item_sk = item.i_item_sk)
+                                       ->  Memoize  (cost=0.30..0.33 rows=1 width=4)
+                                             Cache Key: store_sales.ss_sold_date_sk
+                                             Cache Mode: logical
+                                             ->  Index Scan using date_dim_pkey on date_dim  (cost=0.29..0.32 rows=1 width=4)
+                                                   Index Cond: (d_date_sk = store_sales.ss_sold_date_sk)
+                                                   Filter: ((d_moy = 11) AND (d_year = 2000))
+(25 rows)
+

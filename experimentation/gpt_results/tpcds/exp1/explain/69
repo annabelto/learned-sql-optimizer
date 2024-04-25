@@ -1,0 +1,155 @@
+                                                                      QUERY PLAN                                                                      
+------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=80430.63..106557.98 rows=100 width=48)
+   ->  GroupAggregate  (cost=80430.63..172921.47 rows=354 width=48)
+         Group Key: cd.cd_gender, cd.cd_marital_status, cd.cd_education_status, cd.cd_purchase_estimate, cd.cd_credit_rating
+         ->  Nested Loop Anti Join  (cost=80430.63..172912.62 rows=354 width=40)
+               Join Filter: (c.c_customer_sk = cs.cs_ship_customer_sk)
+               ->  Nested Loop Anti Join  (cost=77746.16..105185.19 rows=360 width=44)
+                     Join Filter: (c.c_customer_sk = ws.ws_bill_customer_sk)
+                     ->  Gather Merge  (cost=74588.53..74629.79 rows=362 width=44)
+                           Workers Planned: 1
+                           ->  Sort  (cost=73588.52..73589.05 rows=213 width=44)
+                                 Sort Key: cd.cd_gender, cd.cd_marital_status, cd.cd_education_status, cd.cd_purchase_estimate, cd.cd_credit_rating
+                                 ->  Nested Loop  (cost=69025.18..73580.28 rows=213 width=44)
+                                       ->  Nested Loop  (cost=69024.75..73242.41 rows=221 width=8)
+                                             ->  Parallel Hash Semi Join  (cost=69024.46..72565.43 rows=1879 width=12)
+                                                   Hash Cond: (c.c_customer_sk = ss.ss_customer_sk)
+                                                   ->  Parallel Seq Scan on customer c  (cost=0.00..3356.24 rows=58824 width=12)
+                                                   ->  Parallel Hash  (cost=69007.04..69007.04 rows=1394 width=4)
+                                                         ->  Parallel Hash Join  (cost=2157.62..69007.04 rows=1394 width=4)
+                                                               Hash Cond: (ss.ss_sold_date_sk = d.d_date_sk)
+                                                               ->  Parallel Seq Scan on store_sales ss  (cost=0.00..63698.56 rows=1200256 width=8)
+                                                               ->  Parallel Hash  (cost=2156.97..2156.97 rows=52 width=4)
+                                                                     ->  Parallel Seq Scan on date_dim d  (cost=0.00..2156.97 rows=52 width=4)
+                                                                           Filter: ((d_moy >= 1) AND (d_moy <= 3) AND (d_year = 2002))
+                                             ->  Index Scan using customer_address_pkey on customer_address ca  (cost=0.29..0.36 rows=1 width=4)
+                                                   Index Cond: (ca_address_sk = c.c_current_addr_sk)
+                                                   Filter: (ca_state = ANY ('{IL,TX,ME}'::bpchar[]))
+                                       ->  Index Scan using customer_demographics_pkey on customer_demographics cd  (cost=0.43..1.53 rows=1 width=44)
+                                             Index Cond: (cd_demo_sk = c.c_current_cdemo_sk)
+                     ->  Materialize  (cost=3157.62..25800.91 rows=876 width=4)
+                           ->  Gather  (cost=3157.62..25796.53 rows=876 width=4)
+                                 Workers Planned: 2
+                                 ->  Parallel Hash Join  (cost=2157.62..24708.93 rows=365 width=4)
+                                       Hash Cond: (ws.ws_sold_date_sk = d_1.d_date_sk)
+                                       ->  Parallel Seq Scan on web_sales ws  (cost=0.00..21764.43 rows=299743 width=8)
+                                       ->  Parallel Hash  (cost=2156.97..2156.97 rows=52 width=4)
+                                             ->  Parallel Seq Scan on date_dim d_1  (cost=0.00..2156.97 rows=52 width=4)
+                                                   Filter: ((d_moy >= 1) AND (d_moy <= 3) AND (d_year = 2002))
+               ->  Materialize  (cost=2684.47..58298.00 rows=1747 width=4)
+                     ->  Hash Join  (cost=2684.47..58289.26 rows=1747 width=4)
+                           Hash Cond: (cs.cs_sold_date_sk = d_2.d_date_sk)
+                           ->  Seq Scan on catalog_sales cs  (cost=0.00..51820.50 rows=1441550 width=8)
+                           ->  Hash  (cost=2683.36..2683.36 rows=89 width=4)
+                                 ->  Seq Scan on date_dim d_2  (cost=0.00..2683.36 rows=89 width=4)
+                                       Filter: ((d_moy >= 1) AND (d_moy <= 3) AND (d_year = 2002))
+ JIT:
+   Functions: 63
+   Options: Inlining false, Optimization false, Expressions true, Deforming true
+(47 rows)
+
+ cd_gender | cd_marital_status | cd_education_status  | cnt1 | cd_purchase_estimate | cd_credit_rating 
+-----------+-------------------+----------------------+------+----------------------+------------------
+ F         | D                 | 2 yr Degree          |    1 |                 1000 | High Risk 
+ F         | D                 | 2 yr Degree          |    1 |                 1500 | Good      
+ F         | D                 | 2 yr Degree          |    1 |                 1500 | High Risk 
+ F         | D                 | 2 yr Degree          |    1 |                 2500 | Good      
+ F         | D                 | 2 yr Degree          |    1 |                 2500 | Low Risk  
+ F         | D                 | 2 yr Degree          |    1 |                 4500 | Unknown   
+ F         | D                 | 2 yr Degree          |    1 |                 6000 | High Risk 
+ F         | D                 | 2 yr Degree          |    1 |                 6500 | Good      
+ F         | D                 | 2 yr Degree          |    2 |                 8500 | High Risk 
+ F         | D                 | 2 yr Degree          |    1 |                 8500 | Unknown   
+ F         | D                 | 2 yr Degree          |    1 |                 9000 | High Risk 
+ F         | D                 | 4 yr Degree          |    1 |                 1500 | High Risk 
+ F         | D                 | 4 yr Degree          |    1 |                 1500 | Unknown   
+ F         | D                 | 4 yr Degree          |    1 |                 3000 | Good      
+ F         | D                 | 4 yr Degree          |    1 |                 4500 | Good      
+ F         | D                 | 4 yr Degree          |    1 |                 4500 | Low Risk  
+ F         | D                 | 4 yr Degree          |    1 |                 4500 | Unknown   
+ F         | D                 | 4 yr Degree          |    1 |                 5500 | Good      
+ F         | D                 | 4 yr Degree          |    1 |                 5500 | Low Risk  
+ F         | D                 | 4 yr Degree          |    1 |                 6000 | High Risk 
+ F         | D                 | 4 yr Degree          |    1 |                 7500 | Unknown   
+ F         | D                 | 4 yr Degree          |    1 |                 9500 | Low Risk  
+ F         | D                 | Advanced Degree      |    1 |                  500 | High Risk 
+ F         | D                 | Advanced Degree      |    3 |                  500 | Low Risk  
+ F         | D                 | Advanced Degree      |    1 |                 1500 | High Risk 
+ F         | D                 | Advanced Degree      |    1 |                 3000 | Low Risk  
+ F         | D                 | Advanced Degree      |    1 |                 4000 | Unknown   
+ F         | D                 | Advanced Degree      |    1 |                 5500 | Good      
+ F         | D                 | Advanced Degree      |    1 |                 7000 | Good      
+ F         | D                 | Advanced Degree      |    1 |                 7500 | High Risk 
+ F         | D                 | Advanced Degree      |    2 |                 9500 | High Risk 
+ F         | D                 | Advanced Degree      |    1 |                 9500 | Unknown   
+ F         | D                 | College              |    1 |                 3500 | Good      
+ F         | D                 | College              |    1 |                 4500 | High Risk 
+ F         | D                 | College              |    2 |                 4500 | Unknown   
+ F         | D                 | College              |    1 |                 6500 | Low Risk  
+ F         | D                 | College              |    1 |                 8000 | Unknown   
+ F         | D                 | College              |    1 |                10000 | High Risk 
+ F         | D                 | Primary              |    1 |                 1000 | Unknown   
+ F         | D                 | Primary              |    2 |                 4000 | Unknown   
+ F         | D                 | Primary              |    1 |                 5000 | Unknown   
+ F         | D                 | Primary              |    1 |                 7500 | Low Risk  
+ F         | D                 | Primary              |    1 |                 7500 | Unknown   
+ F         | D                 | Primary              |    1 |                 9000 | High Risk 
+ F         | D                 | Primary              |    1 |                 9500 | Unknown   
+ F         | D                 | Primary              |    1 |                10000 | Low Risk  
+ F         | D                 | Secondary            |    2 |                  500 | High Risk 
+ F         | D                 | Secondary            |    1 |                  500 | Low Risk  
+ F         | D                 | Secondary            |    1 |                 1500 | Low Risk  
+ F         | D                 | Secondary            |    1 |                 2000 | Unknown   
+ F         | D                 | Secondary            |    1 |                 2500 | Low Risk  
+ F         | D                 | Secondary            |    1 |                 3000 | High Risk 
+ F         | D                 | Secondary            |    1 |                 4000 | High Risk 
+ F         | D                 | Secondary            |    1 |                 5000 | High Risk 
+ F         | D                 | Secondary            |    1 |                 5500 | High Risk 
+ F         | D                 | Secondary            |    1 |                 5500 | Unknown   
+ F         | D                 | Secondary            |    1 |                 6000 | High Risk 
+ F         | D                 | Secondary            |    1 |                 6500 | High Risk 
+ F         | D                 | Secondary            |    1 |                 6500 | Unknown   
+ F         | D                 | Secondary            |    1 |                10000 | Low Risk  
+ F         | D                 | Unknown              |    1 |                 3500 | High Risk 
+ F         | D                 | Unknown              |    1 |                 3500 | Low Risk  
+ F         | D                 | Unknown              |    1 |                 6000 | Good      
+ F         | D                 | Unknown              |    1 |                 6000 | Unknown   
+ F         | D                 | Unknown              |    1 |                 6500 | High Risk 
+ F         | D                 | Unknown              |    1 |                 7500 | Low Risk  
+ F         | D                 | Unknown              |    1 |                 8000 | Good      
+ F         | D                 | Unknown              |    2 |                 8500 | Low Risk  
+ F         | D                 | Unknown              |    1 |                 8500 | Unknown   
+ F         | D                 | Unknown              |    1 |                 9000 | High Risk 
+ F         | D                 | Unknown              |    1 |                 9500 | High Risk 
+ F         | M                 | 2 yr Degree          |    1 |                 2000 | Unknown   
+ F         | M                 | 2 yr Degree          |    1 |                 3000 | Good      
+ F         | M                 | 2 yr Degree          |    1 |                 5500 | Good      
+ F         | M                 | 2 yr Degree          |    1 |                 7000 | Good      
+ F         | M                 | 2 yr Degree          |    1 |                 7500 | Low Risk  
+ F         | M                 | 2 yr Degree          |    1 |                 8500 | Good      
+ F         | M                 | 2 yr Degree          |    1 |                 8500 | Unknown   
+ F         | M                 | 2 yr Degree          |    1 |                 9000 | Good      
+ F         | M                 | 4 yr Degree          |    1 |                 1000 | Low Risk  
+ F         | M                 | 4 yr Degree          |    1 |                 2000 | Good      
+ F         | M                 | 4 yr Degree          |    1 |                 2000 | High Risk 
+ F         | M                 | 4 yr Degree          |    1 |                 3000 | Unknown   
+ F         | M                 | 4 yr Degree          |    1 |                 3500 | Low Risk  
+ F         | M                 | 4 yr Degree          |    1 |                 4500 | Unknown   
+ F         | M                 | 4 yr Degree          |    1 |                 5000 | Unknown   
+ F         | M                 | 4 yr Degree          |    1 |                 5500 | High Risk 
+ F         | M                 | 4 yr Degree          |    1 |                 6000 | Unknown   
+ F         | M                 | 4 yr Degree          |    1 |                 6500 | Good      
+ F         | M                 | 4 yr Degree          |    1 |                 8500 | High Risk 
+ F         | M                 | 4 yr Degree          |    1 |                 8500 | Low Risk  
+ F         | M                 | 4 yr Degree          |    1 |                10000 | Low Risk  
+ F         | M                 | Advanced Degree      |    1 |                 3500 | Good      
+ F         | M                 | Advanced Degree      |    1 |                 4000 | Unknown   
+ F         | M                 | Advanced Degree      |    1 |                 5500 | Low Risk  
+ F         | M                 | Advanced Degree      |    1 |                 6500 | Low Risk  
+ F         | M                 | Advanced Degree      |    1 |                 7000 | Low Risk  
+ F         | M                 | College              |    1 |                  500 | High Risk 
+ F         | M                 | College              |    1 |                  500 | Unknown   
+ F         | M                 | College              |    1 |                 1000 | High Risk 
+(100 rows)
+

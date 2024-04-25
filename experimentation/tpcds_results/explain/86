@@ -1,0 +1,26 @@
+                                                                                                     QUERY PLAN                                                                                                     
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=26639.90..26640.15 rows=100 width=178)
+   ->  Sort  (cost=26639.90..26642.40 rows=1001 width=178)
+         Sort Key: sub.lochierarchy DESC, (CASE WHEN (sub.lochierarchy = 0) THEN sub.i_category ELSE NULL::bpchar END), sub.rank_within_parent
+         ->  Subquery Scan on sub  (cost=26554.09..26601.64 rows=1001 width=178)
+               ->  WindowAgg  (cost=26554.09..26589.13 rows=1001 width=178)
+                     ->  Sort  (cost=26554.09..26556.60 rows=1001 width=170)
+                           Sort Key: ((GROUPING(item.i_category) + GROUPING(item.i_class))), (CASE WHEN (GROUPING(item.i_class) = 0) THEN item.i_category ELSE NULL::bpchar END), (sum(web_sales.ws_net_paid)) DESC
+                           ->  MixedAggregate  (cost=3052.51..26504.21 rows=1001 width=170)
+                                 Hash Key: item.i_category, item.i_class
+                                 Hash Key: item.i_category
+                                 Group Key: ()
+                                 ->  Gather  (cost=3052.51..26425.59 rows=3573 width=108)
+                                       Workers Planned: 2
+                                       ->  Nested Loop  (cost=2052.51..25068.29 rows=1489 width=108)
+                                             ->  Parallel Hash Join  (cost=2052.23..24603.53 rows=1489 width=10)
+                                                   Hash Cond: (web_sales.ws_sold_date_sk = d1.d_date_sk)
+                                                   ->  Parallel Seq Scan on web_sales  (cost=0.00..21764.43 rows=299743 width=14)
+                                                   ->  Parallel Hash  (cost=2049.55..2049.55 rows=214 width=4)
+                                                         ->  Parallel Seq Scan on date_dim d1  (cost=0.00..2049.55 rows=214 width=4)
+                                                               Filter: ((d_month_seq >= 1186) AND (d_month_seq <= 1197))
+                                             ->  Index Scan using item_pkey on item  (cost=0.29..0.31 rows=1 width=106)
+                                                   Index Cond: (i_item_sk = web_sales.ws_item_sk)
+(22 rows)
+

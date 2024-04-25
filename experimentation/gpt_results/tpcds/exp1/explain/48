@@ -1,0 +1,35 @@
+                                                                                                                                                                                                                                                                                                                                                                                                                            QUERY PLAN                                                                                                                                                                                                                                                                                                                                                                                                                            
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Finalize Aggregate  (cost=103380.82..103380.83 rows=1 width=8)
+   ->  Gather  (cost=103380.60..103380.81 rows=2 width=8)
+         Workers Planned: 2
+         ->  Partial Aggregate  (cost=102380.60..102380.61 rows=1 width=8)
+               ->  Nested Loop  (cost=1946.79..102380.60 rows=2 width=4)
+                     ->  Nested Loop  (cost=1946.36..102335.02 rows=58 width=14)
+                           ->  Hash Join  (cost=1946.07..102069.80 rows=716 width=24)
+                                 Hash Cond: (store_sales.ss_store_sk = store.s_store_sk)
+                                 ->  Parallel Hash Join  (cost=1944.80..102065.89 rows=751 width=28)
+                                       Hash Cond: (store_sales.ss_sold_date_sk = date_dim.d_date_sk)
+                                       ->  Parallel Seq Scan on store_sales  (cost=0.00..99706.25 rows=158025 width=32)
+                                             Filter: ((((ss_sales_price >= 100.00) AND (ss_sales_price <= 150.00)) OR ((ss_sales_price >= 50.00) AND (ss_sales_price <= 100.00)) OR ((ss_sales_price >= 150.00) AND (ss_sales_price <= 200.00))) AND (((ss_net_profit >= '0'::numeric) AND (ss_net_profit <= '2000'::numeric)) OR ((ss_net_profit >= '150'::numeric) AND (ss_net_profit <= '3000'::numeric)) OR ((ss_net_profit >= '50'::numeric) AND (ss_net_profit <= '25000'::numeric))))
+                                       ->  Parallel Hash  (cost=1942.12..1942.12 rows=214 width=4)
+                                             ->  Parallel Seq Scan on date_dim  (cost=0.00..1942.12 rows=214 width=4)
+                                                   Filter: (d_year = 2001)
+                                 ->  Hash  (cost=1.12..1.12 rows=12 width=4)
+                                       ->  Seq Scan on store  (cost=0.00..1.12 rows=12 width=4)
+                           ->  Index Scan using customer_address_pkey on customer_address  (cost=0.29..0.36 rows=1 width=7)
+                                 Index Cond: (ca_address_sk = store_sales.ss_addr_sk)
+                                 Filter: (((ca_country)::text = 'United States'::text) AND ((ca_state = ANY ('{ND,NY,SD}'::bpchar[])) OR (ca_state = ANY ('{MD,GA,KS}'::bpchar[])) OR (ca_state = ANY ('{CO,MN,NC}'::bpchar[]))) AND (((ca_state = ANY ('{ND,NY,SD}'::bpchar[])) AND (store_sales.ss_net_profit >= '0'::numeric) AND (store_sales.ss_net_profit <= '2000'::numeric)) OR ((ca_state = ANY ('{MD,GA,KS}'::bpchar[])) AND (store_sales.ss_net_profit >= '150'::numeric) AND (store_sales.ss_net_profit <= '3000'::numeric)) OR ((ca_state = ANY ('{CO,MN,NC}'::bpchar[])) AND (store_sales.ss_net_profit >= '50'::numeric) AND (store_sales.ss_net_profit <= '25000'::numeric))))
+                     ->  Index Scan using customer_demographics_pkey on customer_demographics  (cost=0.43..0.78 rows=1 width=27)
+                           Index Cond: (cd_demo_sk = store_sales.ss_cdemo_sk)
+                           Filter: ((((cd_marital_status = 'S'::bpchar) AND (cd_education_status = 'Secondary'::bpchar)) OR ((cd_marital_status = 'M'::bpchar) AND (cd_education_status = '2 yr Degree'::bpchar)) OR ((cd_marital_status = 'D'::bpchar) AND (cd_education_status = 'Advanced Degree'::bpchar))) AND (((cd_marital_status = 'S'::bpchar) AND (cd_education_status = 'Secondary'::bpchar) AND (store_sales.ss_sales_price >= 100.00) AND (store_sales.ss_sales_price <= 150.00)) OR ((cd_marital_status = 'M'::bpchar) AND (cd_education_status = '2 yr Degree'::bpchar) AND (store_sales.ss_sales_price >= 50.00) AND (store_sales.ss_sales_price <= 100.00)) OR ((cd_marital_status = 'D'::bpchar) AND (cd_education_status = 'Advanced Degree'::bpchar) AND (store_sales.ss_sales_price >= 150.00) AND (store_sales.ss_sales_price <= 200.00))))
+ JIT:
+   Functions: 35
+   Options: Inlining false, Optimization false, Expressions true, Deforming true
+(26 rows)
+
+  sum  
+-------
+ 23943
+(1 row)
+

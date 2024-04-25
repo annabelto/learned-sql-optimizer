@@ -1,0 +1,51 @@
+                                                                                                     QUERY PLAN                                                                                                     
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=140403.38..140403.38 rows=1 width=152)
+   Sort Key: inv1.w_warehouse_sk, inv1.i_item_sk, inv1.mean, inv1.cov, inv2.mean, inv2.cov
+   CTE inv
+     ->  Subquery Scan on foo  (cost=130880.25..139521.09 rows=19508 width=126)
+           ->  Finalize GroupAggregate  (cost=130880.25..139228.47 rows=19508 width=94)
+                 Group Key: warehouse.w_warehouse_sk, item.i_item_sk, date_dim.d_moy
+                 Filter: (CASE avg(inventory.inv_quantity_on_hand) WHEN '0'::numeric THEN '0'::numeric ELSE (stddev_samp(inventory.inv_quantity_on_hand) / avg(inventory.inv_quantity_on_hand)) END > '1'::numeric)
+                 ->  Gather Merge  (cost=130880.25..137180.11 rows=48770 width=94)
+                       Workers Planned: 2
+                       ->  Partial GroupAggregate  (cost=129880.23..130550.82 rows=24385 width=94)
+                             Group Key: warehouse.w_warehouse_sk, item.i_item_sk, date_dim.d_moy
+                             ->  Sort  (cost=129880.23..129941.19 rows=24385 width=34)
+                                   Sort Key: warehouse.w_warehouse_sk, item.i_item_sk, date_dim.d_moy
+                                   ->  Hash Join  (cost=2649.20..128103.33 rows=24385 width=34)
+                                         Hash Cond: (inventory.inv_warehouse_sk = warehouse.w_warehouse_sk)
+                                         ->  Hash Join  (cost=2648.09..127983.95 rows=24385 width=16)
+                                               Hash Cond: (inventory.inv_item_sk = item.i_item_sk)
+                                               ->  Parallel Hash Join  (cost=1944.80..127216.64 rows=24385 width=16)
+                                                     Hash Cond: (inventory.inv_date_sk = date_dim.d_date_sk)
+                                                     ->  Parallel Seq Scan on inventory  (cost=0.00..112424.90 rows=4893790 width=16)
+                                                     ->  Parallel Hash  (cost=1942.12..1942.12 rows=214 width=8)
+                                                           ->  Parallel Seq Scan on date_dim  (cost=0.00..1942.12 rows=214 width=8)
+                                                                 Filter: (d_year = 2000)
+                                               ->  Hash  (cost=478.29..478.29 rows=18000 width=4)
+                                                     ->  Index Only Scan using item_pkey on item  (cost=0.29..478.29 rows=18000 width=4)
+                                         ->  Hash  (cost=1.05..1.05 rows=5 width=22)
+                                               ->  Seq Scan on warehouse  (cost=0.00..1.05 rows=5 width=22)
+   ->  Hash Join  (cost=440.40..882.28 rows=1 width=152)
+         Hash Cond: ((inv1.i_item_sk = inv2.i_item_sk) AND (inv1.w_warehouse_sk = inv2.w_warehouse_sk))
+         ->  CTE Scan on inv inv1  (cost=0.00..438.93 rows=98 width=76)
+               Filter: (d_moy = 1)
+         ->  Hash  (cost=438.93..438.93 rows=98 width=76)
+               ->  CTE Scan on inv inv2  (cost=0.00..438.93 rows=98 width=76)
+                     Filter: (d_moy = 2)
+ JIT:
+   Functions: 55
+   Options: Inlining false, Optimization false, Expressions true, Deforming true
+(37 rows)
+
+ w_warehouse_sk | i_item_sk | d_moy |         mean         |        cov         | w_warehouse_sk | i_item_sk | d_moy |         mean         |        cov         
+----------------+-----------+-------+----------------------+--------------------+----------------+-----------+-------+----------------------+--------------------
+              1 |     14411 |     1 | 186.2500000000000000 | 1.6853723203686013 |              1 |     14411 |     2 | 429.6666666666666667 | 1.1260057194031071
+              2 |      3638 |     1 | 152.6666666666666667 | 1.6131943546920131 |              2 |      3638 |     2 | 366.3333333333333333 | 1.0911246097178872
+              2 |     17267 |     1 | 172.7500000000000000 | 1.7575796617243184 |              2 |     17267 |     2 | 465.0000000000000000 | 1.0430055795607591
+              3 |      5617 |     1 | 263.0000000000000000 | 1.5303934532624829 |              3 |      5617 |     2 | 349.0000000000000000 | 1.4258030522792407
+              4 |      4658 |     1 | 155.0000000000000000 | 1.5277931552006774 |              4 |      4658 |     2 | 468.7500000000000000 | 1.0543579601578155
+              5 |      2501 |     1 | 202.3333333333333333 | 1.5223715684198995 |              5 |      2501 |     2 | 221.0000000000000000 | 1.1126315611842941
+(6 rows)
+

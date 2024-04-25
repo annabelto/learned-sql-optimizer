@@ -1,0 +1,31 @@
+                                                                  QUERY PLAN                                                                  
+----------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=12598.96..12603.16 rows=36 width=49)
+   ->  Gather Merge  (cost=12598.96..12603.16 rows=36 width=49)
+         Workers Planned: 2
+         ->  Sort  (cost=11598.93..11598.98 rows=18 width=49)
+               Sort Key: customer.c_customer_id
+               ->  Nested Loop  (cost=4975.95..11598.56 rows=18 width=49)
+                     Join Filter: (customer.c_current_cdemo_sk = customer_demographics.cd_demo_sk)
+                     ->  Hash Join  (cost=4975.53..11525.13 rows=138 width=77)
+                           Hash Cond: (household_demographics.hd_income_band_sk = income_band.ib_income_band_sk)
+                           ->  Nested Loop  (cost=4974.13..11522.64 rows=345 width=81)
+                                 ->  Parallel Hash Join  (cost=4973.84..11414.16 rows=358 width=81)
+                                       Hash Cond: (store_returns.sr_cdemo_sk = customer.c_current_cdemo_sk)
+                                       ->  Parallel Seq Scan on store_returns  (cost=0.00..5988.98 rows=119798 width=4)
+                                       ->  Parallel Hash  (cost=4968.16..4968.16 rows=455 width=77)
+                                             ->  Parallel Hash Join  (cost=1457.50..4968.16 rows=455 width=77)
+                                                   Hash Cond: (customer.c_current_addr_sk = customer_address.ca_address_sk)
+                                                   ->  Parallel Seq Scan on customer  (cost=0.00..3356.24 rows=58824 width=81)
+                                                   ->  Parallel Hash  (cost=1454.65..1454.65 rows=228 width=4)
+                                                         ->  Parallel Seq Scan on customer_address  (cost=0.00..1454.65 rows=228 width=4)
+                                                               Filter: ((ca_city)::text = 'Woodland'::text)
+                                 ->  Index Scan using household_demographics_pkey on household_demographics  (cost=0.28..0.30 rows=1 width=8)
+                                       Index Cond: (hd_demo_sk = customer.c_current_hdemo_sk)
+                           ->  Hash  (cost=1.30..1.30 rows=8 width=4)
+                                 ->  Seq Scan on income_band  (cost=0.00..1.30 rows=8 width=4)
+                                       Filter: ((ib_lower_bound >= 60306) AND (ib_upper_bound <= 110306))
+                     ->  Index Only Scan using customer_demographics_pkey on customer_demographics  (cost=0.43..0.52 rows=1 width=4)
+                           Index Cond: (cd_demo_sk = store_returns.sr_cdemo_sk)
+(27 rows)
+

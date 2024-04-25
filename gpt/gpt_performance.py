@@ -1,45 +1,61 @@
 import os
+import argparse
 import pandas as pd
 import numpy as np
 
-def do_performance_check(q_number):
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-o", "--output_file", required=True)
+    parser.add_argument("-ig", "--input_dir_gpt", required=True)
+    parser.add_argument("-it", "--input_dir_tpc", required=True)
+    parser.add_argument("-d", "--dataset", required=True)
+    
+    return parser.parse_args()
+
+
+def do_performance_check(q_number, in_dir_gpt, in_dir_tpc, database):
     
     tpch_result = []
     gpt_result = []
     
-    for i in range(5):
+    for _ in range(5):
         os.system("/usr/bin/time -o temp_time -f '%e' psql -h localhost \
-                -U excalibur tpch < ../experimentation/tpch_queries/{}.sql \
-                >/dev/null 2>/dev/null".format(q_number))
+                -U excalibur {} < {}/{}.sql \
+                >/dev/null 2>/dev/null".format(database, in_dir_tpc, q_number))
         with open("temp_time", "r") as t:
             tpch_result.append(float(t.read().strip()))
 
         os.system("/usr/bin/time -o temp_time -f '%e' psql -h localhost \
-                -U excalibur tpch < ../experimentation/gpt_queries/exp5/{}.sql \
-                >/dev/null 2>/dev/null".format(q_number))
+                -U excalibur {} < {}/{}.sql \
+                >/dev/null 2>/dev/null".format(database, in_dir_gpt, q_number))
         with open("temp_time", "r") as t:
             gpt_result.append(float(t.read().strip()))
 
     return np.mean(gpt_result), np.mean(tpch_result)
 
+
 def main():
+    args = parse_args()
     
     # Appropriately build out the timings list
     result = []
-    for i in range(1, 23):
-        gpt, tpch = do_performance_check(i)
+    for i in range(1, 100):
+        print("Running query {}...".format(i))
+        if i in [1, 4, 11, 74]: continue
+        gpt, tpc = do_performance_check(i, args.input_dir_gpt, args.input_dir_tpc, args.dataset)
         result.append(
             {
                 "Query" : i,
-                "TPCH" : tpch,
+                args.dataset.upper() : tpc,
                 "GPT" : gpt,
-                "Improvement" : (tpch - gpt)/tpch
+                "Improvement" : (tpc - gpt)/tpc
             }
         )
 
-    result_df = pd.DataFrame(result, columns=["Query", "TPCH", "GPT", "Improvement"])
+    result_df = pd.DataFrame(result, columns=["Query", args.dataset.upper(), "GPT", "Improvement"])
     print(result_df)
     print("Average improvment via GPT : ", result_df["Improvement"].mean())
+    result_df.to_csv(args.output_file)
     
 if __name__ == "__main__":
     main()

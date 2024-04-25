@@ -1,0 +1,30 @@
+                                                        QUERY PLAN                                                         
+---------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=144519.22..144519.47 rows=100 width=236)
+   ->  Sort  (cost=144519.22..144698.87 rows=71857 width=236)
+         Sort Key: (avg(inventory.inv_quantity_on_hand)), item.i_product_name, item.i_brand, item.i_class, item.i_category
+         ->  GroupAggregate  (cost=133783.08..141772.90 rows=71857 width=236)
+               Group Key: item.i_product_name, item.i_brand, item.i_class, item.i_category
+               Group Key: item.i_product_name, item.i_brand, item.i_class
+               Group Key: item.i_product_name, item.i_brand
+               Group Key: item.i_product_name
+               Group Key: ()
+               ->  Gather Merge  (cost=133783.08..140187.34 rows=54988 width=208)
+                     Workers Planned: 2
+                     ->  Sort  (cost=132783.06..132840.34 rows=22912 width=208)
+                           Sort Key: item.i_product_name, item.i_brand, item.i_class, item.i_category
+                           ->  Parallel Hash Join  (cost=3520.29..128852.29 rows=22912 width=208)
+                                 Hash Cond: (inventory.inv_item_sk = item.i_item_sk)
+                                 ->  Parallel Hash Join  (cost=2052.06..127323.90 rows=22912 width=8)
+                                       Hash Cond: (inventory.inv_date_sk = date_dim.d_date_sk)
+                                       ->  Parallel Seq Scan on inventory  (cost=0.00..112424.90 rows=4893790 width=12)
+                                       ->  Parallel Hash  (cost=2049.55..2049.55 rows=201 width=4)
+                                             ->  Parallel Seq Scan on date_dim  (cost=0.00..2049.55 rows=201 width=4)
+                                                   Filter: ((d_month_seq >= 1200) AND (d_month_seq <= 1211))
+                                 ->  Parallel Hash  (cost=1335.88..1335.88 rows=10588 width=208)
+                                       ->  Parallel Seq Scan on item  (cost=0.00..1335.88 rows=10588 width=208)
+ JIT:
+   Functions: 27
+   Options: Inlining false, Optimization false, Expressions true, Deforming true
+(26 rows)
+

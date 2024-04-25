@@ -1,0 +1,3 @@
+ERROR:  column reference "d_week_seq" is ambiguous
+LINE 25:     SELECT d_week_seq, sun_sales, mon_sales, tue_sales, wed_...
+                    ^

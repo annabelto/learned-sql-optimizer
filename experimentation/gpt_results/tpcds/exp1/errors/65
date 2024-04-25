@@ -1,0 +1,3 @@
+ERROR:  missing FROM-clause entry for table "sc"
+LINE 34:     item ON i_item_sk = sc.ss_item_sk
+                                 ^

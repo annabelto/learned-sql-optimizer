@@ -1,0 +1,4 @@
+ERROR:  column "c_last_review_date" does not exist
+LINE 15:        ,c_last_review_date,ctr_total_return
+                 ^
+HINT:  Perhaps you meant to reference the column "customer.c_last_review_date_sk".

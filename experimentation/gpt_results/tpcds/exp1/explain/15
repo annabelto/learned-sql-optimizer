@@ -1,0 +1,28 @@
+                                                                                        QUERY PLAN                                                                                         
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=46328.54..46328.57 rows=1 width=43)
+   ->  GroupAggregate  (cost=46328.54..46328.57 rows=1 width=43)
+         Group Key: customer_address.ca_zip
+         ->  Sort  (cost=46328.54..46328.55 rows=1 width=17)
+               Sort Key: customer_address.ca_zip
+               ->  Nested Loop  (cost=1000.90..46328.53 rows=1 width=17)
+                     ->  Nested Loop  (cost=1000.59..46328.14 rows=1 width=10)
+                           ->  Gather  (cost=1000.29..46320.71 rows=1 width=10)
+                                 Workers Planned: 2
+                                 ->  Nested Loop  (cost=0.29..45320.61 rows=1 width=10)
+                                       ->  Parallel Seq Scan on catalog_sales  (cost=0.00..44913.07 rows=57 width=14)
+                                             Filter: (cs_sales_price > '500'::numeric)
+                                       ->  Index Scan using date_dim_pkey on date_dim  (cost=0.29..7.15 rows=1 width=4)
+                                             Index Cond: (d_date_sk = catalog_sales.cs_sold_date_sk)
+                                             Filter: ((d_qoy = 2) AND (d_year = 2001))
+                           ->  Index Scan using customer_pkey on customer  (cost=0.29..7.43 rows=1 width=8)
+                                 Index Cond: (c_customer_sk = catalog_sales.cs_bill_customer_sk)
+                     ->  Index Scan using customer_address_pkey on customer_address  (cost=0.31..0.39 rows=1 width=15)
+                           Index Cond: (ca_address_sk = customer.c_current_addr_sk)
+                           Filter: ((substr((ca_zip)::text, 1, 5) = ANY ('{85669,86197,88274,83405,86475,85392,85460,80348,81792}'::text[])) OR (ca_state = ANY ('{CA,WA,GA}'::bpchar[])))
+(20 rows)
+
+ ca_zip | sum 
+--------+-----
+(0 rows)
+

@@ -1,0 +1,3 @@
+ERROR:  column "gross_margin" does not exist
+LINE 17:             ORDER BY gross_margin ASC
+                              ^

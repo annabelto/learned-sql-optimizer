@@ -37,7 +37,7 @@ def check_error(output_path):
     return ""
     
 def check_correct(output_path, q_number):
-    out = subprocess.run(['diff', 'temp_result', '../experimentation/tpch_reg_results/results/{}'.format(q_number)], stdout=subprocess.PIPE)
+    out = subprocess.run(['diff', 'temp_result', '../experimentation/tpcds_results/results/{}'.format(q_number)], stdout=subprocess.PIPE)
     os.system("rm temp_result")
     if len(out.stdout.decode('utf-8')) > 0:
         return False
@@ -107,7 +107,7 @@ if __name__ == "__main__":
     # input_dir = input("Enter the path to the directory containing queries: ")
     # output_dir = input("Enter the path to the directory at which you want to output results: ")
     for filename in os.listdir(input_dir):
-        if "explain" in filename:# or filename.split('.')[0] in ['5', '18', '1', '2', '3', '17', '13', '21', '15', '6', '10', '9', '20', '11', '12', '4', '22', '8']:
+        if "explain" in filename or filename.split('.')[0] in ['1', '4', '11', '74']:
             continue
         
         input_file = os.path.join(input_dir, filename)
@@ -115,7 +115,7 @@ if __name__ == "__main__":
             # prompt = "Using any combination or ordering of data-independent rewrite rules, correctly optimize the following query. Tell me which rules you applied and in what order, and make sure the output follows Postgres SQL syntax: " + parse_sql_query(input_file)
             # Create a message list to maintain history
             messages = [{"role" : "system", "content" : "You are a PostgreSQL expert"}]
-            prompt = "Given a syntactically correct PostgreSQL query of TPC-H as the input, \
+            prompt = "Given a syntactically correct PostgreSQL query of TPC-DS as the input, \
                       then optimize the query using any combination or ordering of data-independent rewrite \
                       rules. List the rules you use and the order in which you applied them. Finally, output \
                       the rewritten query under the heading '### Optimized Query.'. Here's the query : " + parse_sql_query(input_file)

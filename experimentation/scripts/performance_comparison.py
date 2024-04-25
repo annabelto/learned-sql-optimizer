@@ -46,18 +46,20 @@ def main():
 
     # Appropriately build out the timings list
     result = []
-    for i in range(1, 23):
+    for i in range(1, 100):
+        if i in [1, 4, 11, 74]:
+            continue
         if i not in bad_queries:
             result.append(
                 {
                     "Query" : i,
-                    "TPCH" : tpch_results[i],
+                    "TPCDS" : tpch_results[i],
                     "GPT" : gpt_results[i],
                     "Improvement" : (tpch_results[i] - gpt_results[i])/tpch_results[i]
                 }
             )
 
-    result_df = pd.DataFrame(result, columns=["Query", "TPCH", "GPT", "Improvement"])
+    result_df = pd.DataFrame(result, columns=["Query", "TPCDS", "GPT", "Improvement"])
     print(result_df)
     print("Average improvment via GPT : ", result_df["Improvement"].mean())
     result_df.to_csv(args.result_file)

@@ -1,0 +1,118 @@
+                                                                           QUERY PLAN                                                                            
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=164965.81..164968.31 rows=100 width=132)
+   ->  GroupAggregate  (cost=164965.81..164971.23 rows=217 width=132)
+         Group Key: ('store channel'::text), store.s_store_sk
+         Group Key: ('store channel'::text)
+         Group Key: ()
+         ->  Sort  (cost=164965.81..164966.08 rows=108 width=132)
+               Sort Key: ('store channel'::text), store.s_store_sk
+               ->  Append  (cost=6099.80..164962.17 rows=108 width=132)
+                     ->  Merge Left Join  (cost=6099.80..79625.43 rows=12 width=132)
+                           Merge Cond: (store.s_store_sk = store_1.s_store_sk)
+                           ->  GroupAggregate  (cost=3049.90..70227.39 rows=12 width=68)
+                                 Group Key: store.s_store_sk
+                                 ->  Nested Loop  (cost=3049.90..70219.42 rows=1039 width=16)
+                                       Join Filter: (store_sales.ss_store_sk = store.s_store_sk)
+                                       ->  Index Only Scan using store_pkey on store  (cost=0.14..12.31 rows=12 width=4)
+                                       ->  Materialize  (cost=3049.76..70013.62 rows=1090 width=16)
+                                             ->  Gather  (cost=3049.76..70008.18 rows=1090 width=16)
+                                                   Workers Planned: 2
+                                                   ->  Parallel Hash Join  (cost=2049.76..68899.18 rows=454 width=16)
+                                                         Hash Cond: (store_sales.ss_sold_date_sk = date_dim.d_date_sk)
+                                                         ->  Parallel Seq Scan on store_sales  (cost=0.00..63698.56 rows=1200256 width=20)
+                                                         ->  Parallel Hash  (cost=2049.55..2049.55 rows=17 width=4)
+                                                               ->  Parallel Seq Scan on date_dim  (cost=0.00..2049.55 rows=17 width=4)
+                                                                     Filter: ((d_date >= '2000-08-10'::date) AND (d_date <= '2000-09-09'::date))
+                           ->  GroupAggregate  (cost=3049.90..9397.59 rows=12 width=68)
+                                 Group Key: store_1.s_store_sk
+                                 ->  Nested Loop  (cost=3049.90..9396.62 rows=106 width=16)
+                                       Join Filter: (store_returns.sr_store_sk = store_1.s_store_sk)
+                                       ->  Index Only Scan using store_pkey on store store_1  (cost=0.14..12.31 rows=12 width=4)
+                                       ->  Materialize  (cost=3049.76..9364.78 rows=110 width=16)
+                                             ->  Gather  (cost=3049.76..9364.23 rows=110 width=16)
+                                                   Workers Planned: 2
+                                                   ->  Parallel Hash Join  (cost=2049.76..8353.23 rows=46 width=16)
+                                                         Hash Cond: (store_returns.sr_returned_date_sk = date_dim_1.d_date_sk)
+                                                         ->  Parallel Seq Scan on store_returns  (cost=0.00..5988.98 rows=119798 width=20)
+                                                         ->  Parallel Hash  (cost=2049.55..2049.55 rows=17 width=4)
+                                                               ->  Parallel Seq Scan on date_dim date_dim_1  (cost=0.00..2049.55 rows=17 width=4)
+                                                                     Filter: ((d_date >= '2000-08-10'::date) AND (d_date <= '2000-09-09'::date))
+                     ->  Nested Loop  (cost=55044.93..55050.96 rows=36 width=132)
+                           ->  Finalize GroupAggregate  (cost=48047.38..48051.46 rows=6 width=68)
+                                 Group Key: catalog_sales.cs_call_center_sk
+                                 ->  Gather Merge  (cost=48047.38..48051.22 rows=12 width=68)
+                                       Workers Planned: 2
+                                       ->  Partial GroupAggregate  (cost=47047.35..47049.81 rows=6 width=68)
+                                             Group Key: catalog_sales.cs_call_center_sk
+                                             ->  Sort  (cost=47047.35..47047.95 rows=237 width=16)
+                                                   Sort Key: catalog_sales.cs_call_center_sk
+                                                   ->  Parallel Hash Join  (cost=2049.76..47038.01 rows=237 width=16)
+                                                         Hash Cond: (catalog_sales.cs_sold_date_sk = date_dim_2.d_date_sk)
+                                                         ->  Parallel Seq Scan on catalog_sales  (cost=0.00..43411.46 rows=600646 width=20)
+                                                         ->  Parallel Hash  (cost=2049.55..2049.55 rows=17 width=4)
+                                                               ->  Parallel Seq Scan on date_dim date_dim_2  (cost=0.00..2049.55 rows=17 width=4)
+                                                                     Filter: ((d_date >= '2000-08-10'::date) AND (d_date <= '2000-09-09'::date))
+                           ->  Materialize  (cost=6997.56..6998.92 rows=6 width=64)
+                                 ->  Subquery Scan on cr  (cost=6997.56..6998.89 rows=6 width=64)
+                                       ->  Finalize GroupAggregate  (cost=6997.56..6998.83 rows=6 width=68)
+                                             Group Key: catalog_returns.cr_call_center_sk
+                                             ->  Gather Merge  (cost=6997.56..6998.66 rows=6 width=68)
+                                                   Workers Planned: 1
+                                                   ->  Partial GroupAggregate  (cost=5997.55..5997.98 rows=6 width=68)
+                                                         Group Key: catalog_returns.cr_call_center_sk
+                                                         ->  Sort  (cost=5997.55..5997.63 rows=34 width=16)
+                                                               Sort Key: catalog_returns.cr_call_center_sk
+                                                               ->  Parallel Hash Join  (cost=2049.76..5996.68 rows=34 width=16)
+                                                                     Hash Cond: (catalog_returns.cr_returned_date_sk = date_dim_3.d_date_sk)
+                                                                     ->  Parallel Seq Scan on catalog_returns  (cost=0.00..3724.45 rows=84745 width=20)
+                                                                     ->  Parallel Hash  (cost=2049.55..2049.55 rows=17 width=4)
+                                                                           ->  Parallel Seq Scan on date_dim date_dim_3  (cost=0.00..2049.55 rows=17 width=4)
+                                                                                 Filter: ((d_date >= '2000-08-10'::date) AND (d_date <= '2000-09-09'::date))
+                     ->  Merge Left Join  (cost=30259.41..30284.15 rows=60 width=132)
+                           Merge Cond: (web_page.wp_web_page_sk = web_page_1.wp_web_page_sk)
+                           ->  Finalize GroupAggregate  (cost=25609.56..25629.69 rows=60 width=68)
+                                 Group Key: web_page.wp_web_page_sk
+                                 ->  Gather Merge  (cost=25609.56..25627.29 rows=120 width=68)
+                                       Workers Planned: 2
+                                       ->  Partial GroupAggregate  (cost=24609.54..24613.42 rows=60 width=68)
+                                             Group Key: web_page.wp_web_page_sk
+                                             ->  Merge Join  (cost=24609.54..24611.63 rows=119 width=16)
+                                                   Merge Cond: (web_sales.ws_web_page_sk = web_page.wp_web_page_sk)
+                                                   ->  Sort  (cost=24605.17..24605.47 rows=119 width=16)
+                                                         Sort Key: web_sales.ws_web_page_sk
+                                                         ->  Parallel Hash Join  (cost=2049.76..24601.07 rows=119 width=16)
+                                                               Hash Cond: (web_sales.ws_sold_date_sk = date_dim_4.d_date_sk)
+                                                               ->  Parallel Seq Scan on web_sales  (cost=0.00..21764.43 rows=299743 width=20)
+                                                               ->  Parallel Hash  (cost=2049.55..2049.55 rows=17 width=4)
+                                                                     ->  Parallel Seq Scan on date_dim date_dim_4  (cost=0.00..2049.55 rows=17 width=4)
+                                                                           Filter: ((d_date >= '2000-08-10'::date) AND (d_date <= '2000-09-09'::date))
+                                                   ->  Sort  (cost=4.37..4.52 rows=60 width=4)
+                                                         Sort Key: web_page.wp_web_page_sk
+                                                         ->  Seq Scan on web_page  (cost=0.00..2.60 rows=60 width=4)
+                           ->  Finalize GroupAggregate  (cost=4649.85..4652.97 rows=26 width=68)
+                                 Group Key: web_page_1.wp_web_page_sk
+                                 ->  Gather Merge  (cost=4649.85..4652.40 rows=15 width=68)
+                                       Workers Planned: 1
+                                       ->  Partial GroupAggregate  (cost=3649.84..3650.70 rows=15 width=68)
+                                             Group Key: web_page_1.wp_web_page_sk
+                                             ->  Merge Join  (cost=3649.84..3650.36 rows=15 width=16)
+                                                   Merge Cond: (web_returns.wr_web_page_sk = web_page_1.wp_web_page_sk)
+                                                   ->  Sort  (cost=3645.46..3645.50 rows=16 width=16)
+                                                         Sort Key: web_returns.wr_web_page_sk
+                                                         ->  Nested Loop  (cost=0.30..3645.14 rows=16 width=16)
+                                                               ->  Parallel Seq Scan on web_returns  (cost=0.00..1749.14 rows=42214 width=20)
+                                                               ->  Memoize  (cost=0.30..0.41 rows=1 width=4)
+                                                                     Cache Key: web_returns.wr_returned_date_sk
+                                                                     Cache Mode: logical
+                                                                     ->  Index Scan using date_dim_pkey on date_dim date_dim_5  (cost=0.29..0.40 rows=1 width=4)
+                                                                           Index Cond: (d_date_sk = web_returns.wr_returned_date_sk)
+                                                                           Filter: ((d_date >= '2000-08-10'::date) AND (d_date <= '2000-09-09'::date))
+                                                   ->  Sort  (cost=4.37..4.52 rows=60 width=4)
+                                                         Sort Key: web_page_1.wp_web_page_sk
+                                                         ->  Seq Scan on web_page web_page_1  (cost=0.00..2.60 rows=60 width=4)
+ JIT:
+   Functions: 147
+   Options: Inlining false, Optimization false, Expressions true, Deforming true
+(114 rows)
+

@@ -1,0 +1,4 @@
+ERROR:  column "ss_cdemo_sk" does not exist
+LINE 8:   ON ss_cdemo_sk = cd_demo_sk
+             ^
+HINT:  Perhaps you meant to reference the column "customer_demographics.cd_demo_sk".

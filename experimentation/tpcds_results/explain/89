@@ -1,0 +1,38 @@
+                                                                                                                                                                  QUERY PLAN                                                                                                                                                                  
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=70843.83..70844.08 rows=100 width=266)
+   ->  Sort  (cost=70843.83..70844.12 rows=119 width=266)
+         Sort Key: ((tmp1.sum_sales - tmp1.avg_monthly_sales)), tmp1.s_store_name
+         ->  Subquery Scan on tmp1  (cost=70759.60..70839.72 rows=119 width=266)
+               Filter: (CASE WHEN (tmp1.avg_monthly_sales <> '0'::numeric) THEN (abs((tmp1.sum_sales - tmp1.avg_monthly_sales)) / tmp1.avg_monthly_sales) ELSE NULL::numeric END > 0.1)
+               ->  WindowAgg  (cost=70759.60..70831.37 rows=358 width=234)
+                     ->  Incremental Sort  (cost=70759.60..70823.32 rows=358 width=202)
+                           Sort Key: item.i_category, item.i_brand, store.s_store_name, store.s_company_name
+                           Presorted Key: item.i_category
+                           ->  Finalize GroupAggregate  (cost=70753.09..70802.76 rows=358 width=202)
+                                 Group Key: item.i_category, item.i_class, item.i_brand, store.s_store_name, store.s_company_name, date_dim.d_moy
+                                 ->  Gather Merge  (cost=70753.09..70792.33 rows=298 width=202)
+                                       Workers Planned: 2
+                                       ->  Partial GroupAggregate  (cost=69753.06..69757.91 rows=149 width=202)
+                                             Group Key: item.i_category, item.i_class, item.i_brand, store.s_store_name, store.s_company_name, date_dim.d_moy
+                                             ->  Sort  (cost=69753.06..69753.44 rows=149 width=176)
+                                                   Sort Key: item.i_category, item.i_class, item.i_brand, store.s_store_name, store.s_company_name, date_dim.d_moy
+                                                   ->  Hash Join  (cost=1499.92..69747.69 rows=149 width=176)
+                                                         Hash Cond: (store_sales.ss_store_sk = store.s_store_sk)
+                                                         ->  Nested Loop  (cost=1498.65..69745.87 rows=157 width=167)
+                                                               ->  Parallel Hash Join  (cost=1498.34..68348.32 rows=32940 width=167)
+                                                                     Hash Cond: (store_sales.ss_item_sk = item.i_item_sk)
+                                                                     ->  Parallel Seq Scan on store_sales  (cost=0.00..63698.56 rows=1200256 width=18)
+                                                                     ->  Parallel Hash  (cost=1494.71..1494.71 rows=291 width=157)
+                                                                           ->  Parallel Seq Scan on item  (cost=0.00..1494.71 rows=291 width=157)
+                                                                                 Filter: (((i_category = ANY ('{Books,Children,Electronics}'::bpchar[])) AND (i_class = ANY ('{history,school-uniforms,audio}'::bpchar[]))) OR ((i_category = ANY ('{Men,Sports,Shoes}'::bpchar[])) AND (i_class = ANY ('{pants,tennis,womens}'::bpchar[]))))
+                                                               ->  Memoize  (cost=0.30..0.32 rows=1 width=8)
+                                                                     Cache Key: store_sales.ss_sold_date_sk
+                                                                     Cache Mode: logical
+                                                                     ->  Index Scan using date_dim_pkey on date_dim  (cost=0.29..0.31 rows=1 width=8)
+                                                                           Index Cond: (d_date_sk = store_sales.ss_sold_date_sk)
+                                                                           Filter: (d_year = 2001)
+                                                         ->  Hash  (cost=1.12..1.12 rows=12 width=17)
+                                                               ->  Seq Scan on store  (cost=0.00..1.12 rows=12 width=17)
+(34 rows)
+
