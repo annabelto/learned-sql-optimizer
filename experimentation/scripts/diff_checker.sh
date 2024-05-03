@@ -3,8 +3,17 @@
 IN_DIR=$1
 OUT_DIR=$2
 
-for i in $(seq 1 22)
+# n=$3
+
+nq="1 4 11 74"
+
+for i in $(seq 1 99)
 do
+
+    if echo "$nq" | grep -w "$i" > /dev/null; then
+        continue;
+    fi
+
     e=$(wc -l < "$IN_DIR/errors/$i")
     if [ "$e" -ne "0" ];
         then

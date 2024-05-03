@@ -1,0 +1,3 @@
+ERROR:  column "c_current_addr_sk" does not exist
+LINE 42:     JOIN customer_address ON ca_address_sk = c_current_addr_...
+                                                      ^

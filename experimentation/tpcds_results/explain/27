@@ -1,0 +1,37 @@
+                                                                                 QUERY PLAN                                                                                  
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=6659.77..39925.83 rows=100 width=152)
+   ->  GroupAggregate  (cost=6659.77..126084.95 rows=359 width=152)
+         Group Key: item.i_item_id, store.s_state
+         Group Key: item.i_item_id
+         Group Key: ()
+         ->  Incremental Sort  (cost=6659.77..126074.18 rows=179 width=39)
+               Sort Key: item.i_item_id, store.s_state
+               Presorted Key: item.i_item_id
+               ->  Nested Loop  (cost=5988.94..126066.13 rows=179 width=39)
+                     Join Filter: (store_sales.ss_item_sk = item.i_item_sk)
+                     ->  Gather Merge  (cost=3043.71..5095.18 rows=18000 width=21)
+                           Workers Planned: 1
+                           ->  Sort  (cost=2043.70..2070.17 rows=10588 width=21)
+                                 Sort Key: item.i_item_id
+                                 ->  Parallel Seq Scan on item  (cost=0.00..1335.88 rows=10588 width=21)
+                     ->  Materialize  (cost=2945.23..72641.40 rows=179 width=26)
+                           ->  Nested Loop  (cost=2945.23..72640.50 rows=179 width=26)
+                                 Join Filter: (store_sales.ss_store_sk = store.s_store_sk)
+                                 ->  Gather  (cost=2945.23..72607.71 rows=188 width=27)
+                                       Workers Planned: 2
+                                       ->  Nested Loop  (cost=1945.23..71588.91 rows=78 width=27)
+                                             ->  Parallel Hash Join  (cost=1944.80..68794.21 rows=5702 width=31)
+                                                   Hash Cond: (store_sales.ss_sold_date_sk = date_dim.d_date_sk)
+                                                   ->  Parallel Seq Scan on store_sales  (cost=0.00..63698.56 rows=1200256 width=35)
+                                                   ->  Parallel Hash  (cost=1942.12..1942.12 rows=214 width=4)
+                                                         ->  Parallel Seq Scan on date_dim  (cost=0.00..1942.12 rows=214 width=4)
+                                                               Filter: (d_year = 1999)
+                                             ->  Index Scan using customer_demographics_pkey on customer_demographics  (cost=0.43..0.49 rows=1 width=4)
+                                                   Index Cond: (cd_demo_sk = store_sales.ss_cdemo_sk)
+                                                   Filter: ((cd_gender = 'M'::bpchar) AND (cd_marital_status = 'W'::bpchar) AND (cd_education_status = 'Secondary'::bpchar))
+                                 ->  Materialize  (cost=0.00..1.27 rows=12 width=7)
+                                       ->  Seq Scan on store  (cost=0.00..1.21 rows=12 width=7)
+                                             Filter: (s_state = ANY ('{TN,TN,TN,TN,TN,TN}'::bpchar[]))
+(33 rows)
+

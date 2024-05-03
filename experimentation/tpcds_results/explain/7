@@ -1,0 +1,31 @@
+                                                                             QUERY PLAN                                                                              
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=5989.08..72851.48 rows=100 width=145)
+   ->  GroupAggregate  (cost=5989.08..126341.39 rows=180 width=145)
+         Group Key: item.i_item_id
+         ->  Nested Loop  (cost=5989.08..126335.54 rows=180 width=36)
+               Join Filter: (store_sales.ss_item_sk = item.i_item_sk)
+               ->  Gather Merge  (cost=3043.71..5095.18 rows=18000 width=21)
+                     Workers Planned: 1
+                     ->  Sort  (cost=2043.70..2070.17 rows=10588 width=21)
+                           Sort Key: item.i_item_id
+                           ->  Parallel Seq Scan on item  (cost=0.00..1335.88 rows=10588 width=21)
+               ->  Materialize  (cost=2945.38..72640.82 rows=180 width=23)
+                     ->  Nested Loop  (cost=2945.38..72639.92 rows=180 width=23)
+                           ->  Gather  (cost=2945.23..72607.81 rows=189 width=27)
+                                 Workers Planned: 2
+                                 ->  Nested Loop  (cost=1945.23..71588.91 rows=79 width=27)
+                                       ->  Parallel Hash Join  (cost=1944.80..68794.21 rows=5702 width=31)
+                                             Hash Cond: (store_sales.ss_sold_date_sk = date_dim.d_date_sk)
+                                             ->  Parallel Seq Scan on store_sales  (cost=0.00..63698.56 rows=1200256 width=35)
+                                             ->  Parallel Hash  (cost=1942.12..1942.12 rows=214 width=4)
+                                                   ->  Parallel Seq Scan on date_dim  (cost=0.00..1942.12 rows=214 width=4)
+                                                         Filter: (d_year = 2001)
+                                       ->  Index Scan using customer_demographics_pkey on customer_demographics  (cost=0.43..0.49 rows=1 width=4)
+                                             Index Cond: (cd_demo_sk = store_sales.ss_cdemo_sk)
+                                             Filter: ((cd_gender = 'F'::bpchar) AND (cd_marital_status = 'W'::bpchar) AND (cd_education_status = 'College'::bpchar))
+                           ->  Index Scan using promotion_pkey on promotion  (cost=0.15..0.17 rows=1 width=4)
+                                 Index Cond: (p_promo_sk = store_sales.ss_promo_sk)
+                                 Filter: ((p_channel_email = 'N'::bpchar) OR (p_channel_event = 'N'::bpchar))
+(27 rows)
+

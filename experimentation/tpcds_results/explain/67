@@ -1,0 +1,43 @@
+                                                                                           QUERY PLAN                                                                                            
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=71806.76..71861.35 rows=100 width=273)
+   ->  Incremental Sort  (cost=71806.76..83339.31 rows=21125 width=273)
+         Sort Key: dw2.i_category, dw2.i_class, dw2.i_brand, dw2.i_product_name, dw2.d_year, dw2.d_qoy, dw2.d_moy, dw2.s_store_id, dw2.sumsales, dw2.rk
+         Presorted Key: dw2.i_category
+         ->  Subquery Scan on dw2  (cost=71750.28..81887.02 rows=21125 width=273)
+               Filter: (dw2.rk <= 100)
+               ->  WindowAgg  (cost=71750.28..81094.82 rows=63376 width=273)
+                     ->  Incremental Sort  (cost=71750.28..79985.74 rows=63376 width=265)
+                           Sort Key: dw1.i_category, dw1.sumsales DESC
+                           Presorted Key: dw1.i_category
+                           ->  Subquery Scan on dw1  (cost=71713.30..74883.41 rows=63376 width=265)
+                                 ->  GroupAggregate  (cost=71713.30..74249.65 rows=63376 width=265)
+                                       Group Key: item.i_category, item.i_class, item.i_brand, item.i_product_name, date_dim.d_year, date_dim.d_qoy, date_dim.d_moy, store.s_store_id
+                                       Group Key: item.i_category, item.i_class, item.i_brand, item.i_product_name, date_dim.d_year, date_dim.d_qoy, date_dim.d_moy
+                                       Group Key: item.i_category, item.i_class, item.i_brand, item.i_product_name, date_dim.d_year, date_dim.d_qoy
+                                       Group Key: item.i_category, item.i_class, item.i_brand, item.i_product_name, date_dim.d_year
+                                       Group Key: item.i_category, item.i_class, item.i_brand, item.i_product_name
+                                       Group Key: item.i_category, item.i_class, item.i_brand
+                                       Group Key: item.i_category, item.i_class
+                                       Group Key: item.i_category
+                                       Group Key: ()
+                                       ->  Gather Merge  (cost=71713.30..73124.29 rows=12115 width=243)
+                                             Workers Planned: 2
+                                             ->  Sort  (cost=70713.28..70725.90 rows=5048 width=243)
+                                                   Sort Key: item.i_category, item.i_class, item.i_brand, item.i_product_name, date_dim.d_year, date_dim.d_qoy, date_dim.d_moy, store.s_store_id
+                                                   ->  Parallel Hash Join  (cost=3521.54..70402.79 rows=5048 width=243)
+                                                         Hash Cond: (store_sales.ss_item_sk = item.i_item_sk)
+                                                         ->  Hash Join  (cost=2053.31..68921.30 rows=5048 width=43)
+                                                               Hash Cond: (store_sales.ss_store_sk = store.s_store_sk)
+                                                               ->  Parallel Hash Join  (cost=2052.04..68901.45 rows=5295 width=30)
+                                                                     Hash Cond: (store_sales.ss_sold_date_sk = date_dim.d_date_sk)
+                                                                     ->  Parallel Seq Scan on store_sales  (cost=0.00..63698.56 rows=1200256 width=22)
+                                                                     ->  Parallel Hash  (cost=2049.55..2049.55 rows=199 width=16)
+                                                                           ->  Parallel Seq Scan on date_dim  (cost=0.00..2049.55 rows=199 width=16)
+                                                                                 Filter: ((d_month_seq >= 1217) AND (d_month_seq <= 1228))
+                                                               ->  Hash  (cost=1.12..1.12 rows=12 width=21)
+                                                                     ->  Seq Scan on store  (cost=0.00..1.12 rows=12 width=21)
+                                                         ->  Parallel Hash  (cost=1335.88..1335.88 rows=10588 width=208)
+                                                               ->  Parallel Seq Scan on item  (cost=0.00..1335.88 rows=10588 width=208)
+(39 rows)
+

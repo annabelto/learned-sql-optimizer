@@ -1,0 +1,48 @@
+                                                                    QUERY PLAN                                                                    
+--------------------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=142987.17..142987.20 rows=10 width=95)
+   Sort Key: (sum("*SELECT* 3".ext_price)) DESC, item.i_brand_id
+   ->  Finalize GroupAggregate  (cost=142985.73..142987.01 rows=10 width=95)
+         Group Key: item.i_brand, item.i_brand_id, time_dim.t_hour, time_dim.t_minute
+         ->  Gather Merge  (cost=142985.73..142986.76 rows=8 width=95)
+               Workers Planned: 2
+               ->  Partial GroupAggregate  (cost=141985.70..141985.81 rows=4 width=95)
+                     Group Key: item.i_brand, item.i_brand_id, time_dim.t_hour, time_dim.t_minute
+                     ->  Sort  (cost=141985.70..141985.71 rows=4 width=69)
+                           Sort Key: item.i_brand, item.i_brand_id, time_dim.t_hour, time_dim.t_minute
+                           ->  Nested Loop  (cost=3414.78..141985.66 rows=4 width=69)
+                                 ->  Parallel Hash Join  (cost=3414.49..141939.66 rows=15 width=65)
+                                       Hash Cond: ("*SELECT* 3".sold_item_sk = item.i_item_sk)
+                                       ->  Parallel Append  (cost=2049.78..140569.48 rows=2080 width=14)
+                                             ->  Subquery Scan on "*SELECT* 3"  (cost=2049.78..68910.85 rows=1166 width=14)
+                                                   ->  Parallel Hash Join  (cost=2049.78..68899.19 rows=486 width=18)
+                                                         Hash Cond: (store_sales.ss_sold_date_sk = date_dim.d_date_sk)
+                                                         ->  Parallel Seq Scan on store_sales  (cost=0.00..63698.56 rows=1200256 width=18)
+                                                         ->  Parallel Hash  (cost=2049.55..2049.55 rows=18 width=4)
+                                                               ->  Parallel Seq Scan on date_dim  (cost=0.00..2049.55 rows=18 width=4)
+                                                                     Filter: ((d_moy = 12) AND (d_year = 2002))
+                                             ->  Subquery Scan on "*SELECT* 2"  (cost=2049.78..47044.11 rows=609 width=14)
+                                                   ->  Parallel Hash Join  (cost=2049.78..47038.02 rows=254 width=18)
+                                                         Hash Cond: (catalog_sales.cs_sold_date_sk = date_dim_1.d_date_sk)
+                                                         ->  Parallel Seq Scan on catalog_sales  (cost=0.00..43411.46 rows=600646 width=18)
+                                                         ->  Parallel Hash  (cost=2049.55..2049.55 rows=18 width=4)
+                                                               ->  Parallel Seq Scan on date_dim date_dim_1  (cost=0.00..2049.55 rows=18 width=4)
+                                                                     Filter: ((d_moy = 12) AND (d_year = 2002))
+                                             ->  Subquery Scan on "*SELECT* 1"  (cost=2049.78..24604.13 rows=305 width=14)
+                                                   ->  Parallel Hash Join  (cost=2049.78..24601.08 rows=127 width=18)
+                                                         Hash Cond: (web_sales.ws_sold_date_sk = date_dim_2.d_date_sk)
+                                                         ->  Parallel Seq Scan on web_sales  (cost=0.00..21764.43 rows=299743 width=18)
+                                                         ->  Parallel Hash  (cost=2049.55..2049.55 rows=18 width=4)
+                                                               ->  Parallel Seq Scan on date_dim date_dim_2  (cost=0.00..2049.55 rows=18 width=4)
+                                                                     Filter: ((d_moy = 12) AND (d_year = 2002))
+                                       ->  Parallel Hash  (cost=1362.35..1362.35 rows=189 width=59)
+                                             ->  Parallel Seq Scan on item  (cost=0.00..1362.35 rows=189 width=59)
+                                                   Filter: (i_manager_id = 1)
+                                 ->  Index Scan using time_dim_pkey on time_dim  (cost=0.29..3.07 rows=1 width=12)
+                                       Index Cond: (t_time_sk = "*SELECT* 3".time_sk)
+                                       Filter: ((t_meal_time = 'breakfast'::bpchar) OR (t_meal_time = 'dinner'::bpchar))
+ JIT:
+   Functions: 63
+   Options: Inlining false, Optimization false, Expressions true, Deforming true
+(44 rows)
+

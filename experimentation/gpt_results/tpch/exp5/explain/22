@@ -1,0 +1,36 @@
+                                                                QUERY PLAN                                                                 
+-------------------------------------------------------------------------------------------------------------------------------------------
+ Finalize GroupAggregate  (cost=12971.66..13071.29 rows=746 width=72)
+   Group Key: (SUBSTRING(customer.c_phone FROM 1 FOR 2))
+   InitPlan 1 (returns $1)
+     ->  Finalize Aggregate  (cost=6230.81..6230.82 rows=1 width=32)
+           ->  Gather  (cost=6230.59..6230.80 rows=2 width=32)
+                 Workers Planned: 2
+                 ->  Partial Aggregate  (cost=5230.59..5230.60 rows=1 width=32)
+                       ->  Parallel Seq Scan on customer customer_1  (cost=0.00..5225.62 rows=1983 width=6)
+                             Filter: ((c_acctbal > 0.00) AND (SUBSTRING(c_phone FROM 1 FOR 2) = ANY ('{16,28,14,34,21,20,29}'::text[])))
+   ->  Gather Merge  (cost=6740.85..6821.19 rows=622 width=72)
+         Workers Planned: 2
+         Params Evaluated: $1
+         ->  Partial GroupAggregate  (cost=5740.82..5749.37 rows=311 width=72)
+               Group Key: (SUBSTRING(customer.c_phone FROM 1 FOR 2))
+               ->  Sort  (cost=5740.82..5741.60 rows=311 width=38)
+                     Sort Key: (SUBSTRING(customer.c_phone FROM 1 FOR 2))
+                     ->  Nested Loop Anti Join  (cost=0.43..5727.95 rows=311 width=38)
+                           ->  Parallel Seq Scan on customer  (cost=0.00..5225.62 rows=729 width=26)
+                                 Filter: ((c_acctbal > $1) AND (SUBSTRING(c_phone FROM 1 FOR 2) = ANY ('{16,28,14,34,21,20,29}'::text[])))
+                           ->  Index Only Scan using idx_orders_custkey on orders  (cost=0.43..3.28 rows=17 width=4)
+                                 Index Cond: (o_custkey = customer.c_custkey)
+(21 rows)
+
+ cntrycode | numcust | totacctbal 
+-----------+---------+------------
+ 14        |     952 | 7197284.23
+ 16        |     878 | 6651791.79
+ 20        |     913 | 6809667.07
+ 21        |     955 | 7235832.66
+ 28        |     909 | 6710689.26
+ 29        |     948 | 7158866.63
+ 34        |     947 | 7171947.04
+(7 rows)
+

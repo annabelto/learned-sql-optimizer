@@ -41,6 +41,6 @@ if __name__ == "__main__":
                 continue
 
             output_path = os.path.join(output_dir, filename[1:].split('_')[0]+".sql")
-            print("running input file, output file: ", input_file, output_path)
+            # print("running input file, output file: ", input_file, output_path)
             with open(output_path, "w") as f:
                 f.write(sql_query)

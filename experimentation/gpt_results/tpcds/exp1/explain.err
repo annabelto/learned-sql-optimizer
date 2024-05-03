@@ -1,0 +1,180 @@
+ERROR:  syntax error at or near "explain"
+LINE 30: explain select y.d_week_seq AS d_week_seq1,
+         ^
+ERROR:  column reference "d_week_seq" is ambiguous
+LINE 25:     SELECT d_week_seq, sun_sales, mon_sales, tue_sales, wed_...
+                    ^
+ERROR:  syntax error at or near "explain"
+LINE 55: explain select 
+         ^
+ERROR:  syntax error at or near "explain"
+LINE 12: explain select a.ca_state AS state, COUNT(*) AS cnt
+         ^
+ERROR:  syntax error at or near "explain"
+LINE 6: explain select 
+        ^
+ERROR:  syntax error at or near "explain"
+LINE 40: explain select channel, i_brand_id, i_class_id, i_category_i...
+         ^
+ERROR:  syntax error at or near "explain"
+LINE 47: explain select 
+         ^
+ERROR:  syntax error at or near "explain"
+LINE 54: explain select 
+         ^
+ERROR:  column "ss_cdemo_sk" does not exist
+LINE 8:   ON ss_cdemo_sk = cd_demo_sk
+             ^
+HINT:  Perhaps you meant to reference the column "customer_demographics.cd_demo_sk".
+ERROR:  column "ss_cdemo_sk" does not exist
+LINE 8:   ON ss_cdemo_sk = cd_demo_sk
+             ^
+HINT:  Perhaps you meant to reference the column "customer_demographics.cd_demo_sk".
+ERROR:  syntax error at or near "explain"
+LINE 17: explain select 
+         ^
+ERROR:  column "c_last_review_date" does not exist
+LINE 29:     c_last_review_date,
+             ^
+HINT:  Perhaps you meant to reference the column "customer.c_last_review_date_sk".
+ERROR:  syntax error at or near "explain"
+LINE 17: explain select ss1.ca_county,
+         ^
+ERROR:  syntax error at or near "explain"
+LINE 7: explain select SUM(cs_ext_discount_amt) AS "excess discount ...
+        ^
+ERROR:  syntax error at or near "explain"
+LINE 33: explain select i_manufact_id, SUM(total_sales) AS total_sale...
+         ^
+ERROR:  column "gross_margin" does not exist
+LINE 17:             ORDER BY gross_margin ASC
+                              ^
+ERROR:  column "gross_margin" does not exist
+LINE 17:             ORDER BY gross_margin ASC
+                              ^
+ERROR:  syntax error at or near "explain"
+LINE 28: explain select 
+         ^
+ERROR:  syntax error at or near "explain"
+LINE 21: explain select
+         ^
+ERROR:  column "d_day_name" does not exist
+LINE 16:         d_day_name
+                 ^
+ERROR:  syntax error at or near "explain"
+LINE 18: explain select 
+         ^
+ERROR:  syntax error at or near "explain"
+LINE 40: explain select 
+         ^
+ERROR:  subquery in FROM must have an alias
+LINE 7: FROM (
+             ^
+HINT:  For example, FROM (SELECT ...) [AS] foo.
+ERROR:  subquery in FROM must have an alias
+LINE 7: FROM (
+             ^
+HINT:  For example, FROM (SELECT ...) [AS] foo.
+ERROR:  syntax error at or near "explain"
+LINE 24: explain select *
+         ^
+ERROR:  column "web_sales.ws_sales_price" must appear in the GROUP BY clause or be used in an aggregate function
+LINE 8:            SUM(ws_sales_price) OVER (PARTITION BY ws_item_sk...
+                       ^
+ERROR:  syntax error at or near "explain"
+LINE 38: explain select segment, COUNT(*) AS num_customers, segment *...
+         ^
+ERROR:  syntax error at or near "explain"
+LINE 35: explain select i_item_id, SUM(total_sales) AS total_sales
+         ^
+ERROR:  syntax error at or near "explain"
+LINE 43: explain select 
+         ^
+ERROR:  syntax error at or near "explain"
+LINE 49: explain select item_id,
+         ^
+ERROR:  syntax error at or near "###"
+LINE 1: ### Optimized Query
+        ^
+ERROR:  syntax error at or near "###"
+LINE 1: ### Optimized Query
+        ^
+ERROR:  syntax error at or near "explain"
+LINE 33: explain select i_item_id, SUM(total_sales) AS total_sales
+         ^
+ERROR:  syntax error at or near "explain"
+LINE 25: explain select 
+         ^
+ERROR:  table name "ws" specified more than once
+ERROR:  table name "ws" specified more than once
+ERROR:  syntax error at or near "###"
+LINE 1: ### Optimized Query
+        ^
+ERROR:  syntax error at or near "###"
+LINE 1: ### Optimized Query
+        ^
+ERROR:  syntax error at or near "explain"
+LINE 24: explain select 
+         ^
+ERROR:  missing FROM-clause entry for table "sc"
+LINE 34:     item ON i_item_sk = sc.ss_item_sk
+                                 ^
+ERROR:  syntax error at or near ")"
+LINE 42: ) x
+         ^
+ERROR:  syntax error at or near ")"
+LINE 42: ) x
+         ^
+ERROR:  syntax error at or near "explain"
+LINE 27: explain select *
+         ^
+ERROR:  syntax error at or near "explain"
+LINE 62: explain select 
+         ^
+ERROR:  syntax error at or near "explain"
+LINE 65: explain select 
+         ^
+ERROR:  syntax error at or near "explain"
+LINE 47: explain select
+         ^
+ERROR:  syntax error at or near "explain"
+LINE 66: explain select 
+         ^
+ERROR:  syntax error at or near "explain"
+LINE 23: explain select 
+         ^
+ERROR:  column "c_current_addr_sk" does not exist
+LINE 42:     JOIN customer_address ON ca_address_sk = c_current_addr_...
+                                                      ^
+ERROR:  syntax error at or near "explain"
+LINE 31: explain select
+         ^
+ERROR:  column "c_current_cdemo_sk" does not exist
+LINE 13:     SELECT cd_demo_sk, c_current_cdemo_sk
+                                ^
+HINT:  There is a column named "c_current_cdemo_sk" in table "c", but it cannot be referenced from this part of the query.
+ERROR:  column "c_current_cdemo_sk" does not exist
+LINE 13:     SELECT cd_demo_sk, c_current_cdemo_sk
+                                ^
+HINT:  There is a column named "c_current_cdemo_sk" in table "c", but it cannot be referenced from this part of the query.
+ERROR:  syntax error at or near "###"
+LINE 1: ### Optimized Query
+        ^
+ERROR:  syntax error at or near "###"
+LINE 1: ### Optimized Query
+        ^
+ERROR:  syntax error at or near "SELECT"
+LINE 24:     )SELECT
+              ^
+ERROR:  syntax error at or near "explain"
+LINE 26: explain select CAST(amc AS DECIMAL(15,4)) / CAST(pmc AS DECI...
+         ^
+ERROR:  syntax error at or near "explain"
+LINE 7: explain select sum(ws_ext_discount_amt) AS "Excess Discount ...
+        ^
+ERROR:  syntax error at or near "explain"
+LINE 7: explain select 
+        ^
+ERROR:  syntax error at or near "explain"
+LINE 29: explain select
+         ^

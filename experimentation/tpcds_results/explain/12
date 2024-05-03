@@ -1,0 +1,28 @@
+                                                                                            QUERY PLAN                                                                                             
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=25658.35..25658.57 rows=85 width=291)
+   ->  Sort  (cost=25658.35..25658.57 rows=85 width=291)
+         Sort Key: item.i_category, item.i_class, item.i_item_id, item.i_item_desc, ((((sum(web_sales.ws_ext_sales_price)) * '100'::numeric) / sum((sum(web_sales.ws_ext_sales_price))) OVER (?)))
+         ->  WindowAgg  (cost=25653.72..25655.63 rows=85 width=291)
+               ->  Sort  (cost=25653.72..25653.93 rows=85 width=259)
+                     Sort Key: item.i_class
+                     ->  Finalize GroupAggregate  (cost=25639.58..25650.99 rows=85 width=259)
+                           Group Key: item.i_item_id, item.i_item_desc, item.i_category, item.i_class, item.i_current_price
+                           ->  Gather Merge  (cost=25639.58..25648.71 rows=70 width=259)
+                                 Workers Planned: 2
+                                 ->  Partial GroupAggregate  (cost=24639.55..24640.60 rows=35 width=259)
+                                       Group Key: item.i_item_id, item.i_item_desc, item.i_category, item.i_class, item.i_current_price
+                                       ->  Sort  (cost=24639.55..24639.64 rows=35 width=233)
+                                             Sort Key: item.i_item_id, item.i_item_desc, item.i_category, item.i_class, item.i_current_price
+                                             ->  Nested Loop  (cost=2050.05..24638.66 rows=35 width=233)
+                                                   ->  Parallel Hash Join  (cost=2049.76..24601.07 rows=119 width=10)
+                                                         Hash Cond: (web_sales.ws_sold_date_sk = date_dim.d_date_sk)
+                                                         ->  Parallel Seq Scan on web_sales  (cost=0.00..21764.43 rows=299743 width=14)
+                                                         ->  Parallel Hash  (cost=2049.55..2049.55 rows=17 width=4)
+                                                               ->  Parallel Seq Scan on date_dim  (cost=0.00..2049.55 rows=17 width=4)
+                                                                     Filter: ((d_date >= '2001-06-15'::date) AND (d_date <= '2001-07-15'::date))
+                                                   ->  Index Scan using item_pkey on item  (cost=0.29..0.32 rows=1 width=231)
+                                                         Index Cond: (i_item_sk = web_sales.ws_item_sk)
+                                                         Filter: (i_category = ANY ('{Men,Books,Electronics}'::bpchar[]))
+(24 rows)
+

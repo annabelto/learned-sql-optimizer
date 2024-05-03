@@ -1,0 +1,75 @@
+                                                                                                                                                                                                                                                                                                               QUERY PLAN                                                                                                                                                                                                                                                                                                                
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=148595.49..148604.35 rows=100 width=180)
+   ->  Incremental Sort  (cost=148595.49..148640.96 rows=513 width=180)
+         Sort Key: store_sales.ss_customer_sk, (sum(store_sales.ss_quantity)) DESC, (sum(store_sales.ss_wholesale_cost)) DESC, (sum(store_sales.ss_sales_price)) DESC, ((COALESCE(ws.ws_qty, '0'::bigint) + COALESCE((sum(catalog_sales.cs_quantity)), '0'::bigint))), ((COALESCE(ws.ws_wc, '0'::numeric) + COALESCE((sum(catalog_sales.cs_wholesale_cost)), '0'::numeric))), ((COALESCE(ws.ws_sp, '0'::numeric) + COALESCE((sum(catalog_sales.cs_sales_price)), '0'::numeric))), (round((((sum(store_sales.ss_quantity)) / (COALESCE(ws.ws_qty, '0'::bigint) + COALESCE((sum(catalog_sales.cs_quantity)), '0'::bigint))))::numeric, 2))
+         Presorted Key: store_sales.ss_customer_sk
+         ->  Merge Left Join  (cost=148595.31..148622.43 rows=513 width=180)
+               Merge Cond: ((store_sales.ss_customer_sk = ws.ws_customer_sk) AND (store_sales.ss_item_sk = ws.ws_item_sk))
+               Join Filter: (ws.ws_sold_year = date_dim.d_year)
+               Filter: ((COALESCE(ws.ws_qty, '0'::bigint) > 0) OR (COALESCE((sum(catalog_sales.cs_quantity)), '0'::bigint) > 0))
+               ->  Sort  (cost=122305.55..122307.86 rows=924 width=156)
+                     Sort Key: store_sales.ss_customer_sk, store_sales.ss_item_sk
+                     ->  Merge Left Join  (cost=121715.52..122260.03 rows=924 width=156)
+                           Merge Cond: ((store_sales.ss_item_sk = catalog_sales.cs_item_sk) AND (store_sales.ss_customer_sk = catalog_sales.cs_bill_customer_sk))
+                           Join Filter: (date_dim_1.d_year = date_dim.d_year)
+                           ->  Finalize GroupAggregate  (cost=72395.63..72526.28 rows=924 width=84)
+                                 Group Key: date_dim.d_year, store_sales.ss_item_sk, store_sales.ss_customer_sk
+                                 ->  Gather Merge  (cost=72395.63..72497.02 rows=770 width=84)
+                                       Workers Planned: 2
+                                       ->  Partial GroupAggregate  (cost=71395.60..71408.11 rows=385 width=84)
+                                             Group Key: date_dim.d_year, store_sales.ss_item_sk, store_sales.ss_customer_sk
+                                             ->  Sort  (cost=71395.60..71396.56 rows=385 width=28)
+                                                   Sort Key: store_sales.ss_item_sk, store_sales.ss_customer_sk
+                                                   ->  Nested Loop Anti Join  (cost=1945.22..71379.07 rows=385 width=28)
+                                                         ->  Parallel Hash Join  (cost=1944.80..68794.21 rows=5702 width=32)
+                                                               Hash Cond: (store_sales.ss_sold_date_sk = date_dim.d_date_sk)
+                                                               ->  Parallel Seq Scan on store_sales  (cost=0.00..63698.56 rows=1200256 width=32)
+                                                               ->  Parallel Hash  (cost=1942.12..1942.12 rows=214 width=8)
+                                                                     ->  Parallel Seq Scan on date_dim  (cost=0.00..1942.12 rows=214 width=8)
+                                                                           Filter: (d_year = 1998)
+                                                         ->  Index Only Scan using store_returns_pkey on store_returns  (cost=0.42..0.44 rows=1 width=8)
+                                                               Index Cond: ((sr_item_sk = store_sales.ss_item_sk) AND (sr_ticket_number = store_sales.ss_ticket_number))
+                           ->  Materialize  (cost=49319.89..49706.61 rows=2513 width=84)
+                                 ->  Finalize GroupAggregate  (cost=49319.89..49675.19 rows=2513 width=84)
+                                       Group Key: date_dim_1.d_year, catalog_sales.cs_item_sk, catalog_sales.cs_bill_customer_sk
+                                       ->  Gather Merge  (cost=49319.89..49595.62 rows=2094 width=84)
+                                             Workers Planned: 2
+                                             ->  Partial GroupAggregate  (cost=48319.87..48353.90 rows=1047 width=84)
+                                                   Group Key: date_dim_1.d_year, catalog_sales.cs_item_sk, catalog_sales.cs_bill_customer_sk
+                                                   ->  Sort  (cost=48319.87..48322.49 rows=1047 width=28)
+                                                         Sort Key: catalog_sales.cs_item_sk, catalog_sales.cs_bill_customer_sk
+                                                         ->  Nested Loop Anti Join  (cost=1945.22..48267.35 rows=1047 width=28)
+                                                               ->  Parallel Hash Join  (cost=1944.80..46933.04 rows=2978 width=32)
+                                                                     Hash Cond: (catalog_sales.cs_sold_date_sk = date_dim_1.d_date_sk)
+                                                                     ->  Parallel Seq Scan on catalog_sales  (cost=0.00..43411.46 rows=600646 width=32)
+                                                                     ->  Parallel Hash  (cost=1942.12..1942.12 rows=214 width=8)
+                                                                           ->  Parallel Seq Scan on date_dim date_dim_1  (cost=0.00..1942.12 rows=214 width=8)
+                                                                                 Filter: (d_year = 1998)
+                                                               ->  Index Only Scan using catalog_returns_pkey on catalog_returns  (cost=0.42..0.44 rows=1 width=8)
+                                                                     Index Cond: ((cr_item_sk = catalog_sales.cs_item_sk) AND (cr_order_number = catalog_sales.cs_order_number))
+               ->  Sort  (cost=26289.77..26293.31 rows=1417 width=84)
+                     Sort Key: ws.ws_customer_sk, ws.ws_item_sk
+                     ->  Subquery Scan on ws  (cost=26001.20..26215.60 rows=1417 width=84)
+                           ->  Finalize GroupAggregate  (cost=26001.20..26201.43 rows=1417 width=84)
+                                 Group Key: date_dim_2.d_year, web_sales.ws_item_sk, web_sales.ws_bill_customer_sk
+                                 ->  Gather Merge  (cost=26001.20..26156.57 rows=1180 width=84)
+                                       Workers Planned: 2
+                                       ->  Partial GroupAggregate  (cost=25001.17..25020.35 rows=590 width=84)
+                                             Group Key: date_dim_2.d_year, web_sales.ws_item_sk, web_sales.ws_bill_customer_sk
+                                             ->  Sort  (cost=25001.17..25002.65 rows=590 width=28)
+                                                   Sort Key: web_sales.ws_item_sk, web_sales.ws_bill_customer_sk
+                                                   ->  Nested Loop Anti Join  (cost=1945.09..24974.02 rows=590 width=28)
+                                                         ->  Parallel Hash Join  (cost=1944.80..24496.10 rows=1493 width=32)
+                                                               Hash Cond: (web_sales.ws_sold_date_sk = date_dim_2.d_date_sk)
+                                                               ->  Parallel Seq Scan on web_sales  (cost=0.00..21764.43 rows=299743 width=32)
+                                                               ->  Parallel Hash  (cost=1942.12..1942.12 rows=214 width=8)
+                                                                     ->  Parallel Seq Scan on date_dim date_dim_2  (cost=0.00..1942.12 rows=214 width=8)
+                                                                           Filter: (d_year = 1998)
+                                                         ->  Index Only Scan using web_returns_pkey on web_returns  (cost=0.29..0.31 rows=1 width=8)
+                                                               Index Cond: ((wr_item_sk = web_sales.ws_item_sk) AND (wr_order_number = web_sales.ws_order_number))
+ JIT:
+   Functions: 98
+   Options: Inlining false, Optimization false, Expressions true, Deforming true
+(71 rows)
+

@@ -1,0 +1,52 @@
+                                                               QUERY PLAN                                                               
+----------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=560741.78..560741.78 rows=1 width=72)
+   CTE ws_wh
+     ->  Hash Join  (cost=37764.14..198798.73 rows=7241622 width=12)
+           Hash Cond: (ws1_1.ws_order_number = ws2.ws_order_number)
+           Join Filter: (ws1_1.ws_warehouse_sk <> ws2.ws_warehouse_sk)
+           ->  Seq Scan on web_sales ws1_1  (cost=0.00..25960.84 rows=719384 width=8)
+           ->  Hash  (cost=25960.84..25960.84 rows=719384 width=8)
+                 ->  Seq Scan on web_sales ws2  (cost=0.00..25960.84 rows=719384 width=8)
+   ->  Sort  (cost=361943.05..361943.05 rows=1 width=72)
+         Sort Key: (count(DISTINCT ws1.ws_order_number))
+         ->  Aggregate  (cost=361943.03..361943.04 rows=1 width=72)
+               ->  Nested Loop Semi Join  (cost=164482.59..361943.02 rows=1 width=16)
+                     Join Filter: (ws1.ws_order_number = web_returns.wr_order_number)
+                     ->  Hash Join  (cost=163944.02..188493.21 rows=2 width=20)
+                           Hash Cond: (ws1.ws_order_number = ws_wh.ws_order_number)
+                           ->  Gather  (cost=1003.03..25552.18 rows=4 width=16)
+                                 Workers Planned: 2
+                                 ->  Nested Loop  (cost=3.03..24551.78 rows=2 width=16)
+                                       ->  Nested Loop  (cost=2.74..24539.75 rows=38 width=20)
+                                             ->  Hash Join  (cost=2.44..22664.81 rows=49939 width=24)
+                                                   Hash Cond: (ws1.ws_web_site_sk = web_site.web_site_sk)
+                                                   ->  Parallel Seq Scan on web_sales ws1  (cost=0.00..21764.43 rows=299743 width=28)
+                                                   ->  Hash  (cost=2.38..2.38 rows=5 width=4)
+                                                         ->  Seq Scan on web_site  (cost=0.00..2.38 rows=5 width=4)
+                                                               Filter: (web_company_name = 'pri'::bpchar)
+                                             ->  Memoize  (cost=0.30..0.33 rows=1 width=4)
+                                                   Cache Key: ws1.ws_ship_date_sk
+                                                   Cache Mode: logical
+                                                   ->  Index Scan using date_dim_pkey on date_dim  (cost=0.29..0.32 rows=1 width=4)
+                                                         Index Cond: (d_date_sk = ws1.ws_ship_date_sk)
+                                                         Filter: ((d_date >= '2001-04-01'::date) AND (d_date <= '2001-05-31'::date))
+                                       ->  Index Scan using customer_address_pkey on customer_address  (cost=0.29..0.32 rows=1 width=4)
+                                             Index Cond: (ca_address_sk = ws1.ws_ship_addr_sk)
+                                             Filter: (ca_state = 'VA'::bpchar)
+                           ->  Hash  (cost=162938.49..162938.49 rows=200 width=4)
+                                 ->  HashAggregate  (cost=162936.49..162938.49 rows=200 width=4)
+                                       Group Key: ws_wh.ws_order_number
+                                       ->  CTE Scan on ws_wh  (cost=0.00..144832.44 rows=7241622 width=4)
+                     ->  Hash Join  (cost=538.56..172531.95 rows=389 width=8)
+                           Hash Cond: (ws_wh_1.ws_order_number = web_returns.wr_order_number)
+                           Join Filter: (ws_wh.ws_order_number = ws_wh_1.ws_order_number)
+                           ->  CTE Scan on ws_wh ws_wh_1  (cost=0.00..144832.44 rows=7241622 width=4)
+                           ->  Hash  (cost=538.54..538.54 rows=2 width=4)
+                                 ->  Index Only Scan using web_returns_pkey on web_returns  (cost=0.29..538.54 rows=2 width=4)
+                                       Index Cond: (wr_order_number = ws_wh.ws_order_number)
+ JIT:
+   Functions: 67
+   Options: Inlining true, Optimization true, Expressions true, Deforming true
+(48 rows)
+

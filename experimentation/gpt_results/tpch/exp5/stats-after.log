@@ -1,0 +1,10 @@
+ checkpoints_timed | checkpoints_req | checkpoint_write_time | checkpoint_sync_time | buffers_checkpoint | buffers_clean | maxwritten_clean | buffers_backend | buffers_backend_fsync | buffers_alloc |         stats_reset          
+-------------------+-----------------+-----------------------+----------------------+--------------------+---------------+------------------+-----------------+-----------------------+---------------+------------------------------
+               751 |              12 |                838558 |                  379 |              18770 |          8018 |                7 |          489954 |                     0 |     136443547 | 2024-04-17 15:22:41.22588-05
+(1 row)
+
+ datid | datname | numbackends | xact_commit | xact_rollback | blks_read | blks_hit  | tup_returned | tup_fetched | tup_inserted | tup_updated | tup_deleted | conflicts | temp_files | temp_bytes  | deadlocks | checksum_failures | checksum_last_failure | blk_read_time | blk_write_time | session_time | active_time | idle_in_transaction_time | sessions | sessions_abandoned | sessions_fatal | sessions_killed |          stats_reset          
+-------+---------+-------------+-------------+---------------+-----------+-----------+--------------+-------------+--------------+-------------+-------------+-----------+------------+-------------+-----------+-------------------+-----------------------+---------------+----------------+--------------+-------------+--------------------------+----------+--------------------+----------------+-----------------+-------------------------------
+ 16427 | tpch    |           0 |       17048 |           416 | 183399616 | 301789918 |   4079575413 |  1369254983 |      8662770 |        2026 |         667 |         0 |      15824 | 27865418566 |         0 |                   |                       |             0 |              0 |   894119.118 |  667949.561 |                    2.293 |     1506 |                  0 |              0 |               0 | 2024-04-17 18:43:44.634634-05
+(1 row)
+

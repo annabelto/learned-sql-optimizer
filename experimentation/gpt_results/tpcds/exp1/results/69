@@ -1,0 +1,104 @@
+ cd_gender | cd_marital_status | cd_education_status  | cnt1 | cd_purchase_estimate | cd_credit_rating 
+-----------+-------------------+----------------------+------+----------------------+------------------
+ F         | D                 | 2 yr Degree          |    1 |                 1000 | High Risk 
+ F         | D                 | 2 yr Degree          |    1 |                 1500 | Good      
+ F         | D                 | 2 yr Degree          |    1 |                 1500 | High Risk 
+ F         | D                 | 2 yr Degree          |    1 |                 2500 | Good      
+ F         | D                 | 2 yr Degree          |    1 |                 2500 | Low Risk  
+ F         | D                 | 2 yr Degree          |    1 |                 4500 | Unknown   
+ F         | D                 | 2 yr Degree          |    1 |                 6000 | High Risk 
+ F         | D                 | 2 yr Degree          |    1 |                 6500 | Good      
+ F         | D                 | 2 yr Degree          |    2 |                 8500 | High Risk 
+ F         | D                 | 2 yr Degree          |    1 |                 8500 | Unknown   
+ F         | D                 | 2 yr Degree          |    1 |                 9000 | High Risk 
+ F         | D                 | 4 yr Degree          |    1 |                 1500 | High Risk 
+ F         | D                 | 4 yr Degree          |    1 |                 1500 | Unknown   
+ F         | D                 | 4 yr Degree          |    1 |                 3000 | Good      
+ F         | D                 | 4 yr Degree          |    1 |                 4500 | Good      
+ F         | D                 | 4 yr Degree          |    1 |                 4500 | Low Risk  
+ F         | D                 | 4 yr Degree          |    1 |                 4500 | Unknown   
+ F         | D                 | 4 yr Degree          |    1 |                 5500 | Good      
+ F         | D                 | 4 yr Degree          |    1 |                 5500 | Low Risk  
+ F         | D                 | 4 yr Degree          |    1 |                 6000 | High Risk 
+ F         | D                 | 4 yr Degree          |    1 |                 7500 | Unknown   
+ F         | D                 | 4 yr Degree          |    1 |                 9500 | Low Risk  
+ F         | D                 | Advanced Degree      |    1 |                  500 | High Risk 
+ F         | D                 | Advanced Degree      |    3 |                  500 | Low Risk  
+ F         | D                 | Advanced Degree      |    1 |                 1500 | High Risk 
+ F         | D                 | Advanced Degree      |    1 |                 3000 | Low Risk  
+ F         | D                 | Advanced Degree      |    1 |                 4000 | Unknown   
+ F         | D                 | Advanced Degree      |    1 |                 5500 | Good      
+ F         | D                 | Advanced Degree      |    1 |                 7000 | Good      
+ F         | D                 | Advanced Degree      |    1 |                 7500 | High Risk 
+ F         | D                 | Advanced Degree      |    2 |                 9500 | High Risk 
+ F         | D                 | Advanced Degree      |    1 |                 9500 | Unknown   
+ F         | D                 | College              |    1 |                 3500 | Good      
+ F         | D                 | College              |    1 |                 4500 | High Risk 
+ F         | D                 | College              |    2 |                 4500 | Unknown   
+ F         | D                 | College              |    1 |                 6500 | Low Risk  
+ F         | D                 | College              |    1 |                 8000 | Unknown   
+ F         | D                 | College              |    1 |                10000 | High Risk 
+ F         | D                 | Primary              |    1 |                 1000 | Unknown   
+ F         | D                 | Primary              |    2 |                 4000 | Unknown   
+ F         | D                 | Primary              |    1 |                 5000 | Unknown   
+ F         | D                 | Primary              |    1 |                 7500 | Low Risk  
+ F         | D                 | Primary              |    1 |                 7500 | Unknown   
+ F         | D                 | Primary              |    1 |                 9000 | High Risk 
+ F         | D                 | Primary              |    1 |                 9500 | Unknown   
+ F         | D                 | Primary              |    1 |                10000 | Low Risk  
+ F         | D                 | Secondary            |    2 |                  500 | High Risk 
+ F         | D                 | Secondary            |    1 |                  500 | Low Risk  
+ F         | D                 | Secondary            |    1 |                 1500 | Low Risk  
+ F         | D                 | Secondary            |    1 |                 2000 | Unknown   
+ F         | D                 | Secondary            |    1 |                 2500 | Low Risk  
+ F         | D                 | Secondary            |    1 |                 3000 | High Risk 
+ F         | D                 | Secondary            |    1 |                 4000 | High Risk 
+ F         | D                 | Secondary            |    1 |                 5000 | High Risk 
+ F         | D                 | Secondary            |    1 |                 5500 | High Risk 
+ F         | D                 | Secondary            |    1 |                 5500 | Unknown   
+ F         | D                 | Secondary            |    1 |                 6000 | High Risk 
+ F         | D                 | Secondary            |    1 |                 6500 | High Risk 
+ F         | D                 | Secondary            |    1 |                 6500 | Unknown   
+ F         | D                 | Secondary            |    1 |                10000 | Low Risk  
+ F         | D                 | Unknown              |    1 |                 3500 | High Risk 
+ F         | D                 | Unknown              |    1 |                 3500 | Low Risk  
+ F         | D                 | Unknown              |    1 |                 6000 | Good      
+ F         | D                 | Unknown              |    1 |                 6000 | Unknown   
+ F         | D                 | Unknown              |    1 |                 6500 | High Risk 
+ F         | D                 | Unknown              |    1 |                 7500 | Low Risk  
+ F         | D                 | Unknown              |    1 |                 8000 | Good      
+ F         | D                 | Unknown              |    2 |                 8500 | Low Risk  
+ F         | D                 | Unknown              |    1 |                 8500 | Unknown   
+ F         | D                 | Unknown              |    1 |                 9000 | High Risk 
+ F         | D                 | Unknown              |    1 |                 9500 | High Risk 
+ F         | M                 | 2 yr Degree          |    1 |                 2000 | Unknown   
+ F         | M                 | 2 yr Degree          |    1 |                 3000 | Good      
+ F         | M                 | 2 yr Degree          |    1 |                 5500 | Good      
+ F         | M                 | 2 yr Degree          |    1 |                 7000 | Good      
+ F         | M                 | 2 yr Degree          |    1 |                 7500 | Low Risk  
+ F         | M                 | 2 yr Degree          |    1 |                 8500 | Good      
+ F         | M                 | 2 yr Degree          |    1 |                 8500 | Unknown   
+ F         | M                 | 2 yr Degree          |    1 |                 9000 | Good      
+ F         | M                 | 4 yr Degree          |    1 |                 1000 | Low Risk  
+ F         | M                 | 4 yr Degree          |    1 |                 2000 | Good      
+ F         | M                 | 4 yr Degree          |    1 |                 2000 | High Risk 
+ F         | M                 | 4 yr Degree          |    1 |                 3000 | Unknown   
+ F         | M                 | 4 yr Degree          |    1 |                 3500 | Low Risk  
+ F         | M                 | 4 yr Degree          |    1 |                 4500 | Unknown   
+ F         | M                 | 4 yr Degree          |    1 |                 5000 | Unknown   
+ F         | M                 | 4 yr Degree          |    1 |                 5500 | High Risk 
+ F         | M                 | 4 yr Degree          |    1 |                 6000 | Unknown   
+ F         | M                 | 4 yr Degree          |    1 |                 6500 | Good      
+ F         | M                 | 4 yr Degree          |    1 |                 8500 | High Risk 
+ F         | M                 | 4 yr Degree          |    1 |                 8500 | Low Risk  
+ F         | M                 | 4 yr Degree          |    1 |                10000 | Low Risk  
+ F         | M                 | Advanced Degree      |    1 |                 3500 | Good      
+ F         | M                 | Advanced Degree      |    1 |                 4000 | Unknown   
+ F         | M                 | Advanced Degree      |    1 |                 5500 | Low Risk  
+ F         | M                 | Advanced Degree      |    1 |                 6500 | Low Risk  
+ F         | M                 | Advanced Degree      |    1 |                 7000 | Low Risk  
+ F         | M                 | College              |    1 |                  500 | High Risk 
+ F         | M                 | College              |    1 |                  500 | Unknown   
+ F         | M                 | College              |    1 |                 1000 | High Risk 
+(100 rows)
+

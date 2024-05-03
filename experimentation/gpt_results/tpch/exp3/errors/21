@@ -1,0 +1,3 @@
+ERROR:  missing FROM-clause entry for table "l1"
+LINE 7:         WHERE l_orderkey = l1.l_orderkey
+                                   ^

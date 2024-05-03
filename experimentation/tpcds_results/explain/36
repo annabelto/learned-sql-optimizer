@@ -1,0 +1,32 @@
+                                                                                                                        QUERY PLAN                                                                                                                         
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=73064.59..73064.84 rows=100 width=178)
+   ->  Sort  (cost=73064.59..73067.10 rows=1001 width=178)
+         Sort Key: sub.lochierarchy DESC, (CASE WHEN (sub.lochierarchy = 0) THEN sub.i_category ELSE NULL::bpchar END), sub.rank_within_parent
+         ->  Subquery Scan on sub  (cost=72976.29..73026.34 rows=1001 width=178)
+               ->  WindowAgg  (cost=72976.29..73013.82 rows=1001 width=178)
+                     ->  Sort  (cost=72976.29..72978.79 rows=1001 width=170)
+                           Sort Key: ((GROUPING(item.i_category) + GROUPING(item.i_class))), (CASE WHEN (GROUPING(item.i_class) = 0) THEN item.i_category ELSE NULL::bpchar END), ((sum(store_sales.ss_net_profit) / sum(store_sales.ss_ext_sales_price)))
+                           ->  MixedAggregate  (cost=4414.42..72926.40 rows=1001 width=170)
+                                 Hash Key: item.i_category, item.i_class
+                                 Hash Key: item.i_category
+                                 Group Key: ()
+                                 ->  Gather  (cost=4414.42..72602.81 rows=13047 width=114)
+                                       Workers Planned: 2
+                                       ->  Parallel Hash Join  (cost=3414.42..70298.11 rows=5436 width=114)
+                                             Hash Cond: (store_sales.ss_item_sk = item.i_item_sk)
+                                             ->  Hash Join  (cost=1946.19..68815.61 rows=5436 width=16)
+                                                   Hash Cond: (store_sales.ss_store_sk = store.s_store_sk)
+                                                   ->  Parallel Hash Join  (cost=1944.80..68794.21 rows=5702 width=20)
+                                                         Hash Cond: (store_sales.ss_sold_date_sk = d1.d_date_sk)
+                                                         ->  Parallel Seq Scan on store_sales  (cost=0.00..63698.56 rows=1200256 width=24)
+                                                         ->  Parallel Hash  (cost=1942.12..1942.12 rows=214 width=4)
+                                                               ->  Parallel Seq Scan on date_dim d1  (cost=0.00..1942.12 rows=214 width=4)
+                                                                     Filter: (d_year = 2000)
+                                                   ->  Hash  (cost=1.24..1.24 rows=12 width=4)
+                                                         ->  Seq Scan on store  (cost=0.00..1.24 rows=12 width=4)
+                                                               Filter: (s_state = ANY ('{TN,TN,TN,TN,TN,TN,TN,TN}'::bpchar[]))
+                                             ->  Parallel Hash  (cost=1335.88..1335.88 rows=10588 width=106)
+                                                   ->  Parallel Seq Scan on item  (cost=0.00..1335.88 rows=10588 width=106)
+(28 rows)
+

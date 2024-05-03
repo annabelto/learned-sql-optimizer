@@ -1,0 +1,38 @@
+                                                                                                                                                                                                                        QUERY PLAN                                                                                                                                                                                                                         
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=19992.42..19992.44 rows=7 width=236)
+   CTE customer_total_return
+     ->  Finalize GroupAggregate  (cost=7053.85..7122.67 rows=703 width=39)
+           Group Key: catalog_returns.cr_returning_customer_sk, customer_address_1.ca_state
+           ->  Gather Merge  (cost=7053.85..7109.74 rows=414 width=39)
+                 Workers Planned: 1
+                 ->  Partial GroupAggregate  (cost=6053.84..6063.16 rows=414 width=39)
+                       Group Key: catalog_returns.cr_returning_customer_sk, customer_address_1.ca_state
+                       ->  Sort  (cost=6053.84..6054.88 rows=414 width=13)
+                             Sort Key: catalog_returns.cr_returning_customer_sk, customer_address_1.ca_state
+                             ->  Nested Loop  (cost=1945.09..6035.85 rows=414 width=13)
+                                   ->  Parallel Hash Join  (cost=1944.80..5891.72 rows=422 width=14)
+                                         Hash Cond: (catalog_returns.cr_returned_date_sk = date_dim.d_date_sk)
+                                         ->  Parallel Seq Scan on catalog_returns  (cost=0.00..3724.45 rows=84745 width=18)
+                                         ->  Parallel Hash  (cost=1942.12..1942.12 rows=214 width=4)
+                                               ->  Parallel Seq Scan on date_dim  (cost=0.00..1942.12 rows=214 width=4)
+                                                     Filter: (d_year = 2001)
+                                   ->  Index Scan using customer_address_pkey on customer_address customer_address_1  (cost=0.29..0.34 rows=1 width=7)
+                                         Index Cond: (ca_address_sk = catalog_returns.cr_returning_addr_sk)
+   ->  Sort  (cost=12869.75..12869.77 rows=7 width=236)
+         Sort Key: customer.c_customer_id, customer.c_salutation, customer.c_first_name, customer.c_last_name, customer_address.ca_street_number, customer_address.ca_street_name, customer_address.ca_street_type, customer_address.ca_suite_number, customer_address.ca_city, customer_address.ca_county, customer_address.ca_zip, customer_address.ca_country, customer_address.ca_gmt_offset, customer_address.ca_location_type, ctr1.ctr_total_return
+         ->  Nested Loop  (cost=0.58..12869.65 rows=7 width=236)
+               ->  Nested Loop  (cost=0.29..12785.64 rows=234 width=116)
+                     ->  CTE Scan on customer_total_return ctr1  (cost=0.00..11153.09 rows=234 width=36)
+                           Filter: (ctr_total_return > (SubPlan 2))
+                           SubPlan 2
+                             ->  Aggregate  (cost=15.83..15.84 rows=1 width=32)
+                                   ->  CTE Scan on customer_total_return ctr2  (cost=0.00..15.82 rows=4 width=32)
+                                         Filter: (ctr1.ctr_state = ctr_state)
+                     ->  Index Scan using customer_pkey on customer  (cost=0.29..6.98 rows=1 width=88)
+                           Index Cond: (c_customer_sk = ctr1.ctr_customer_sk)
+               ->  Index Scan using customer_address_pkey on customer_address  (cost=0.29..0.36 rows=1 width=128)
+                     Index Cond: (ca_address_sk = customer.c_current_addr_sk)
+                     Filter: (ca_state = 'TN'::bpchar)
+(34 rows)
+

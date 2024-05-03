@@ -1,0 +1,23 @@
+                                                                                      QUERY PLAN                                                                                      
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=5616.63..5622.88 rows=2 width=125)
+   ->  Group  (cost=5616.63..5622.88 rows=2 width=125)
+         Group Key: item.i_item_id, item.i_item_desc, item.i_current_price
+         ->  Nested Loop  (cost=5616.63..5621.57 rows=175 width=125)
+               ->  Gather Merge  (cost=5616.20..5616.32 rows=1 width=133)
+                     Workers Planned: 1
+                     ->  Sort  (cost=4616.19..4616.19 rows=1 width=133)
+                           Sort Key: item.i_item_id, item.i_item_desc, item.i_current_price
+                           ->  Nested Loop  (cost=0.43..4616.18 rows=1 width=133)
+                                 ->  Parallel Seq Scan on item  (cost=0.00..1441.76 rows=1 width=129)
+                                       Filter: ((i_current_price >= '58'::numeric) AND (i_current_price <= '88'::numeric) AND (i_manufact_id = ANY ('{259,559,580,485}'::integer[])))
+                                 ->  Nested Loop  (cost=0.43..3173.85 rows=56 width=4)
+                                       ->  Seq Scan on date_dim  (cost=0.00..2500.73 rows=56 width=4)
+                                             Filter: ((d_date >= '2001-01-13'::date) AND (d_date <= '2001-03-14'::date))
+                                       ->  Index Scan using inventory_pkey on inventory  (cost=0.43..12.01 rows=1 width=8)
+                                             Index Cond: ((inv_date_sk = date_dim.d_date_sk) AND (inv_item_sk = item.i_item_sk))
+                                             Filter: ((inv_quantity_on_hand >= 100) AND (inv_quantity_on_hand <= 500))
+               ->  Index Only Scan using store_sales_pkey on store_sales  (cost=0.43..3.50 rows=175 width=4)
+                     Index Cond: (ss_item_sk = inventory.inv_item_sk)
+(19 rows)
+

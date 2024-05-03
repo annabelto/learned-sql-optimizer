@@ -1,0 +1,3 @@
+ERROR:  column "d_day_name" does not exist
+LINE 16:         d_day_name
+                 ^

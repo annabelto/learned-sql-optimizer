@@ -1,0 +1,30 @@
+                                                                        QUERY PLAN                                                                        
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+ GroupAggregate  (cost=141941.76..151245.17 rows=5 width=24)
+   Group Key: orders.o_orderpriority
+   ->  Gather Merge  (cost=141941.76..150862.16 rows=76592 width=20)
+         Workers Planned: 2
+         ->  Sort  (cost=140941.74..141021.52 rows=31913 width=20)
+               Sort Key: orders.o_orderpriority
+               ->  Nested Loop  (cost=793.55..138554.35 rows=31913 width=20)
+                     ->  Parallel Bitmap Heap Scan on orders  (cost=793.12..27247.07 rows=23930 width=20)
+                           Recheck Cond: ((o_orderdate >= '1996-01-01'::date) AND (o_orderdate < '1996-04-01 00:00:00'::timestamp without time zone))
+                           ->  Bitmap Index Scan on idx_orders_orderdate  (cost=0.00..778.76 rows=57433 width=0)
+                                 Index Cond: ((o_orderdate >= '1996-01-01'::date) AND (o_orderdate < '1996-04-01 00:00:00'::timestamp without time zone))
+                     ->  Index Scan using idx_lineitem_orderkey on lineitem  (cost=0.43..4.60 rows=5 width=4)
+                           Index Cond: (l_orderkey = orders.o_orderkey)
+                           Filter: (l_commitdate < l_receiptdate)
+ JIT:
+   Functions: 11
+   Options: Inlining false, Optimization false, Expressions true, Deforming true
+(17 rows)
+
+ o_orderpriority | order_count 
+-----------------+-------------
+ 1-URGENT        |       10499
+ 2-HIGH          |       10304
+ 3-MEDIUM        |       10260
+ 4-NOT SPECIFIED |       10489
+ 5-LOW           |       10254
+(5 rows)
+

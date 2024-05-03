@@ -1,0 +1,3 @@
+ERROR:  subquery uses ungrouped column "l.l_orderkey" from outer query
+LINE 3: ...ELECT COUNT(*) FROM orders o WHERE o.o_orderkey = l.l_orderk...
+                                                             ^

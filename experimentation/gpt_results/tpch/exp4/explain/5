@@ -1,0 +1,48 @@
+                                                                               QUERY PLAN                                                                               
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=88827.13..88827.20 rows=25 width=58)
+   Sort Key: (sum((lineitem.l_extendedprice * ('1'::numeric - lineitem.l_discount)))) DESC
+   ->  Finalize GroupAggregate  (cost=88781.81..88826.55 rows=25 width=58)
+         Group Key: nation.n_name
+         ->  Gather Merge  (cost=88781.81..88825.87 rows=50 width=58)
+               Workers Planned: 2
+               ->  Partial GroupAggregate  (cost=87781.78..87820.07 rows=25 width=58)
+                     Group Key: nation.n_name
+                     ->  Sort  (cost=87781.78..87789.38 rows=3038 width=38)
+                           Sort Key: nation.n_name
+                           ->  Hash Join  (cost=473.57..87606.05 rows=3038 width=38)
+                                 Hash Cond: ((nation.n_nationkey = supplier.s_nationkey) AND (lineitem.l_suppkey = supplier.s_suppkey))
+                                 ->  Nested Loop  (cost=1.57..86733.60 rows=76277 width=50)
+                                       ->  Nested Loop  (cost=1.14..29429.94 rows=19065 width=38)
+                                             ->  Nested Loop  (cost=0.71..9717.61 rows=12500 width=38)
+                                                   ->  Nested Loop  (cost=0.57..8151.32 rows=62500 width=42)
+                                                         ->  Parallel Index Scan using customer_pkey on customer  (cost=0.42..6619.42 rows=62500 width=8)
+                                                         ->  Memoize  (cost=0.15..0.17 rows=1 width=34)
+                                                               Cache Key: customer.c_nationkey
+                                                               Cache Mode: logical
+                                                               ->  Index Scan using nation_pkey on nation  (cost=0.14..0.16 rows=1 width=34)
+                                                                     Index Cond: (n_nationkey = customer.c_nationkey)
+                                                   ->  Memoize  (cost=0.14..0.64 rows=1 width=4)
+                                                         Cache Key: nation.n_regionkey
+                                                         Cache Mode: logical
+                                                         ->  Index Scan using region_pkey on region  (cost=0.13..0.63 rows=1 width=4)
+                                                               Index Cond: (r_regionkey = nation.n_regionkey)
+                                                               Filter: (r_name = 'MIDDLE EAST'::bpchar)
+                                             ->  Index Scan using idx_orders_custkey on orders  (cost=0.43..1.55 rows=3 width=8)
+                                                   Index Cond: (o_custkey = customer.c_custkey)
+                                                   Filter: ((o_orderdate >= '1995-01-01'::date) AND (o_orderdate < '1996-01-01 00:00:00'::timestamp without time zone))
+                                       ->  Index Scan using idx_lineitem_orderkey on lineitem  (cost=0.43..2.85 rows=16 width=20)
+                                             Index Cond: (l_orderkey = orders.o_orderkey)
+                                 ->  Hash  (cost=322.00..322.00 rows=10000 width=8)
+                                       ->  Seq Scan on supplier  (cost=0.00..322.00 rows=10000 width=8)
+(35 rows)
+
+          n_name           |    revenue    
+---------------------------+---------------
+ IRAQ                      | 55613560.4794
+ EGYPT                     | 53534848.8262
+ SAUDI ARABIA              | 53455219.9390
+ IRAN                      | 50867712.4702
+ JORDAN                    | 48588461.4921
+(5 rows)
+

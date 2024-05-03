@@ -1,0 +1,18 @@
+                                              QUERY PLAN                                               
+-------------------------------------------------------------------------------------------------------
+ Subquery Scan on subquery  (cost=199727.75..199727.78 rows=1 width=160)
+   ->  Finalize Aggregate  (cost=199727.75..199727.76 rows=1 width=360)
+         ->  Gather  (cost=199727.39..199727.60 rows=2 width=360)
+               Workers Planned: 2
+               ->  Partial Aggregate  (cost=198727.39..198727.40 rows=1 width=360)
+                     ->  Parallel Seq Scan on store_sales  (cost=0.00..63698.56 rows=1200256 width=16)
+ JIT:
+   Functions: 6
+   Options: Inlining false, Optimization false, Expressions true, Deforming true
+(9 rows)
+
+       bucket1       |       bucket2       |       bucket3       |       bucket4        |       bucket5        
+---------------------+---------------------+---------------------+----------------------+----------------------
+ 16.1457020801340221 | 46.8443411497321717 | 77.3498718467154781 | 108.1783756365957178 | 139.1718740374242030
+(1 row)
+

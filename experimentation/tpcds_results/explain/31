@@ -1,0 +1,57 @@
+                                                                                                                                                                                                                                                       QUERY PLAN                                                                                                                                                                                                                                                       
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=692975.58..692975.59 rows=1 width=210)
+   Sort Key: ((ss3.store_sales / ss2.store_sales))
+   CTE ss
+     ->  HashAggregate  (cost=351521.76..405843.99 rows=1476800 width=54)
+           Group Key: customer_address.ca_county, date_dim.d_qoy, date_dim.d_year
+           Planned Partitions: 128
+           ->  Hash Join  (cost=5617.60..129380.86 rows=2623066 width=28)
+                 Hash Cond: (store_sales.ss_addr_sk = customer_address.ca_address_sk)
+                 ->  Hash Join  (cost=3405.60..119958.79 rows=2746474 width=18)
+                       Hash Cond: (store_sales.ss_sold_date_sk = date_dim.d_date_sk)
+                       ->  Seq Scan on store_sales  (cost=0.00..80502.15 rows=2880615 width=14)
+                       ->  Hash  (cost=2135.49..2135.49 rows=73049 width=12)
+                             ->  Seq Scan on date_dim  (cost=0.00..2135.49 rows=73049 width=12)
+                 ->  Hash  (cost=1587.00..1587.00 rows=50000 width=18)
+                       ->  Seq Scan on customer_address  (cost=0.00..1587.00 rows=50000 width=18)
+   CTE ws
+     ->  HashAggregate  (cost=103623.84..122440.16 rows=718952 width=54)
+           Group Key: customer_address_1.ca_county, date_dim_1.d_qoy, date_dim_1.d_year
+           Planned Partitions: 64
+           ->  Hash Join  (cost=5617.60..42737.59 rows=718952 width=28)
+                 Hash Cond: (web_sales.ws_bill_addr_sk = customer_address_1.ca_address_sk)
+                 ->  Hash Join  (cost=3405.60..38637.94 rows=719048 width=18)
+                       Hash Cond: (web_sales.ws_sold_date_sk = date_dim_1.d_date_sk)
+                       ->  Seq Scan on web_sales  (cost=0.00..25960.84 rows=719384 width=14)
+                       ->  Hash  (cost=2135.49..2135.49 rows=73049 width=12)
+                             ->  Seq Scan on date_dim date_dim_1  (cost=0.00..2135.49 rows=73049 width=12)
+                 ->  Hash  (cost=1587.00..1587.00 rows=50000 width=18)
+                       ->  Seq Scan on customer_address customer_address_1  (cost=0.00..1587.00 rows=50000 width=18)
+   ->  Nested Loop  (cost=0.00..164691.41 rows=1 width=210)
+         Join Filter: (((ss1.ca_county)::text = (ws2.ca_county)::text) AND (CASE WHEN (ws1.web_sales > '0'::numeric) THEN (ws2.web_sales / ws1.web_sales) ELSE NULL::numeric END > CASE WHEN (ss1.store_sales > '0'::numeric) THEN (ss2.store_sales / ss1.store_sales) ELSE NULL::numeric END) AND (CASE WHEN (ws2.web_sales > '0'::numeric) THEN (ws3.web_sales / ws2.web_sales) ELSE NULL::numeric END > CASE WHEN (ss2.store_sales > '0'::numeric) THEN (ss3.store_sales / ss2.store_sales) ELSE NULL::numeric END))
+         ->  Nested Loop  (cost=0.00..146716.93 rows=1 width=554)
+               Join Filter: ((ss1.ca_county)::text = (ss3.ca_county)::text)
+               ->  Nested Loop  (cost=0.00..109796.47 rows=1 width=444)
+                     Join Filter: ((ss1.ca_county)::text = (ss2.ca_county)::text)
+                     ->  Nested Loop  (cost=0.00..72876.00 rows=1 width=334)
+                           Join Filter: ((ws1.ca_county)::text = (ss1.ca_county)::text)
+                           ->  Nested Loop  (cost=0.00..35954.71 rows=2 width=220)
+                                 Join Filter: ((ws1.ca_county)::text = (ws3.ca_county)::text)
+                                 ->  CTE Scan on ws ws1  (cost=0.00..17973.80 rows=18 width=110)
+                                       Filter: ((d_qoy = 1) AND (d_year = 1999))
+                                 ->  CTE Scan on ws ws3  (cost=0.00..17973.80 rows=18 width=110)
+                                       Filter: ((d_year = 1999) AND (d_qoy = 3))
+                           ->  CTE Scan on ss ss1  (cost=0.00..36920.00 rows=37 width=114)
+                                 Filter: ((d_qoy = 1) AND (d_year = 1999))
+                     ->  CTE Scan on ss ss2  (cost=0.00..36920.00 rows=37 width=110)
+                           Filter: ((d_year = 1999) AND (d_qoy = 2))
+               ->  CTE Scan on ss ss3  (cost=0.00..36920.00 rows=37 width=110)
+                     Filter: ((d_year = 1999) AND (d_qoy = 3))
+         ->  CTE Scan on ws ws2  (cost=0.00..17973.80 rows=18 width=110)
+               Filter: ((d_year = 1999) AND (d_qoy = 2))
+ JIT:
+   Functions: 74
+   Options: Inlining true, Optimization true, Expressions true, Deforming true
+(53 rows)
+

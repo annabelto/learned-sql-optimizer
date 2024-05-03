@@ -1,0 +1,4 @@
+ERROR:  column "c_current_cdemo_sk" does not exist
+LINE 13:     SELECT cd_demo_sk, c_current_cdemo_sk
+                                ^
+HINT:  There is a column named "c_current_cdemo_sk" in table "c", but it cannot be referenced from this part of the query.

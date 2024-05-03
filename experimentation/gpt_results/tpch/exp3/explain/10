@@ -1,0 +1,59 @@
+                                                                                             QUERY PLAN                                                                                             
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=153697.06..153697.11 rows=20 width=202)
+   ->  Sort  (cost=153697.06..153801.70 rows=41855 width=202)
+         Sort Key: sub.revenue DESC
+         ->  Hash Join  (cost=146976.06..152583.32 rows=41855 width=202)
+               Hash Cond: (c.c_nationkey = n.n_nationkey)
+               ->  Hash Join  (cost=146974.50..152453.26 rows=41855 width=180)
+                     Hash Cond: (c.c_custkey = sub.o_custkey)
+                     ->  Seq Scan on customer c  (cost=0.00..5085.00 rows=150000 width=148)
+                     ->  Hash  (cost=146451.31..146451.31 rows=41855 width=36)
+                           ->  Subquery Scan on sub  (cost=139315.52..146451.31 rows=41855 width=36)
+                                 ->  Finalize GroupAggregate  (cost=139315.52..146032.76 rows=41855 width=36)
+                                       Group Key: o.o_custkey
+                                       ->  Gather Merge  (cost=139315.52..145166.54 rows=45738 width=36)
+                                             Workers Planned: 2
+                                             ->  Partial GroupAggregate  (cost=138315.49..138887.22 rows=22869 width=36)
+                                                   Group Key: o.o_custkey
+                                                   ->  Sort  (cost=138315.49..138372.67 rows=22869 width=16)
+                                                         Sort Key: o.o_custkey
+                                                         ->  Nested Loop  (cost=777.55..136659.65 rows=22869 width=16)
+                                                               ->  Parallel Bitmap Heap Scan on orders o  (cost=777.11..27223.75 rows=23442 width=8)
+                                                                     Recheck Cond: ((o_orderdate >= '1995-01-01'::date) AND (o_orderdate < '1995-04-01 00:00:00'::timestamp without time zone))
+                                                                     ->  Bitmap Index Scan on idx_orders_orderdate  (cost=0.00..763.05 rows=56262 width=0)
+                                                                           Index Cond: ((o_orderdate >= '1995-01-01'::date) AND (o_orderdate < '1995-04-01 00:00:00'::timestamp without time zone))
+                                                               ->  Index Scan using idx_lineitem_orderkey on lineitem l  (cost=0.43..4.63 rows=4 width=16)
+                                                                     Index Cond: (l_orderkey = o.o_orderkey)
+                                                                     Filter: (l_returnflag = 'R'::bpchar)
+               ->  Hash  (cost=1.25..1.25 rows=25 width=30)
+                     ->  Seq Scan on nation n  (cost=0.00..1.25 rows=25 width=30)
+ JIT:
+   Functions: 36
+   Options: Inlining false, Optimization false, Expressions true, Deforming true
+(31 rows)
+
+ c_custkey |       c_name       |   revenue   | c_acctbal |          n_name           |                c_address                 |     c_phone     |                                                    c_comment                                                    
+-----------+--------------------+-------------+-----------+---------------------------+------------------------------------------+-----------------+-----------------------------------------------------------------------------------------------------------------
+     51811 | Customer#000051811 | 762516.0781 |   1016.15 | CHINA                     |  iahxUHfAxlJkZWz4iPGDmAQJSWl UlrqXRW     | 28-777-205-1675 | ajole slyly fluffily even asymptotes. packages sleep furiously. blithely pending packages cajole: express 
+     55660 | Customer#000055660 | 710150.2474 |   -219.55 | CHINA                     | kiYYSqJhEKjcMI0LfihORDze0MR              | 28-186-193-8786 | serve slyly final ideas. furiously regular requests caj
+    108397 | Customer#000108397 | 644467.3603 |    681.01 | EGYPT                     | 0ebkko88eZ,ifUK3V,vwdEz7OwVox5yMDl3hrA6C | 14-181-358-4643 | ests nag carefully carefully bold deposits. accounts haggle blithely pinto beans. furiously express requests
+     42859 | Customer#000042859 | 598864.7041 |   7912.40 | UNITED STATES             | edjGRq4P0AvgLETxFR,skTlH4efOAoohuNJl     | 34-478-378-5818 | pinto beans. deposits sleep slyly accounts. instructions cajole carefully carefully unusual idea
+     88561 | Customer#000088561 | 573554.9101 |   5748.66 | BRAZIL                    | yZf,sUaIXAj96VD                          | 12-940-159-1382 | nal ideas. ironic forges boost final theodolites. regular theodolites sleep quickly. frays along the slyly iron
+     10834 | Customer#000010834 | 569892.8631 |   7268.86 | CANADA                    | ZD6fXMBJoyPd3Sbr sIAeQtE1CK0pLLa         | 13-716-315-4564 | re carefully carefully express requests. regular pinto beans promise ironic, regular a
+     30523 | Customer#000030523 | 537346.6920 |   3463.98 | PERU                      | 3A8vNPnR5e0Kz9ytD87XIfSGQZpVThT6RMTkd7   | 27-228-232-7684 | s x-ray slyly. quickly unusual requests nag slyly at the unusual foxes. regular asymptotes haggle. brave, ir
+     95257 | Customer#000095257 | 536806.9648 |   7192.11 | BRAZIL                    | aYNvFHtnZ3nfM3KhZSS6aIZbWfj407VfjEyQ8O   | 12-704-221-9665 | d the pending, final requests are bold tithes. furio
+     89656 | Customer#000089656 | 524620.9105 |   8550.54 | CHINA                     | 6CfrdVLxwI7BK2UHBZw,QGxoI                | 28-726-206-4973 | after the instructions. accounts wake carefully final 
+    146387 | Customer#000146387 | 505610.9556 |   5876.07 | CHINA                     | tosJaoVnvFw8y0ljO 3,F0r                  | 28-153-281-4117 | e carefully even dependencies boost 
+     34651 | Customer#000034651 | 497659.0700 |   4661.01 | INDIA                     | up3KwRhiA n09zWBbWh9B                    | 18-544-680-9599 | le furiously among the slyly regular platelets. ironically 
+     68908 | Customer#000068908 | 497453.4685 |   1549.23 | ROMANIA                   | VqiOO1plFxo                              | 29-969-568-2540 | e. even, ironic instructions haggle blithely. unusual pinto beans haggle fluffily. blithely pendi
+    115855 | Customer#000115855 | 497397.9061 |    756.56 | ALGERIA                   | TMP8ULnjsXFO,yHpKjyq5ZZICXttOs4Ht,dz qdl | 10-999-612-2399 | regular, even packages. final instructions affix quickly! pending 
+    125129 | Customer#000125129 | 494210.0020 |   2991.52 | MOROCCO                   | Dm3BE7MCV7dNfxOlq8TvBWRDdRgqM Lp         | 25-122-350-3652 | ges was. carefully special ideas boos
+     75973 | Customer#000075973 | 493838.1329 |   2420.53 | SAUDI ARABIA              | qHbPMs,SFZmfPlIQLB9X6zuyZGUh4g AXTjtRFJ  | 30-658-261-3539 |  instead of the bold packages. carefully final accounts haggle carefully. ironic pearls ag
+    140314 | Customer#000140314 | 484770.5809 |    562.74 | UNITED STATES             | rBvqHikywx71UjCDyhyo7yoHgeWzuSL4i        | 34-301-413-4453 | lly express requests haggle ironic requests. deposits nag after the fluffily final deposits. quickly unu
+    121303 | Customer#000121303 | 481668.6514 |   7206.07 | UNITED KINGDOM            | kJrLw66u0faIgv4IvZrI3UPTdJoI96n          | 33-773-349-2681 | al hockey players. packages after the carefully ironic pac
+     16195 | Customer#000016195 | 481238.0520 |   5647.78 | ROMANIA                   | QPvSNnKE6czmiWBUdugrnD                   | 29-692-341-5614 | re. fluffily ironic pinto beans cajole carefully according to the requests. ir
+    109168 | Customer#000109168 | 481087.0855 |   2947.40 | CHINA                     | 9HqXcL6X4eyYc4OUd                        | 28-198-666-9028 | efully final, regular asymptotes. quickly ironic packages cajole carefully. blithely final platelets wak
+     31729 | Customer#000031729 | 480301.4354 |   5792.04 | GERMANY                   | B5NrtgSpZFksUUESq                        | 17-322-148-9331 | accounts are furiously. carefully special deposits detec
+(20 rows)
+

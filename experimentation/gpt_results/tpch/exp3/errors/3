@@ -1,0 +1,4 @@
+ERROR:  column o.c_custkey does not exist
+LINE 9:     orders o ON c.c_custkey = o.c_custkey AND o.o_orderdate ...
+                                      ^
+HINT:  Perhaps you meant to reference the column "c.c_custkey" or the column "o.o_custkey".

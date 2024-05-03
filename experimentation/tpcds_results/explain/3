@@ -1,0 +1,26 @@
+                                                           QUERY PLAN                                                            
+---------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=8846.23..8846.48 rows=100 width=91)
+   ->  Sort  (cost=8846.23..8846.73 rows=200 width=91)
+         Sort Key: dt.d_year, (sum(store_sales.ss_sales_price)) DESC, item.i_brand_id
+         ->  Finalize GroupAggregate  (cost=8818.38..8838.58 rows=200 width=91)
+               Group Key: dt.d_year, item.i_brand, item.i_brand_id
+               ->  Gather Merge  (cost=8818.38..8834.61 rows=118 width=91)
+                     Workers Planned: 1
+                     ->  Partial GroupAggregate  (cost=7818.37..7821.32 rows=118 width=91)
+                           Group Key: dt.d_year, item.i_brand, item.i_brand_id
+                           ->  Sort  (cost=7818.37..7818.67 rows=118 width=65)
+                                 Sort Key: dt.d_year, item.i_brand, item.i_brand_id
+                                 ->  Nested Loop  (cost=6.08..7814.31 rows=118 width=65)
+                                       ->  Nested Loop  (cost=5.79..7340.33 rows=1506 width=65)
+                                             ->  Parallel Seq Scan on item  (cost=0.00..1362.35 rows=9 width=59)
+                                                   Filter: (i_manufact_id = 816)
+                                             ->  Bitmap Heap Scan on store_sales  (cost=5.79..662.47 rows=175 width=14)
+                                                   Recheck Cond: (ss_item_sk = item.i_item_sk)
+                                                   ->  Bitmap Index Scan on store_sales_pkey  (cost=0.00..5.74 rows=175 width=0)
+                                                         Index Cond: (ss_item_sk = item.i_item_sk)
+                                       ->  Index Scan using date_dim_pkey on date_dim dt  (cost=0.29..0.31 rows=1 width=8)
+                                             Index Cond: (d_date_sk = store_sales.ss_sold_date_sk)
+                                             Filter: (d_moy = 11)
+(22 rows)
+

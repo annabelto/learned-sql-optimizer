@@ -1,0 +1,25 @@
+                                                          QUERY PLAN                                                           
+-------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=70052.92..70052.97 rows=21 width=91)
+   ->  Sort  (cost=70052.92..70052.97 rows=21 width=91)
+         Sort Key: (sum(store_sales.ss_ext_sales_price)) DESC, item.i_brand_id
+         ->  Finalize GroupAggregate  (cost=70049.66..70052.45 rows=21 width=91)
+               Group Key: dt.d_year, item.i_brand, item.i_brand_id
+               ->  Gather Merge  (cost=70049.66..70051.97 rows=18 width=91)
+                     Workers Planned: 2
+                     ->  Partial GroupAggregate  (cost=69049.64..69049.87 rows=9 width=91)
+                           Group Key: dt.d_year, item.i_brand, item.i_brand_id
+                           ->  Sort  (cost=69049.64..69049.66 rows=9 width=65)
+                                 Sort Key: item.i_brand, item.i_brand_id
+                                 ->  Nested Loop  (cost=2050.06..69049.50 rows=9 width=65)
+                                       ->  Parallel Hash Join  (cost=2049.78..68899.19 rows=486 width=14)
+                                             Hash Cond: (store_sales.ss_sold_date_sk = dt.d_date_sk)
+                                             ->  Parallel Seq Scan on store_sales  (cost=0.00..63698.56 rows=1200256 width=14)
+                                             ->  Parallel Hash  (cost=2049.55..2049.55 rows=18 width=8)
+                                                   ->  Parallel Seq Scan on date_dim dt  (cost=0.00..2049.55 rows=18 width=8)
+                                                         Filter: ((d_moy = 12) AND (d_year = 2000))
+                                       ->  Index Scan using item_pkey on item  (cost=0.29..0.31 rows=1 width=59)
+                                             Index Cond: (i_item_sk = store_sales.ss_item_sk)
+                                             Filter: (i_manager_id = 1)
+(21 rows)
+

@@ -1,0 +1,32 @@
+                                                                                                    QUERY PLAN                                                                                                     
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Finalize Aggregate  (cost=43263.76..43263.77 rows=1 width=32)
+   ->  Gather  (cost=43263.53..43263.74 rows=2 width=32)
+         Workers Planned: 2
+         ->  Partial Aggregate  (cost=42263.53..42263.54 rows=1 width=32)
+               ->  Parallel Append  (cost=0.43..42263.25 rows=114 width=32)
+                     ->  Nested Loop  (cost=0.43..18122.14 rows=24 width=32)
+                           ->  Parallel Seq Scan on part  (cost=0.00..5972.00 rows=100 width=4)
+                                 Filter: ((p_size >= 1) AND (p_size <= 15) AND (p_brand = 'Brand#41'::bpchar) AND (p_container = ANY ('{"LG CASE","LG BOX","LG PACK","LG PKG"}'::bpchar[])))
+                           ->  Index Scan using idx_lineitem_part_supp on lineitem  (cost=0.43..121.49 rows=1 width=16)
+                                 Index Cond: (l_partkey = part.p_partkey)
+                                 Filter: ((l_quantity >= '23'::numeric) AND (l_quantity <= '33'::numeric) AND (l_shipmode = ANY ('{AIR,"AIR REG"}'::bpchar[])) AND (l_shipinstruct = 'DELIVER IN PERSON'::bpchar))
+                     ->  Nested Loop  (cost=0.43..14073.65 rows=15 width=32)
+                           ->  Parallel Seq Scan on part part_1  (cost=0.00..5972.00 rows=66 width=4)
+                                 Filter: ((p_size >= 1) AND (p_size <= 10) AND (p_brand = 'Brand#32'::bpchar) AND (p_container = ANY ('{"MED BAG","MED BOX","MED PKG","MED PACK"}'::bpchar[])))
+                           ->  Index Scan using idx_lineitem_part_supp on lineitem lineitem_1  (cost=0.43..122.74 rows=1 width=16)
+                                 Index Cond: (l_partkey = part_1.p_partkey)
+                                 Filter: ((l_quantity >= '13'::numeric) AND (l_quantity <= '23'::numeric) AND (l_shipmode = ANY ('{AIR,"AIR REG"}'::bpchar[])) AND (l_shipinstruct = 'DELIVER IN PERSON'::bpchar))
+                     ->  Nested Loop  (cost=0.43..10065.74 rows=8 width=32)
+                           ->  Parallel Seq Scan on part part_2  (cost=0.00..5972.00 rows=33 width=4)
+                                 Filter: ((p_size >= 1) AND (p_size <= 5) AND (p_brand = 'Brand#53'::bpchar) AND (p_container = ANY ('{"SM CASE","SM BOX","SM PACK","SM PKG"}'::bpchar[])))
+                           ->  Index Scan using idx_lineitem_part_supp on lineitem lineitem_2  (cost=0.43..124.04 rows=1 width=16)
+                                 Index Cond: (l_partkey = part_2.p_partkey)
+                                 Filter: ((l_quantity >= '10'::numeric) AND (l_quantity <= '20'::numeric) AND (l_shipmode = ANY ('{AIR,"AIR REG"}'::bpchar[])) AND (l_shipinstruct = 'DELIVER IN PERSON'::bpchar))
+(23 rows)
+
+   revenue    
+--------------
+ 4052170.4672
+(1 row)
+

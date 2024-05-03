@@ -1,0 +1,30 @@
+                                                                                                                                                                                                                                                                                          QUERY PLAN                                                                                                                                                                                                                                                                                          
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=3910.18..3910.70 rows=8 width=51)
+   ->  Unique  (cost=3910.18..3910.70 rows=8 width=51)
+         ->  GroupAggregate  (cost=3910.18..3910.68 rows=8 width=51)
+               Group Key: i1.i_product_name
+               Filter: (count(*) > 0)
+               ->  Sort  (cost=3910.18..3910.24 rows=25 width=51)
+                     Sort Key: i1.i_product_name
+                     ->  Hash Join  (cost=1503.15..3909.60 rows=25 width=51)
+                           Hash Cond: (i2.i_manufact = i1.i_manufact)
+                           ->  Seq Scan on item i2  (cost=0.00..2400.00 rows=84 width=51)
+                                 Filter: (((i_category = 'Women'::bpchar) AND (i_color = ANY ('{forest,lime,navy,slate,dark,aquamarine,frosted,plum}'::bpchar[])) AND (i_units = ANY ('{Pallet,Pound,Gross,Bunch,Ton,Tbl,Dram,Box}'::bpchar[])) AND (i_size = ANY ('{economy,small,"extra large",petite}'::bpchar[]))) OR ((i_category = 'Men'::bpchar) AND (i_color = ANY ('{powder,sky,maroon,smoke,papaya,peach,firebrick,sienna}'::bpchar[])) AND (i_units = ANY ('{Dozen,Lb,Ounce,Case,Bundle,Carton,Cup,Each}'::bpchar[])) AND (i_size = ANY ('{N/A,large,economy,small}'::bpchar[]))))
+                           ->  Hash  (cost=1500.00..1500.00 rows=252 width=102)
+                                 ->  Seq Scan on item i1  (cost=0.00..1500.00 rows=252 width=102)
+                                       Filter: ((i_manufact_id >= 704) AND (i_manufact_id <= 744))
+(14 rows)
+
+                   i_product_name                   
+----------------------------------------------------
+ ableableeingable                                  
+ ablen stn stbarought                              
+ antiationpriableought                             
+ barcallyeingableought                             
+ esebarn stationought                              
+ oughtableable                                     
+ oughteseantiationought                            
+ prioughtableoughtought                            
+(8 rows)
+

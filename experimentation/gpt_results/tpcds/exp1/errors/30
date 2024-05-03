@@ -1,0 +1,4 @@
+ERROR:  column "c_last_review_date" does not exist
+LINE 29:     c_last_review_date,
+             ^
+HINT:  Perhaps you meant to reference the column "customer.c_last_review_date_sk".

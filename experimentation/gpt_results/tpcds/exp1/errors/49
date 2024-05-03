@@ -1,0 +1,4 @@
+ERROR:  subquery in FROM must have an alias
+LINE 7: FROM (
+             ^
+HINT:  For example, FROM (SELECT ...) [AS] foo.

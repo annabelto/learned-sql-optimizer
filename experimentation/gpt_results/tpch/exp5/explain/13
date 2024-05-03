@@ -1,0 +1,72 @@
+                                                                 QUERY PLAN                                                                  
+---------------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=151690.33..151690.83 rows=200 width=16)
+   Sort Key: (count(*)) DESC, (count(orders.o_orderkey)) DESC
+   ->  HashAggregate  (cost=151680.69..151682.69 rows=200 width=16)
+         Group Key: count(orders.o_orderkey)
+         ->  Finalize GroupAggregate  (cost=111428.25..149430.69 rows=150000 width=12)
+               Group Key: customer.c_custkey
+               ->  Gather Merge  (cost=111428.25..146430.69 rows=300000 width=12)
+                     Workers Planned: 2
+                     ->  Sort  (cost=110428.22..110803.22 rows=150000 width=12)
+                           Sort Key: customer.c_custkey
+                           ->  Partial HashAggregate  (cost=88584.44..94966.77 rows=150000 width=12)
+                                 Group Key: customer.c_custkey
+                                 Planned Partitions: 4
+                                 ->  Parallel Hash Left Join  (cost=44161.64..53431.68 rows=624938 width=8)
+                                       Hash Cond: (customer.c_custkey = orders.o_custkey)
+                                       ->  Parallel Index Only Scan using customer_pkey on customer  (cost=0.42..3031.42 rows=62500 width=4)
+                                       ->  Parallel Hash  (cost=33907.50..33907.50 rows=624938 width=8)
+                                             ->  Parallel Seq Scan on orders  (cost=0.00..33907.50 rows=624938 width=8)
+                                                   Filter: ((o_comment)::text !~~ '%unusual%accounts%'::text)
+ JIT:
+   Functions: 17
+   Options: Inlining false, Optimization false, Expressions true, Deforming true
+(22 rows)
+
+ c_count | custdist 
+---------+----------
+       0 |    50004
+       9 |     6606
+      10 |     6565
+      11 |     6062
+       8 |     5925
+      12 |     5648
+      13 |     4986
+      19 |     4796
+       7 |     4644
+      20 |     4567
+      17 |     4519
+      18 |     4490
+      14 |     4477
+      15 |     4451
+      16 |     4410
+      21 |     4139
+      22 |     3730
+       6 |     3303
+      23 |     3161
+      24 |     2672
+      25 |     2097
+       5 |     1942
+      26 |     1654
+      27 |     1188
+       4 |     1027
+      28 |      855
+      29 |      596
+       3 |      393
+      30 |      387
+      31 |      215
+      32 |      142
+       2 |      134
+      33 |       78
+      34 |       50
+      35 |       35
+       1 |       18
+      36 |       17
+      37 |        7
+      40 |        3
+      39 |        3
+      41 |        2
+      38 |        2
+(42 rows)
+
