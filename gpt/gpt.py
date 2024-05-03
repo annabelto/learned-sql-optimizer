@@ -85,7 +85,6 @@ def parse_sql_query(input_file):
     # Escape special characters
     sql_query = sql_query.replace('"', r'\"')
     sql_query = sql_query.replace("'", r"\'")
-    # print("query: ", sql_query)
     return sql_query
 
 def parse_args():
@@ -94,6 +93,7 @@ def parse_args():
     parser.add_argument("-o", "--out_dir", required=True)
     parser.add_argument("-c", "--chat", type=bool, required=False, default=False)
     parser.add_argument("-p", "--performance", type=bool, required=False, default=False)
+    parser.add_argument("-l", "--leetcode", type=bool, required=False)
     
     return parser.parse_args()
 
@@ -104,8 +104,6 @@ if __name__ == "__main__":
     input_dir = args.input_dir
     output_dir = args.out_dir
 
-    # input_dir = input("Enter the path to the directory containing queries: ")
-    # output_dir = input("Enter the path to the directory at which you want to output results: ")
     for filename in os.listdir(input_dir):
         if "explain" in filename or filename.split('.')[0] in ['1', '4', '11', '74']:
             continue
@@ -129,7 +127,6 @@ if __name__ == "__main__":
                 f.write(result)
 
             if args.chat:
-
                 solved, error = do_check(output_path, int(filename.split('.')[0]))
                 counter = 0
                 while counter < 10:
@@ -171,10 +168,6 @@ if __name__ == "__main__":
                     counter += 1
 
                 print("Took {} tries, and solved : {}".format(counter, solved))
-
-    # input_file = input("Enter the file path containing the SQL query: ")
-    # output_path = input("Enter the file path at which to output the result: ")
-    # print("prompt: ", prompt)
 
    # /usr/bin/time -a -f "$n = %e" -o $RESULTS/results.log psql -h localhost -U $USER $DBNAME < $q > $RESULTS/results/$n 2> $RESULTS/errors/$n &
 

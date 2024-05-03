@@ -1,0 +1,5 @@
+venv/
+databases/
+.vscode
+.history
+.DS_Store
