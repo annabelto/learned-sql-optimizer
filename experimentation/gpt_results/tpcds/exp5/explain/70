@@ -1,0 +1,63 @@
+                                                                                                       QUERY PLAN                                                                                                       
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=137628.73..137628.73 rows=3 width=97)
+   ->  Sort  (cost=137628.73..137628.73 rows=3 width=97)
+         Sort Key: sub.lochierarchy DESC, (CASE WHEN (sub.lochierarchy = 0) THEN sub.s_state ELSE NULL::bpchar END), sub.rank_within_parent
+         ->  Subquery Scan on sub  (cost=137628.56..137628.70 rows=3 width=97)
+               ->  WindowAgg  (cost=137628.56..137628.67 rows=3 width=97)
+                     ->  Sort  (cost=137628.56..137628.57 rows=3 width=89)
+                           Sort Key: ((GROUPING(store.s_state) + GROUPING(store.s_county))), (CASE WHEN (GROUPING(store.s_county) = 0) THEN store.s_state ELSE NULL::bpchar END), (sum(store_sales.ss_net_profit)) DESC
+                           ->  MixedAggregate  (cost=69277.41..137628.54 rows=3 width=89)
+                                 Hash Key: store.s_state, store.s_county
+                                 Hash Key: store.s_state
+                                 Group Key: ()
+                                 ->  Nested Loop  (cost=69277.41..137535.73 rows=6182 width=27)
+                                       Join Filter: (store.s_state = tmp1.s_state)
+                                       ->  Subquery Scan on tmp1  (cost=68250.64..68250.75 rows=1 width=3)
+                                             Filter: (tmp1.ranking <= 5)
+                                             ->  WindowAgg  (cost=68250.64..68250.72 rows=2 width=43)
+                                                   ->  Incremental Sort  (cost=68250.64..68250.69 rows=2 width=35)
+                                                         Sort Key: store_1.s_state, (sum(store_sales_1.ss_net_profit)) DESC
+                                                         Presorted Key: store_1.s_state
+                                                         ->  Finalize GroupAggregate  (cost=68211.70..68250.61 rows=1 width=35)
+                                                               Group Key: store_1.s_state
+                                                               ->  Gather Merge  (cost=68211.70..68250.59 rows=2 width=35)
+                                                                     Workers Planned: 2
+                                                                     ->  Partial GroupAggregate  (cost=67211.68..67250.33 rows=1 width=35)
+                                                                           Group Key: store_1.s_state
+                                                                           ->  Sort  (cost=67211.68..67224.56 rows=5152 width=9)
+                                                                                 Sort Key: store_1.s_state
+                                                                                 ->  Hash Join  (cost=26.78..66894.04 rows=5152 width=9)
+                                                                                       Hash Cond: (store_sales_1.ss_store_sk = store_1.s_store_sk)
+                                                                                       ->  Hash Join  (cost=25.51..66873.81 rows=5404 width=10)
+                                                                                             Hash Cond: (store_sales_1.ss_sold_date_sk = date_dim.d_date_sk)
+                                                                                             ->  Parallel Seq Scan on store_sales store_sales_1  (cost=0.00..63697.68 rows=1200168 width=14)
+                                                                                             ->  Hash  (cost=21.19..21.19 rows=345 width=4)
+                                                                                                   ->  Index Scan using idx_date_dim_month_seq on date_dim  (cost=0.29..21.19 rows=345 width=4)
+                                                                                                         Index Cond: ((d_month_seq >= 1220) AND (d_month_seq <= 1231))
+                                                                                       ->  Hash  (cost=1.12..1.12 rows=12 width=7)
+                                                                                             ->  Seq Scan on store store_1  (cost=0.00..1.12 rows=12 width=7)
+                                       ->  Gather  (cost=1026.78..69130.44 rows=12364 width=27)
+                                             Workers Planned: 2
+                                             ->  Hash Join  (cost=26.78..66894.04 rows=5152 width=27)
+                                                   Hash Cond: (store_sales.ss_store_sk = store.s_store_sk)
+                                                   ->  Hash Join  (cost=25.51..66873.81 rows=5404 width=10)
+                                                         Hash Cond: (store_sales.ss_sold_date_sk = d1.d_date_sk)
+                                                         ->  Parallel Seq Scan on store_sales  (cost=0.00..63697.68 rows=1200168 width=14)
+                                                         ->  Hash  (cost=21.19..21.19 rows=345 width=4)
+                                                               ->  Index Scan using idx_date_dim_month_seq on date_dim d1  (cost=0.29..21.19 rows=345 width=4)
+                                                                     Index Cond: ((d_month_seq >= 1220) AND (d_month_seq <= 1231))
+                                                   ->  Hash  (cost=1.12..1.12 rows=12 width=25)
+                                                         ->  Seq Scan on store  (cost=0.00..1.12 rows=12 width=25)
+ JIT:
+   Functions: 63
+   Options: Inlining false, Optimization false, Expressions true, Deforming true
+(52 rows)
+
+   total_sum   | s_state |     s_county      | lochierarchy | rank_within_parent 
+---------------+---------+-------------------+--------------+--------------------
+ -436278965.56 |         |                   |            2 |                  1
+ -436278965.56 | TN      |                   |            1 |                  1
+ -436278965.56 | TN      | Williamson County |            0 |                  1
+(3 rows)
+

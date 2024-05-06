@@ -1,0 +1,41 @@
+                                                                                                     QUERY PLAN                                                                                                     
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=7025.59..7025.59 rows=1 width=74)
+   Sort Key: (sum(cr.cr_net_loss)) DESC
+   ->  GroupAggregate  (cost=7025.55..7025.58 rows=1 width=74)
+         Group Key: cc.cc_call_center_id, cc.cc_name, cc.cc_manager
+         ->  Sort  (cost=7025.55..7025.55 rows=1 width=48)
+               Sort Key: cc.cc_call_center_id, cc.cc_name, cc.cc_manager
+               ->  Nested Loop  (cost=3051.20..7025.54 rows=1 width=48)
+                     ->  Nested Loop  (cost=3050.77..7024.00 rows=1 width=52)
+                           ->  Gather  (cost=3050.64..7023.84 rows=1 width=14)
+                                 Workers Planned: 1
+                                 ->  Nested Loop  (cost=2050.64..6023.74 rows=1 width=14)
+                                       ->  Nested Loop  (cost=2050.35..6021.59 rows=6 width=18)
+                                             ->  Nested Loop  (cost=2050.07..6010.90 rows=35 width=22)
+                                                   ->  Parallel Hash Join  (cost=2049.78..5996.69 rows=36 width=14)
+                                                         Hash Cond: (cr.cr_returned_date_sk = d.d_date_sk)
+                                                         ->  Parallel Seq Scan on catalog_returns cr  (cost=0.00..3724.45 rows=84745 width=18)
+                                                         ->  Parallel Hash  (cost=2049.55..2049.55 rows=18 width=4)
+                                                               ->  Parallel Seq Scan on date_dim d  (cost=0.00..2049.55 rows=18 width=4)
+                                                                     Filter: ((d_year = 2000) AND (d_moy = 12))
+                                                   ->  Index Scan using customer_pkey on customer c  (cost=0.29..0.39 rows=1 width=16)
+                                                         Index Cond: (c_customer_sk = cr.cr_returning_customer_sk)
+                                             ->  Index Scan using household_demographics_pkey on household_demographics hd  (cost=0.28..0.31 rows=1 width=4)
+                                                   Index Cond: (hd_demo_sk = c.c_current_hdemo_sk)
+                                                   Filter: (hd_buy_potential ~~ 'Unknown%'::text)
+                                       ->  Index Scan using customer_address_pkey on customer_address ca  (cost=0.29..0.36 rows=1 width=4)
+                                             Index Cond: (ca_address_sk = c.c_current_addr_sk)
+                                             Filter: (ca_gmt_offset = '-7'::numeric)
+                           ->  Index Scan using call_center_pkey on call_center cc  (cost=0.13..0.15 rows=1 width=46)
+                                 Index Cond: (cc_call_center_sk = cr.cr_call_center_sk)
+                     ->  Index Scan using customer_demographics_pkey on customer_demographics cd  (cost=0.43..1.54 rows=1 width=4)
+                           Index Cond: (cd_demo_sk = c.c_current_cdemo_sk)
+                           Filter: (((cd_marital_status = 'M'::bpchar) AND (cd_education_status = 'Unknown'::bpchar)) OR ((cd_marital_status = 'W'::bpchar) AND (cd_education_status = 'Advanced Degree'::bpchar)))
+(32 rows)
+
+   call_center    | call_center_name |    manager     | returns_loss 
+------------------+------------------+----------------+--------------
+ AAAAAAAACAAAAAAA | Mid Atlantic     | Felipe Perkins |       341.90
+(1 row)
+

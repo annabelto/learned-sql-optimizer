@@ -1,0 +1,5 @@
+    i_item_id     |                   i_item_desc                   |    s_store_id    | s_store_name | store_sales_quantity | store_returns_quantity | catalog_sales_quantity 
+------------------+-------------------------------------------------+------------------+--------------+----------------------+------------------------+------------------------
+ AAAAAAAAJMMBAAAA | Different, social ideas ought to enjoy. No impo | AAAAAAAACAAAAAAA | able         |                   10 |                      9 |                     99
+(1 row)
+

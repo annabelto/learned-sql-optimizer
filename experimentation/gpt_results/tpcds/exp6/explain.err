@@ -1,0 +1,91 @@
+ERROR:  syntax error at or near "explain"
+LINE 24: explain select d_week_seq1,
+         ^
+ERROR:  syntax error at or near "explain"
+LINE 85: explain select channel, 
+         ^
+ERROR:  column "wr_web_site_sk" does not exist
+LINE 72:         SELECT wr_web_site_sk AS wsr_web_site_sk, 
+                        ^
+HINT:  Perhaps you meant to reference the column "*SELECT* 1.wsr_web_site_sk".
+ERROR:  syntax error at or near "explain"
+LINE 26: explain select 
+         ^
+ERROR:  syntax error at or near "explain"
+LINE 37: explain select channel, i_brand_id, i_class_id, i_category_i...
+         ^
+ERROR:  syntax error at or near "explain"
+LINE 28: explain select SUM(sales)
+         ^
+ERROR:  syntax error at or near "explain"
+LINE 37: explain select 
+         ^
+ERROR:  syntax error at or near "explain"
+LINE 15: explain select 
+         ^
+ERROR:  syntax error at or near "explain"
+LINE 15: explain select 
+         ^
+ERROR:  syntax error at or near "explain"
+LINE 26: explain select i_manufact_id, SUM(total_sales) AS total_sale...
+         ^
+ERROR:  syntax error at or near "explain"
+LINE 28: explain select 
+         ^
+ERROR:  syntax error at or near "explain"
+LINE 51: explain select 
+         ^
+ERROR:  missing FROM-clause entry for table "ws"
+LINE 6:         ws.ws_item_sk AS item,
+                ^
+ERROR:  missing FROM-clause entry for table "ws"
+LINE 6:         ws.ws_item_sk AS item,
+                ^
+ERROR:  syntax error at or near "explain"
+LINE 71: explain select  
+         ^
+ERROR:  syntax error at or near "explain"
+LINE 52: explain select segment, COUNT(*) AS num_customers, segment *...
+         ^
+ERROR:  syntax error at or near "explain"
+LINE 35: explain select i_item_id, SUM(total_sales) AS total_sales
+         ^
+ERROR:  syntax error at or near "explain"
+LINE 44: explain select 
+         ^
+ERROR:  syntax error at or near "explain"
+LINE 50: explain select 
+         ^
+ERROR:  syntax error at or near "explain"
+LINE 18: explain select 
+         ^
+ERROR:  syntax error at or near "explain"
+LINE 31: explain select i_item_id, SUM(total_sales) AS total_sales
+         ^
+ERROR:  syntax error at or near "explain"
+LINE 80: explain select 
+         ^
+ERROR:  syntax error at or near "explain"
+LINE 59: explain select 
+         ^
+ERROR:  syntax error at or near "explain"
+LINE 59: explain select channel, 
+         ^
+ERROR:  syntax error at or near "explain"
+LINE 58: explain select 
+         ^
+ERROR:  syntax error at or near "explain"
+LINE 61: explain select 
+         ^
+ERROR:  syntax error at or near "explain"
+LINE 15: explain select 
+         ^
+ERROR:  syntax error at or near "explain"
+LINE 44: explain select 
+         ^
+ERROR:  syntax error at or near "explain"
+LINE 7: explain select 
+        ^
+ERROR:  syntax error at or near "explain"
+LINE 15: explain select
+         ^

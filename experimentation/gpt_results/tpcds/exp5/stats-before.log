@@ -1,0 +1,10 @@
+ checkpoints_timed | checkpoints_req | checkpoint_write_time | checkpoint_sync_time | buffers_checkpoint | buffers_clean | maxwritten_clean | buffers_backend | buffers_backend_fsync | buffers_alloc |          stats_reset          
+-------------------+-----------------+-----------------------+----------------------+--------------------+---------------+------------------+-----------------+-----------------------+---------------+-------------------------------
+               250 |               1 |                  3038 |                   31 |                 30 |           144 |                0 |            1211 |                     0 |     148203539 | 2024-05-02 11:58:24.116717-05
+(1 row)
+
+ datid | datname | numbackends | xact_commit | xact_rollback | blks_read |  blks_hit  | tup_returned | tup_fetched | tup_inserted | tup_updated | tup_deleted | conflicts | temp_files | temp_bytes  | deadlocks | checksum_failures | checksum_last_failure | blk_read_time | blk_write_time | session_time | active_time | idle_in_transaction_time | sessions | sessions_abandoned | sessions_fatal | sessions_killed |          stats_reset          
+-------+---------+-------------+-------------+---------------+-----------+------------+--------------+-------------+--------------+-------------+-------------+-----------+------------+-------------+-----------+-------------------+-----------------------+---------------+----------------+--------------+-------------+--------------------------+----------+--------------------+----------------+-----------------+-------------------------------
+ 16900 | tpcds   |           0 |       18775 |           136 | 158177564 | 1024026920 |  10026302406 |   358143895 |          401 |           7 |          14 |         0 |       5230 | 45559589252 |         0 |                   |                       |             0 |              0 |  1960207.034 | 1946737.396 |                        0 |     2481 |                  0 |              0 |               0 | 2024-05-02 12:02:52.231943-05
+(1 row)
+

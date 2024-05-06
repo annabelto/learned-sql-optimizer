@@ -1,0 +1,49 @@
+                                                                                     QUERY PLAN                                                                                     
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=27600.16..27602.41 rows=100 width=52)
+   ->  GroupAggregate  (cost=27600.16..27610.58 rows=463 width=52)
+         Group Key: customer_address.ca_zip, customer_address.ca_city
+         ->  Sort  (cost=27600.16..27601.32 rows=463 width=26)
+               Sort Key: customer_address.ca_zip, customer_address.ca_city
+               ->  Hash Join  (cost=4685.82..27579.66 rows=463 width=26)
+                     Hash Cond: (web_sales.ws_item_sk = item.i_item_sk)
+                     Join Filter: ((substr((customer_address.ca_zip)::text, 1, 5) = ANY ('{85669,86197,88274,83405,86475,85392,85460,80348,81792}'::text[])) OR (hashed SubPlan 2))
+                     ->  Gather  (cost=3050.80..25942.31 rows=886 width=30)
+                           Workers Planned: 2
+                           ->  Nested Loop  (cost=2050.80..24853.71 rows=369 width=30)
+                                 ->  Nested Loop  (cost=2050.51..24722.15 rows=369 width=14)
+                                       ->  Parallel Hash Join  (cost=2050.21..24601.52 rows=369 width=14)
+                                             Hash Cond: (web_sales.ws_sold_date_sk = date_dim.d_date_sk)
+                                             ->  Parallel Seq Scan on web_sales  (cost=0.00..21764.43 rows=299743 width=18)
+                                             ->  Parallel Hash  (cost=2049.55..2049.55 rows=53 width=4)
+                                                   ->  Parallel Seq Scan on date_dim  (cost=0.00..2049.55 rows=53 width=4)
+                                                         Filter: ((d_qoy = 1) AND (d_year = 2000))
+                                       ->  Index Scan using customer_pkey on customer  (cost=0.29..0.33 rows=1 width=8)
+                                             Index Cond: (c_customer_sk = web_sales.ws_bill_customer_sk)
+                                 ->  Index Scan using customer_address_pkey on customer_address  (cost=0.29..0.36 rows=1 width=24)
+                                       Index Cond: (ca_address_sk = customer.c_current_addr_sk)
+                     ->  Hash  (cost=1410.00..1410.00 rows=18000 width=21)
+                           ->  Seq Scan on item  (cost=0.00..1410.00 rows=18000 width=21)
+                     SubPlan 2
+                       ->  Index Scan using item_pkey on item item_sub  (cost=0.29..47.07 rows=10 width=17)
+                             Index Cond: (i_item_sk = ANY ('{2,3,5,7,11,13,17,19,23,29}'::integer[]))
+(27 rows)
+
+   ca_zip   |    ca_city     |  sum  
+------------+----------------+-------
+ 04698      | Woodlawn       | 45.37
+ 21289      | Lincoln        | 42.36
+ 27057      | Georgetown     | 28.19
+ 32924      | Belleville     | 35.08
+ 41521      | Newport        | 11.59
+ 48482      | Mount Vernon   | 25.35
+ 64136      | Pleasant Grove |  0.00
+ 68252      | Maple Grove    | 55.18
+ 69303      | Springfield    | 26.92
+ 76614      | Providence     | 75.83
+ 79303      | Springfield    |  5.84
+ 88828      | Greenwood      |  1.45
+ 91675      | Waterloo       | 39.39
+            |                | 83.01
+(14 rows)
+

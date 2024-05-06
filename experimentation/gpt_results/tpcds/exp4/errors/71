@@ -1,0 +1,3 @@
+ERROR:  syntax error at or near "WHERE"
+LINE 46: WHERE 
+         ^

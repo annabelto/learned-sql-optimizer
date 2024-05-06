@@ -1,0 +1,80 @@
+                                                                                                            QUERY PLAN                                                                                                             
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=73149.34..73294.45 rows=100 width=1254)
+   ->  GroupAggregate  (cost=73149.34..73439.56 rows=200 width=1254)
+         Group Key: "*SELECT* 1".w_warehouse_name, "*SELECT* 1".w_warehouse_sq_ft, "*SELECT* 1".w_city, "*SELECT* 1".w_county, "*SELECT* 1".w_state, "*SELECT* 1".w_country, 'ORIENTAL,BOXBUNDLES'::text, "*SELECT* 1".year
+         ->  Incremental Sort  (cost=73149.34..73380.95 rows=351 width=1254)
+               Sort Key: "*SELECT* 1".w_warehouse_name, "*SELECT* 1".w_warehouse_sq_ft, "*SELECT* 1".w_city, "*SELECT* 1".w_county, "*SELECT* 1".w_state, "*SELECT* 1".w_country, "*SELECT* 1".year
+               Presorted Key: "*SELECT* 1".w_warehouse_name, "*SELECT* 1".w_warehouse_sq_ft, "*SELECT* 1".w_city, "*SELECT* 1".w_county, "*SELECT* 1".w_state, "*SELECT* 1".w_country
+               ->  Result  (cost=73148.22..73368.45 rows=351 width=1254)
+                     ->  Merge Append  (cost=73148.22..73364.94 rows=351 width=1222)
+                           Sort Key: "*SELECT* 1".w_warehouse_name, "*SELECT* 1".w_warehouse_sq_ft, "*SELECT* 1".w_city, "*SELECT* 1".w_county, "*SELECT* 1".w_state, "*SELECT* 1".w_country
+                           ->  Subquery Scan on "*SELECT* 1"  (cost=25105.04..25176.62 rows=118 width=1222)
+                                 ->  Finalize GroupAggregate  (cost=25105.04..25175.44 rows=118 width=1222)
+                                       Group Key: warehouse.w_warehouse_name, warehouse.w_warehouse_sq_ft, warehouse.w_city, warehouse.w_county, warehouse.w_state, warehouse.w_country, date_dim.d_year
+                                       ->  Gather Merge  (cost=25105.04..25144.28 rows=98 width=1222)
+                                             Workers Planned: 2
+                                             ->  Partial GroupAggregate  (cost=24105.02..24132.95 rows=49 width=1222)
+                                                   Group Key: warehouse.w_warehouse_name, warehouse.w_warehouse_sq_ft, warehouse.w_city, warehouse.w_county, warehouse.w_state, warehouse.w_country, date_dim.d_year
+                                                   ->  Sort  (cost=24105.02..24105.14 rows=49 width=91)
+                                                         Sort Key: warehouse.w_warehouse_name, warehouse.w_warehouse_sq_ft, warehouse.w_city, warehouse.w_county, warehouse.w_state, warehouse.w_country
+                                                         ->  Hash Join  (cost=2.98..24103.64 rows=49 width=91)
+                                                               Hash Cond: (web_sales.ws_warehouse_sk = warehouse.w_warehouse_sk)
+                                                               ->  Nested Loop  (cost=1.87..24102.29 rows=49 width=29)
+                                                                     ->  Nested Loop  (cost=1.58..24054.00 rows=149 width=33)
+                                                                           ->  Hash Join  (cost=1.27..22719.22 rows=29966 width=29)
+                                                                                 Hash Cond: (web_sales.ws_ship_mode_sk = ship_mode.sm_ship_mode_sk)
+                                                                                 ->  Parallel Seq Scan on web_sales  (cost=0.00..21764.43 rows=299743 width=33)
+                                                                                 ->  Hash  (cost=1.25..1.25 rows=2 width=4)
+                                                                                       ->  Seq Scan on ship_mode  (cost=0.00..1.25 rows=2 width=4)
+                                                                                             Filter: (sm_carrier = ANY ('{ORIENTAL,BOXBUNDLES}'::bpchar[]))
+                                                                           ->  Memoize  (cost=0.30..0.33 rows=1 width=12)
+                                                                                 Cache Key: web_sales.ws_sold_date_sk
+                                                                                 Cache Mode: logical
+                                                                                 ->  Index Scan using date_dim_pkey on date_dim  (cost=0.29..0.32 rows=1 width=12)
+                                                                                       Index Cond: (d_date_sk = web_sales.ws_sold_date_sk)
+                                                                                       Filter: (d_year = 2001)
+                                                                     ->  Index Scan using time_dim_pkey on time_dim  (cost=0.29..0.32 rows=1 width=4)
+                                                                           Index Cond: (t_time_sk = web_sales.ws_sold_time_sk)
+                                                                           Filter: ((t_time >= 42970) AND (t_time <= 71770))
+                                                               ->  Hash  (cost=1.05..1.05 rows=5 width=70)
+                                                                     ->  Seq Scan on warehouse  (cost=0.00..1.05 rows=5 width=70)
+                           ->  Subquery Scan on "*SELECT* 2"  (cost=48043.17..48184.80 rows=233 width=1222)
+                                 ->  Finalize GroupAggregate  (cost=48043.17..48182.47 rows=233 width=1222)
+                                       Group Key: warehouse_1.w_warehouse_name, warehouse_1.w_warehouse_sq_ft, warehouse_1.w_city, warehouse_1.w_county, warehouse_1.w_state, warehouse_1.w_country, date_dim_1.d_year
+                                       ->  Gather Merge  (cost=48043.17..48120.85 rows=194 width=1222)
+                                             Workers Planned: 2
+                                             ->  Partial GroupAggregate  (cost=47043.15..47098.44 rows=97 width=1222)
+                                                   Group Key: warehouse_1.w_warehouse_name, warehouse_1.w_warehouse_sq_ft, warehouse_1.w_city, warehouse_1.w_county, warehouse_1.w_state, warehouse_1.w_country, date_dim_1.d_year
+                                                   ->  Sort  (cost=47043.15..47043.39 rows=97 width=91)
+                                                         Sort Key: warehouse_1.w_warehouse_name, warehouse_1.w_warehouse_sq_ft, warehouse_1.w_city, warehouse_1.w_county, warehouse_1.w_state, warehouse_1.w_country
+                                                         ->  Hash Join  (cost=1947.48..47039.95 rows=97 width=91)
+                                                               Hash Cond: (catalog_sales.cs_warehouse_sk = warehouse_1.w_warehouse_sk)
+                                                               ->  Nested Loop  (cost=1946.37..47038.36 rows=98 width=29)
+                                                                     ->  Hash Join  (cost=1946.08..46943.78 rows=296 width=33)
+                                                                           Hash Cond: (catalog_sales.cs_ship_mode_sk = ship_mode_1.sm_ship_mode_sk)
+                                                                           ->  Parallel Hash Join  (cost=1944.80..46933.04 rows=2978 width=37)
+                                                                                 Hash Cond: (catalog_sales.cs_sold_date_sk = date_dim_1.d_date_sk)
+                                                                                 ->  Parallel Seq Scan on catalog_sales  (cost=0.00..43411.46 rows=600646 width=33)
+                                                                                 ->  Parallel Hash  (cost=1942.12..1942.12 rows=214 width=12)
+                                                                                       ->  Parallel Seq Scan on date_dim date_dim_1  (cost=0.00..1942.12 rows=214 width=12)
+                                                                                             Filter: (d_year = 2001)
+                                                                           ->  Hash  (cost=1.25..1.25 rows=2 width=4)
+                                                                                 ->  Seq Scan on ship_mode ship_mode_1  (cost=0.00..1.25 rows=2 width=4)
+                                                                                       Filter: (sm_carrier = ANY ('{ORIENTAL,BOXBUNDLES}'::bpchar[]))
+                                                                     ->  Index Scan using time_dim_pkey on time_dim time_dim_1  (cost=0.29..0.32 rows=1 width=4)
+                                                                           Index Cond: (t_time_sk = catalog_sales.cs_sold_time_sk)
+                                                                           Filter: ((t_time >= 42970) AND (t_time <= 71770))
+                                                               ->  Hash  (cost=1.05..1.05 rows=5 width=70)
+                                                                     ->  Seq Scan on warehouse warehouse_1  (cost=0.00..1.05 rows=5 width=70)
+(67 rows)
+
+   w_warehouse_name   | w_warehouse_sq_ft |  w_city  |     w_county      | w_state |   w_country   |    ship_carriers    | year |  jan_sales  |  feb_sales  |  mar_sales  |  apr_sales  |  may_sales  |  jun_sales  |  jul_sales  |  aug_sales   |  sep_sales   |  oct_sales   |  nov_sales   |  dec_sales   |    jan_sales_per_sq_foot     |    feb_sales_per_sq_foot     |    mar_sales_per_sq_foot     |    apr_sales_per_sq_foot     |    may_sales_per_sq_foot     |    jun_sales_per_sq_foot     |    jul_sales_per_sq_foot     |    aug_sales_per_sq_foot     |    sep_sales_per_sq_foot     |    oct_sales_per_sq_foot     |    nov_sales_per_sq_foot     |     dec_sales_per_sq_foot     |   jan_net   |   feb_net   |   mar_net   |   apr_net   |   may_net   |   jun_net   |   jul_net   |   aug_net   |   sep_net   |   oct_net   |   nov_net    |   dec_net    
+----------------------+-------------------+----------+-------------------+---------+---------------+---------------------+------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+--------------+--------------+--------------+--------------+--------------+------------------------------+------------------------------+------------------------------+------------------------------+------------------------------+------------------------------+------------------------------+------------------------------+------------------------------+------------------------------+------------------------------+-------------------------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+-------------+--------------+--------------
+ Bad cards must make. |            621234 | Fairview | Williamson County | TN      | United States | ORIENTAL,BOXBUNDLES | 2001 | 56238489.97 | 49090232.54 | 58406664.39 | 55990239.49 | 54289115.97 | 59091977.39 | 67341541.29 | 111490484.22 | 116157172.34 | 117287894.03 | 189344585.62 | 174618024.73 |  90.527063827800796602623325 |  79.020518097850407564110000 |  94.017172901032461324443235 |  90.127455177920075143992642 |      87.38915766039849704217 |  95.120320829188357377128782 | 108.399638928326524462187055 | 179.466166082345782577922570 | 186.978131171185092867959969 | 188.798253202496965765140000 | 304.787866761960871108740491 |  281.082530463561234794762386 | 40144605.02 | 30500365.04 | 37424218.11 | 34493365.13 | 36752689.36 | 36222072.74 | 43748697.97 | 73725468.64 | 76871326.83 | 77214075.81 | 122684115.64 | 110700828.71
+ Conventional childr  |            977787 | Fairview | Williamson County | TN      | United States | ORIENTAL,BOXBUNDLES | 2001 | 59656968.66 | 43235115.39 | 53658768.13 | 53121038.28 | 54705977.97 | 52481548.60 | 54300975.42 | 116683787.24 | 101792764.60 | 121789103.40 | 189590667.25 | 162752745.17 |  61.012233400525881261966409 |  44.217314599191848599935449 |  54.877767990370090871159219 |  54.327822194404302802878231 |  55.948767952529538395111148 |  53.673804826613567184726480 |  55.534564705810161199650101 | 119.334565953525665607660105 | 104.105254620893916579467947 | 124.555862779930598487638901 | 193.897717243121457293297149 |  166.450101269499389962202061 | 35885446.84 | 23232970.04 | 34311304.73 | 37229128.37 | 30425825.76 | 29285068.79 | 33229658.61 | 70176173.68 | 67383737.51 | 82020908.71 | 117145134.35 | 108564575.90
+ Doors canno          |            294242 | Fairview | Williamson County | TN      | United States | ORIENTAL,BOXBUNDLES | 2001 | 54004347.89 | 55801214.65 | 38226787.26 | 47698408.06 | 54994103.21 | 50398238.06 | 51844109.44 | 119217795.42 | 122683221.64 | 103900455.51 | 166727297.33 | 173043585.35 | 183.537183304898688815535732 | 189.643948348638196071045066 | 129.916148136567859578440456 | 162.106048966496965145240000 | 186.900929201133760543043185 | 171.281591547093889012960095 | 176.195476648473025588040000 | 405.169198890709008527190843 | 416.946668524547821196196329 | 353.112252873485089844881181 | 566.633238388809211967883903 |  588.099541703767647101976523 | 34871293.03 | 37648098.35 | 18218490.66 | 34087154.64 | 39341789.26 | 33810782.23 | 33530331.34 | 74159889.19 | 85174823.45 | 69990265.28 | 108026332.75 | 112384351.92
+ Important issues liv |            138504 | Fairview | Williamson County | TN      | United States | ORIENTAL,BOXBUNDLES | 2001 | 46926924.33 | 54388964.71 | 58826096.62 | 57663841.59 | 54898206.05 | 48358537.28 | 59136286.15 | 109509118.90 | 130377869.92 | 105084440.19 | 170627065.40 | 193663331.82 | 338.812773132905909103636945 | 392.688765017616819972710585 | 424.724893288280483245211158 | 416.333402573210882130710000 | 396.365491610350603850486540 | 349.149030208513833736740000 | 426.964464203199907431020000 | 790.656723993530872737126404 | 941.329275111188123478150000 |     758.71050792756887903115 |    1231.92879194824698242246 | 1398.250821781320395679060000 | 33954546.31 | 35271498.50 | 36933685.84 | 41319761.56 | 38979421.98 | 32620591.17 | 36887445.00 | 66611061.32 | 76488046.90 | 72175555.97 | 108245611.60 | 120243471.75
+                      |                   | Fairview | Williamson County | TN      | United States | ORIENTAL,BOXBUNDLES | 2001 | 58503842.11 | 47269974.34 | 46476762.34 | 62432496.76 | 43165242.40 | 63249834.37 | 49404979.84 | 138123590.72 | 115498898.31 | 119055621.32 | 184615125.74 | 186033195.92 |                            0 |                            0 |                            0 |                            0 |                            0 |                            0 |                            0 |                            0 |                            0 |                            0 |                            0 |                             0 | 39575477.11 | 27714836.14 | 28326214.03 | 40747115.82 | 29821005.45 | 44743480.37 | 30977130.20 | 89403877.85 | 75064523.49 | 70185525.83 | 122080812.41 | 116710914.13
+(5 rows)
+

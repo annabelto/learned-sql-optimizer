@@ -2,12 +2,15 @@ import os
 import argparse
 import pandas as pd
 import numpy as np
+import subprocess
 
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("-o", "--output_file", required=True)
     parser.add_argument("-ig", "--input_dir_gpt", required=True)
     parser.add_argument("-it", "--input_dir_tpc", required=True)
+    parser.add_argument("-igr", "--dir_gpt_result", required=True)
+    parser.add_argument("-itr", "--dir_tpc_result", required=True)
     parser.add_argument("-d", "--dataset", required=True)
     
     return parser.parse_args()
@@ -34,14 +37,27 @@ def do_performance_check(q_number, in_dir_gpt, in_dir_tpc, database):
     return np.mean(gpt_result), np.mean(tpch_result)
 
 
+def find_invalid(d1, d2):
+    out = subprocess.run(['python3', '/home/excalibur/learned-sql-optimizer/experimentation/scripts/diff_checker.py', \
+                          '-i1', d1, '-i2', d2, '-n', '99'], stdout=subprocess.PIPE)
+    invalid = []
+    for i in out.stdout.decode('utf-8').split(' '):
+        try:
+            invalid.append(int(i))
+        except:
+            continue
+    return invalid
+
 def main():
     args = parse_args()
     
     # Appropriately build out the timings list
     result = []
-    for i in range(1, 100):
+    invalid = find_invalid(args.dir_gpt_result, args.dir_tpc_result)
+    for i in range(1, 99):
         print("Running query {}...".format(i))
-        if i in [1, 4, 11, 74]: continue
+        if i in invalid or i in [1, 11, 4, 74]:
+            continue
         gpt, tpc = do_performance_check(i, args.input_dir_gpt, args.input_dir_tpc, args.dataset)
         result.append(
             {

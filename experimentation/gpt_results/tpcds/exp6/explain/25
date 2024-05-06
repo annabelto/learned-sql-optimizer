@@ -1,0 +1,44 @@
+                                                                                 QUERY PLAN                                                                                  
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=9916.20..9918.24 rows=1 width=237)
+   ->  GroupAggregate  (cost=9916.20..9918.24 rows=1 width=237)
+         Group Key: item.i_item_id, item.i_item_desc, store.s_store_id, store.s_store_name
+         ->  Nested Loop  (cost=9916.20..9918.21 rows=1 width=159)
+               ->  Nested Loop  (cost=9915.91..9917.89 rows=1 width=163)
+                     Join Filter: (item.i_item_sk = catalog_sales.cs_item_sk)
+                     ->  Nested Loop  (cost=9915.48..9915.63 rows=1 width=173)
+                           ->  Gather Merge  (cost=9915.19..9915.31 rows=1 width=177)
+                                 Workers Planned: 2
+                                 ->  Sort  (cost=8915.17..8915.17 rows=1 width=177)
+                                       Sort Key: item.i_item_id, item.i_item_desc, store.s_store_id, store.s_store_name
+                                       ->  Nested Loop  (cost=2159.40..8915.16 rows=1 width=177)
+                                             ->  Nested Loop  (cost=2159.27..8915.00 rows=1 width=159)
+                                                   ->  Nested Loop  (cost=2158.98..8914.70 rows=1 width=36)
+                                                         ->  Parallel Hash Join  (cost=2158.55..8462.02 rows=339 width=18)
+                                                               Hash Cond: (store_returns.sr_returned_date_sk = d2.d_date_sk)
+                                                               ->  Parallel Seq Scan on store_returns  (cost=0.00..5988.98 rows=119798 width=22)
+                                                               ->  Parallel Hash  (cost=2156.97..2156.97 rows=126 width=4)
+                                                                     ->  Parallel Seq Scan on date_dim d2  (cost=0.00..2156.97 rows=126 width=4)
+                                                                           Filter: ((d_moy >= 4) AND (d_moy <= 10) AND (d_year = 1999))
+                                                         ->  Index Scan using store_sales_pkey on store_sales  (cost=0.43..1.33 rows=1 width=26)
+                                                               Index Cond: ((ss_item_sk = store_returns.sr_item_sk) AND (ss_ticket_number = store_returns.sr_ticket_number))
+                                                               Filter: (store_returns.sr_customer_sk = ss_customer_sk)
+                                                   ->  Index Scan using item_pkey on item  (cost=0.29..0.31 rows=1 width=123)
+                                                         Index Cond: (i_item_sk = store_sales.ss_item_sk)
+                                             ->  Index Scan using store_pkey on store  (cost=0.14..0.15 rows=1 width=26)
+                                                   Index Cond: (s_store_sk = store_sales.ss_store_sk)
+                           ->  Index Scan using date_dim_pkey on date_dim d1  (cost=0.29..0.32 rows=1 width=4)
+                                 Index Cond: (d_date_sk = store_sales.ss_sold_date_sk)
+                                 Filter: ((d_moy = 4) AND (d_year = 1999))
+                     ->  Index Scan using catalog_sales_pkey on catalog_sales  (cost=0.43..2.25 rows=1 width=18)
+                           Index Cond: (cs_item_sk = store_sales.ss_item_sk)
+                           Filter: (store_sales.ss_customer_sk = cs_bill_customer_sk)
+               ->  Index Scan using date_dim_pkey on date_dim d3  (cost=0.29..0.32 rows=1 width=4)
+                     Index Cond: (d_date_sk = catalog_sales.cs_sold_date_sk)
+                     Filter: ((d_moy >= 4) AND (d_moy <= 10) AND (d_year = 1999))
+(36 rows)
+
+ i_item_id | i_item_desc | s_store_id | s_store_name | store_sales_profit | store_returns_loss | catalog_sales_profit 
+-----------+-------------+------------+--------------+--------------------+--------------------+----------------------
+(0 rows)
+

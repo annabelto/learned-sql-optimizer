@@ -1,0 +1,32 @@
+                                                                           QUERY PLAN                                                                           
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Finalize GroupAggregate  (cost=139714.04..139715.31 rows=5 width=24)
+   Group Key: orders.o_orderpriority
+   ->  Gather Merge  (cost=139714.04..139715.21 rows=10 width=24)
+         Workers Planned: 2
+         ->  Sort  (cost=138714.02..138714.03 rows=5 width=24)
+               Sort Key: orders.o_orderpriority
+               ->  Partial HashAggregate  (cost=138713.91..138713.96 rows=5 width=24)
+                     Group Key: orders.o_orderpriority
+                     ->  Nested Loop  (cost=793.55..138554.35 rows=31913 width=16)
+                           ->  Parallel Bitmap Heap Scan on orders  (cost=793.12..27247.07 rows=23930 width=20)
+                                 Recheck Cond: ((o_orderdate >= '1996-01-01'::date) AND (o_orderdate < '1996-04-01 00:00:00'::timestamp without time zone))
+                                 ->  Bitmap Index Scan on idx_orders_orderdate  (cost=0.00..778.76 rows=57433 width=0)
+                                       Index Cond: ((o_orderdate >= '1996-01-01'::date) AND (o_orderdate < '1996-04-01 00:00:00'::timestamp without time zone))
+                           ->  Index Scan using idx_lineitem_orderkey on lineitem  (cost=0.43..4.60 rows=5 width=4)
+                                 Index Cond: (l_orderkey = orders.o_orderkey)
+                                 Filter: (l_commitdate < l_receiptdate)
+ JIT:
+   Functions: 13
+   Options: Inlining false, Optimization false, Expressions true, Deforming true
+(19 rows)
+
+ o_orderpriority | order_count 
+-----------------+-------------
+ 1-URGENT        |       29077
+ 2-HIGH          |       28408
+ 3-MEDIUM        |       28069
+ 4-NOT SPECIFIED |       28891
+ 5-LOW           |       28276
+(5 rows)
+

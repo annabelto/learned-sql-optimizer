@@ -1,0 +1,113 @@
+ERROR:  syntax error at or near "explain"
+LINE 24: explain select d_week_seq1,
+         ^
+ERROR:  syntax error at or near "explain"
+LINE 112: explain select 
+          ^
+ERROR:  syntax error at or near "explain"
+LINE 12: explain select a.ca_state AS state, COUNT(*) AS cnt
+         ^
+ERROR:  syntax error at or near "explain"
+LINE 17: explain select
+         ^
+ERROR:  syntax error at or near "explain"
+LINE 43: explain select channel, i_brand_id, i_class_id, i_category_i...
+         ^
+ERROR:  syntax error at or near "explain"
+LINE 44: explain select 
+         ^
+ERROR:  syntax error at or near "explain"
+LINE 30: explain select 
+         ^
+ERROR:  relation "ssales" does not exist
+LINE 7:     ssales
+            ^
+ERROR:  relation "ssales" does not exist
+LINE 7:     ssales
+            ^
+ERROR:  syntax error at or near "explain"
+LINE 17: explain select 
+         ^
+ERROR:  syntax error at or near "explain"
+LINE 31: explain select 
+         ^
+ERROR:  syntax error at or near "explain"
+LINE 37: explain select i_manufact_id, SUM(total_sales) AS total_sale...
+         ^
+ERROR:  syntax error at or near "explain"
+LINE 29: explain select
+         ^
+ERROR:  syntax error at or near "explain"
+LINE 17: explain select 
+         ^
+ERROR:  syntax error at or near "explain"
+LINE 54: explain select 
+         ^
+ERROR:  column "cr_return_amt" does not exist
+LINE 27:         WHERE cr_return_amt > 10000 AND cs_net_profit > 1 AN...
+                       ^
+HINT:  Perhaps you meant to reference the column "cr.cr_return_amount" or the column "cr.cr_return_tax".
+ERROR:  column "cr_return_amt" does not exist
+LINE 27:         WHERE cr_return_amt > 10000 AND cs_net_profit > 1 AN...
+                       ^
+HINT:  Perhaps you meant to reference the column "cr.cr_return_amount" or the column "cr.cr_return_tax".
+ERROR:  syntax error at or near "explain"
+LINE 33: explain select 
+         ^
+ERROR:  syntax error at or near "explain"
+LINE 38: explain select segment, COUNT(*) AS num_customers, segment *...
+         ^
+ERROR:  syntax error at or near "explain"
+LINE 36: explain select i_item_id, SUM(total_sales) AS total_sales
+         ^
+ERROR:  syntax error at or near "explain"
+LINE 45: explain select 
+         ^
+ERROR:  syntax error at or near "explain"
+LINE 33: explain select ss_items.item_id,
+         ^
+ERROR:  syntax error at or near "explain"
+LINE 19: explain select 
+         ^
+ERROR:  syntax error at or near "explain"
+LINE 36: explain select i_item_id, SUM(total_sales) AS total_sales
+         ^
+ERROR:  syntax error at or near "explain"
+LINE 37: explain select 
+         ^
+ERROR:  syntax error at or near "explain"
+LINE 79: explain select 
+         ^
+ERROR:  syntax error at or near "explain"
+LINE 24: explain select 
+         ^
+ERROR:  syntax error at or near "explain"
+LINE 22: explain select i_brand_id AS brand_id, i_brand AS brand, t_h...
+         ^
+ERROR:  syntax error at or near "explain"
+LINE 55: explain select 
+         ^
+ERROR:  syntax error at or near "explain"
+LINE 55: explain select channel, 
+         ^
+ERROR:  syntax error at or near "explain"
+LINE 43: explain select 
+         ^
+ERROR:  syntax error at or near "explain"
+LINE 61: explain select 
+         ^
+ERROR:  syntax error at or near "explain"
+LINE 23: explain select 
+         ^
+ERROR:  syntax error at or near "explain"
+LINE 31: explain select
+         ^
+ERROR:  syntax error at or near "explain"
+LINE 21: explain select
+         ^
+ERROR:  syntax error at or near "explain"
+LINE 7: explain select 
+        ^
+ERROR:  syntax error at or near "explain"
+LINE 13: explain select
+         ^

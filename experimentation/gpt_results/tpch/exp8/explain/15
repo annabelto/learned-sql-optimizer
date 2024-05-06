@@ -1,0 +1,7 @@
+CREATE VIEW
+ s_suppkey |          s_name           |           s_address           |     s_phone     | total_revenue 
+-----------+---------------------------+-------------------------------+-----------------+---------------
+       493 | Supplier#000000493        | 7tdI3AtlDll57sj5K48WLX j5RDbc | 21-252-702-2543 |  1779637.1723
+(1 row)
+
+DROP VIEW

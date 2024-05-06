@@ -1,0 +1,3 @@
+ERROR:  missing FROM-clause entry for table "n2"
+LINE 13: ...pplier ON s_suppkey = l_suppkey AND s_nationkey = n2.n_natio...
+                                                              ^

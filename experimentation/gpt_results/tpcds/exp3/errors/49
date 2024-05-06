@@ -1,0 +1,4 @@
+ERROR:  column "cr_return_amt" does not exist
+LINE 27:         WHERE cr_return_amt > 10000 AND cs_net_profit > 1 AN...
+                       ^
+HINT:  Perhaps you meant to reference the column "cr.cr_return_amount" or the column "cr.cr_return_tax".

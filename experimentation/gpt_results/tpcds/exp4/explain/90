@@ -1,0 +1,35 @@
+                                                                                                                  QUERY PLAN                                                                                                                  
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=24127.58..24127.63 rows=20 width=40)
+   ->  Sort  (cost=24127.58..24127.63 rows=20 width=40)
+         Sort Key: (((sum(CASE WHEN ((time_dim.t_hour >= 12) AND (time_dim.t_hour <= 13)) THEN 1 ELSE 0 END))::numeric(15,4) / (sum(CASE WHEN ((time_dim.t_hour >= 14) AND (time_dim.t_hour <= 15)) THEN 1 ELSE 0 END))::numeric(15,4))) DESC
+         ->  Finalize GroupAggregate  (cost=24117.80..24127.15 rows=20 width=40)
+               Group Key: household_demographics.hd_dep_count, web_page.wp_char_count
+               ->  Gather Merge  (cost=24117.80..24126.30 rows=40 width=24)
+                     Workers Planned: 2
+                     ->  Partial GroupAggregate  (cost=23117.77..23121.66 rows=20 width=24)
+                           Group Key: household_demographics.hd_dep_count, web_page.wp_char_count
+                           ->  Sort  (cost=23117.77..23118.18 rows=164 width=12)
+                                 Sort Key: web_page.wp_char_count
+                                 ->  Nested Loop  (cost=155.22..23111.74 rows=164 width=12)
+                                       ->  Hash Join  (cost=154.93..22787.97 rows=999 width=12)
+                                             Hash Cond: (web_sales.ws_ship_hdemo_sk = household_demographics.hd_demo_sk)
+                                             ->  Hash Join  (cost=2.92..22609.74 rows=9988 width=12)
+                                                   Hash Cond: (web_sales.ws_web_page_sk = web_page.wp_web_page_sk)
+                                                   ->  Parallel Seq Scan on web_sales  (cost=0.00..21764.43 rows=299743 width=12)
+                                                   ->  Hash  (cost=2.90..2.90 rows=2 width=8)
+                                                         ->  Seq Scan on web_page  (cost=0.00..2.90 rows=2 width=8)
+                                                               Filter: ((wp_char_count >= 5000) AND (wp_char_count <= 5200))
+                                             ->  Hash  (cost=143.00..143.00 rows=720 width=8)
+                                                   ->  Seq Scan on household_demographics  (cost=0.00..143.00 rows=720 width=8)
+                                                         Filter: (hd_dep_count = 6)
+                                       ->  Index Scan using time_dim_pkey on time_dim  (cost=0.29..0.32 rows=1 width=8)
+                                             Index Cond: (t_time_sk = web_sales.ws_sold_time_sk)
+                                             Filter: ((t_hour >= 12) AND (t_hour <= 15))
+(26 rows)
+
+    am_pm_ratio     
+--------------------
+ 1.9100000000000000
+(1 row)
+

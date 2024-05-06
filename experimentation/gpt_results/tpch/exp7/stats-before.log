@@ -1,0 +1,10 @@
+ checkpoints_timed | checkpoints_req | checkpoint_write_time | checkpoint_sync_time | buffers_checkpoint | buffers_clean | maxwritten_clean | buffers_backend | buffers_backend_fsync | buffers_alloc |          stats_reset          
+-------------------+-----------------+-----------------------+----------------------+--------------------+---------------+------------------+-----------------+-----------------------+---------------+-------------------------------
+               210 |               1 |                  3026 |                   18 |                 30 |            13 |                0 |             455 |                     0 |      64139849 | 2024-05-02 11:58:24.116717-05
+(1 row)
+
+ datid | datname | numbackends | xact_commit | xact_rollback | blks_read | blks_hit | tup_returned | tup_fetched | tup_inserted | tup_updated | tup_deleted | conflicts | temp_files | temp_bytes | deadlocks | checksum_failures | checksum_last_failure | blk_read_time | blk_write_time | session_time | active_time | idle_in_transaction_time | sessions | sessions_abandoned | sessions_fatal | sessions_killed |          stats_reset          
+-------+---------+-------------+-------------+---------------+-----------+----------+--------------+-------------+--------------+-------------+-------------+-----------+------------+------------+-----------+-------------------+-----------------------+---------------+----------------+--------------+-------------+--------------------------+----------+--------------------+----------------+-----------------+-------------------------------
+ 16427 | tpch    |           0 |         381 |             1 |   4799353 |  4211541 |     77251376 |    82286202 |          240 |          16 |         240 |         0 |        341 |  585519000 |         0 |                   |                       |             0 |              0 |     19005.34 |   18787.834 |                        0 |       40 |                  0 |              0 |               0 | 2024-05-04 22:39:50.967203-05
+(1 row)
+

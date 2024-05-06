@@ -1,0 +1,43 @@
+                                                    QUERY PLAN                                                    
+------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=8044.35..8044.36 rows=1 width=32)
+   InitPlan 1 (returns $3)
+     ->  Aggregate  (cost=4062.54..4062.55 rows=1 width=32)
+           ->  Gather  (cost=1005.06..4062.53 rows=1 width=6)
+                 Workers Planned: 1
+                 ->  Nested Loop  (cost=5.06..3062.43 rows=1 width=6)
+                       ->  Nested Loop  (cost=4.77..2940.63 rows=376 width=10)
+                             ->  Parallel Seq Scan on item i2  (cost=0.00..1362.35 rows=9 width=4)
+                                   Filter: (i_manufact_id = 714)
+                             ->  Bitmap Heap Scan on web_sales ws2  (cost=4.77..174.92 rows=44 width=14)
+                                   Recheck Cond: (ws_item_sk = i2.i_item_sk)
+                                   ->  Bitmap Index Scan on web_sales_pkey  (cost=0.00..4.75 rows=44 width=0)
+                                         Index Cond: (ws_item_sk = i2.i_item_sk)
+                       ->  Index Scan using date_dim_pkey on date_dim d2  (cost=0.29..0.32 rows=1 width=4)
+                             Index Cond: (d_date_sk = ws2.ws_sold_date_sk)
+                             Filter: ((d_date >= '2000-02-01'::date) AND (d_date <= '2000-05-01'::date))
+   ->  Sort  (cost=3981.80..3981.81 rows=1 width=32)
+         Sort Key: (sum(web_sales.ws_ext_discount_amt))
+         ->  Aggregate  (cost=3981.78..3981.79 rows=1 width=32)
+               ->  Gather  (cost=1005.05..3981.78 rows=1 width=6)
+                     Workers Planned: 1
+                     Params Evaluated: $3
+                     ->  Nested Loop  (cost=5.05..2981.68 rows=1 width=6)
+                           ->  Nested Loop  (cost=4.76..2938.95 rows=125 width=10)
+                                 ->  Parallel Seq Scan on item  (cost=0.00..1362.35 rows=9 width=4)
+                                       Filter: (i_manufact_id = 714)
+                                 ->  Bitmap Heap Scan on web_sales  (cost=4.76..175.03 rows=15 width=14)
+                                       Recheck Cond: (ws_item_sk = item.i_item_sk)
+                                       Filter: (ws_ext_discount_amt > $3)
+                                       ->  Bitmap Index Scan on web_sales_pkey  (cost=0.00..4.75 rows=44 width=0)
+                                             Index Cond: (ws_item_sk = item.i_item_sk)
+                           ->  Index Scan using date_dim_pkey on date_dim  (cost=0.29..0.34 rows=1 width=4)
+                                 Index Cond: (d_date_sk = web_sales.ws_sold_date_sk)
+                                 Filter: ((d_date >= '2000-02-01'::date) AND (d_date <= '2000-05-01'::date))
+(34 rows)
+
+ Excess Discount Amount 
+------------------------
+                       
+(1 row)
+

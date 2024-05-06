@@ -1,0 +1,37 @@
+                                                                        QUERY PLAN                                                                        
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=47862.93..47862.94 rows=1 width=32)
+   InitPlan 1 (returns $2)
+     ->  Finalize Aggregate  (cost=42338.98..42339.00 rows=1 width=32)
+           ->  Gather  (cost=42338.87..42338.98 rows=1 width=32)
+                 Workers Planned: 1
+                 ->  Partial Aggregate  (cost=41338.87..41338.88 rows=1 width=32)
+                       ->  Nested Loop  (cost=0.43..41336.44 rows=970 width=6)
+                             ->  Parallel Seq Scan on date_dim date_dim_1  (cost=0.00..2049.55 rows=49 width=4)
+                                   Filter: ((d_date >= '2001-03-09'::date) AND (d_date <= '2001-06-07'::date))
+                             ->  Index Scan using idx_catalog_sales_date_customer on catalog_sales catalog_sales_1  (cost=0.43..793.93 rows=784 width=10)
+                                   Index Cond: (cs_sold_date_sk = date_dim_1.d_date_sk)
+                                   Filter: (cs_item_sk IS NOT NULL)
+   ->  Aggregate  (cost=5523.94..5523.95 rows=1 width=32)
+         ->  Gather  (cost=1005.39..5523.93 rows=1 width=6)
+               Workers Planned: 1
+               Params Evaluated: $2
+               ->  Nested Loop  (cost=5.39..4523.83 rows=1 width=6)
+                     ->  Nested Loop  (cost=5.09..4441.41 rows=251 width=10)
+                           ->  Parallel Seq Scan on item  (cost=0.00..1362.35 rows=9 width=4)
+                                 Filter: (i_manufact_id = 722)
+                           ->  Bitmap Heap Scan on catalog_sales  (cost=5.09..341.83 rows=29 width=14)
+                                 Recheck Cond: (cs_item_sk = item.i_item_sk)
+                                 Filter: (cs_ext_discount_amt > $2)
+                                 ->  Bitmap Index Scan on catalog_sales_pkey  (cost=0.00..5.09 rows=88 width=0)
+                                       Index Cond: (cs_item_sk = item.i_item_sk)
+                     ->  Index Scan using date_dim_pkey on date_dim  (cost=0.29..0.33 rows=1 width=4)
+                           Index Cond: (d_date_sk = catalog_sales.cs_sold_date_sk)
+                           Filter: ((d_date >= '2001-03-09'::date) AND (d_date <= '2001-06-07'::date))
+(28 rows)
+
+ excess discount amount 
+------------------------
+               13264.08
+(1 row)
+

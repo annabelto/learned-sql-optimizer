@@ -1,0 +1,60 @@
+                                                                                                       QUERY PLAN                                                                                                       
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=141776.87..141776.88 rows=3 width=97)
+   ->  Sort  (cost=141776.87..141776.88 rows=3 width=97)
+         Sort Key: sub.lochierarchy DESC, (CASE WHEN (sub.lochierarchy = 0) THEN sub.s_state ELSE NULL::bpchar END), sub.rank_within_parent
+         ->  Subquery Scan on sub  (cost=141776.70..141776.84 rows=3 width=97)
+               ->  WindowAgg  (cost=141776.70..141776.81 rows=3 width=97)
+                     ->  Sort  (cost=141776.70..141776.71 rows=3 width=89)
+                           Sort Key: ((GROUPING(store.s_state) + GROUPING(store.s_county))), (CASE WHEN (GROUPING(store.s_county) = 0) THEN store.s_state ELSE NULL::bpchar END), (sum(store_sales.ss_net_profit)) DESC
+                           ->  MixedAggregate  (cost=73331.68..141776.68 rows=3 width=89)
+                                 Hash Key: store.s_state, store.s_county
+                                 Hash Key: store.s_state
+                                 Group Key: ()
+                                 ->  Nested Loop  (cost=73331.68..141591.13 rows=12365 width=27)
+                                       Join Filter: (store.s_state = store_1.s_state)
+                                       ->  Limit  (cost=70278.32..70278.32 rows=1 width=35)
+                                             ->  Sort  (cost=70278.32..70278.32 rows=1 width=35)
+                                                   Sort Key: (sum(store_sales_1.ss_net_profit)) DESC
+                                                   ->  Finalize GroupAggregate  (cost=70239.40..70278.31 rows=1 width=35)
+                                                         Group Key: store_1.s_state
+                                                         ->  Gather Merge  (cost=70239.40..70278.28 rows=2 width=35)
+                                                               Workers Planned: 2
+                                                               ->  Partial GroupAggregate  (cost=69239.38..69278.03 rows=1 width=35)
+                                                                     Group Key: store_1.s_state
+                                                                     ->  Sort  (cost=69239.38..69252.26 rows=5152 width=9)
+                                                                           Sort Key: store_1.s_state
+                                                                           ->  Hash Join  (cost=2053.36..68921.73 rows=5152 width=9)
+                                                                                 Hash Cond: (store_sales_1.ss_store_sk = store_1.s_store_sk)
+                                                                                 ->  Parallel Hash Join  (cost=2052.09..68901.50 rows=5405 width=10)
+                                                                                       Hash Cond: (store_sales_1.ss_sold_date_sk = date_dim.d_date_sk)
+                                                                                       ->  Parallel Seq Scan on store_sales store_sales_1  (cost=0.00..63698.56 rows=1200256 width=14)
+                                                                                       ->  Parallel Hash  (cost=2049.55..2049.55 rows=203 width=4)
+                                                                                             ->  Parallel Seq Scan on date_dim  (cost=0.00..2049.55 rows=203 width=4)
+                                                                                                   Filter: ((d_month_seq >= 1220) AND (d_month_seq <= 1231))
+                                                                                 ->  Hash  (cost=1.12..1.12 rows=12 width=7)
+                                                                                       ->  Seq Scan on store store_1  (cost=0.00..1.12 rows=12 width=7)
+                                       ->  Gather  (cost=3053.36..71158.23 rows=12365 width=27)
+                                             Workers Planned: 2
+                                             ->  Hash Join  (cost=2053.36..68921.73 rows=5152 width=27)
+                                                   Hash Cond: (store_sales.ss_store_sk = store.s_store_sk)
+                                                   ->  Parallel Hash Join  (cost=2052.09..68901.50 rows=5405 width=10)
+                                                         Hash Cond: (store_sales.ss_sold_date_sk = d1.d_date_sk)
+                                                         ->  Parallel Seq Scan on store_sales  (cost=0.00..63698.56 rows=1200256 width=14)
+                                                         ->  Parallel Hash  (cost=2049.55..2049.55 rows=203 width=4)
+                                                               ->  Parallel Seq Scan on date_dim d1  (cost=0.00..2049.55 rows=203 width=4)
+                                                                     Filter: ((d_month_seq >= 1220) AND (d_month_seq <= 1231))
+                                                   ->  Hash  (cost=1.12..1.12 rows=12 width=25)
+                                                         ->  Seq Scan on store  (cost=0.00..1.12 rows=12 width=25)
+ JIT:
+   Functions: 60
+   Options: Inlining false, Optimization false, Expressions true, Deforming true
+(49 rows)
+
+   total_sum   | s_state |     s_county      | lochierarchy | rank_within_parent 
+---------------+---------+-------------------+--------------+--------------------
+ -436278965.56 |         |                   |            2 |                  1
+ -436278965.56 | TN      |                   |            1 |                  1
+ -436278965.56 | TN      | Williamson County |            0 |                  1
+(3 rows)
+
