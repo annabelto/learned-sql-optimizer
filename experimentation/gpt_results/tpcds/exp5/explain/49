@@ -1,0 +1,118 @@
+                                                                                         QUERY PLAN                                                                                         
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=30496.88..30496.89 rows=3 width=84)
+   ->  Sort  (cost=30496.88..30496.89 rows=3 width=84)
+         Sort Key: "*SELECT* 1".channel, "*SELECT* 1".return_rank, "*SELECT* 1".currency_rank, "*SELECT* 1".item
+         ->  Append  (cost=5944.65..30496.86 rows=3 width=84)
+               ->  Subquery Scan on "*SELECT* 1"  (cost=5944.65..5944.70 rows=1 width=84)
+                     Filter: (("*SELECT* 1".return_rank <= 10) OR ("*SELECT* 1".currency_rank <= 10))
+                     ->  WindowAgg  (cost=5944.65..5944.69 rows=1 width=116)
+                           ->  Sort  (cost=5944.65..5944.65 rows=1 width=76)
+                                 Sort Key: (((sum(COALESCE(wr.wr_return_quantity, 0)))::numeric(15,4) / (sum(COALESCE(ws.ws_quantity, 0)))::numeric(15,4)))
+                                 ->  WindowAgg  (cost=5944.60..5944.64 rows=1 width=76)
+                                       ->  Sort  (cost=5944.60..5944.60 rows=1 width=68)
+                                             Sort Key: (((sum(COALESCE(wr.wr_return_amt, '0'::numeric)))::numeric(15,4) / (sum(COALESCE(ws.ws_net_paid, '0'::numeric)))::numeric(15,4)))
+                                             ->  GroupAggregate  (cost=5944.54..5944.59 rows=1 width=68)
+                                                   Group Key: ws.ws_item_sk
+                                                   ->  Sort  (cost=5944.54..5944.54 rows=1 width=24)
+                                                         Sort Key: ws.ws_item_sk
+                                                         ->  Nested Loop  (cost=1000.72..5944.53 rows=1 width=24)
+                                                               ->  Gather  (cost=1000.42..5944.19 rows=1 width=28)
+                                                                     Workers Planned: 1
+                                                                     ->  Nested Loop  (cost=0.42..4944.09 rows=1 width=28)
+                                                                           ->  Parallel Seq Scan on web_returns wr  (cost=0.00..1854.67 rows=390 width=18)
+                                                                                 Filter: (wr_return_amt > '10000'::numeric)
+                                                                           ->  Index Scan using web_sales_pkey on web_sales ws  (cost=0.42..7.92 rows=1 width=22)
+                                                                                 Index Cond: ((ws_item_sk = wr.wr_item_sk) AND (ws_order_number = wr.wr_order_number))
+                                                                                 Filter: ((ws_net_profit > '1'::numeric) AND (ws_net_paid > '0'::numeric) AND (ws_quantity > 0))
+                                                               ->  Index Scan using date_dim_pkey on date_dim  (cost=0.29..0.34 rows=1 width=4)
+                                                                     Index Cond: (d_date_sk = ws.ws_sold_date_sk)
+                                                                     Filter: ((d_year = 1998) AND (d_moy = 11))
+               ->  Subquery Scan on "*SELECT* 2"  (cost=11179.76..11179.82 rows=1 width=84)
+                     Filter: (("*SELECT* 2".return_rank <= 10) OR ("*SELECT* 2".currency_rank <= 10))
+                     ->  WindowAgg  (cost=11179.76..11179.80 rows=1 width=116)
+                           ->  Sort  (cost=11179.76..11179.77 rows=1 width=76)
+                                 Sort Key: (((sum(COALESCE(cr.cr_return_quantity, 0)))::numeric(15,4) / (sum(COALESCE(cs.cs_quantity, 0)))::numeric(15,4)))
+                                 ->  WindowAgg  (cost=11179.71..11179.75 rows=1 width=76)
+                                       ->  Sort  (cost=11179.71..11179.72 rows=1 width=68)
+                                             Sort Key: (((sum(COALESCE(cr.cr_return_amount, '0'::numeric)))::numeric(15,4) / (sum(COALESCE(cs.cs_net_paid, '0'::numeric)))::numeric(15,4)))
+                                             ->  GroupAggregate  (cost=11179.65..11179.70 rows=1 width=68)
+                                                   Group Key: cs.cs_item_sk
+                                                   ->  Sort  (cost=11179.65..11179.66 rows=1 width=24)
+                                                         Sort Key: cs.cs_item_sk
+                                                         ->  Nested Loop  (cost=1000.72..11179.64 rows=1 width=24)
+                                                               ->  Gather  (cost=1000.43..11179.31 rows=1 width=28)
+                                                                     Workers Planned: 1
+                                                                     ->  Nested Loop  (cost=0.43..10179.21 rows=1 width=28)
+                                                                           ->  Parallel Seq Scan on catalog_returns cr  (cost=0.00..3936.32 rows=784 width=18)
+                                                                                 Filter: (cr_return_amount > '10000'::numeric)
+                                                                           ->  Index Scan using catalog_sales_pkey on catalog_sales cs  (cost=0.43..7.96 rows=1 width=22)
+                                                                                 Index Cond: ((cs_item_sk = cr.cr_item_sk) AND (cs_order_number = cr.cr_order_number))
+                                                                                 Filter: ((cs_net_profit > '1'::numeric) AND (cs_net_paid > '0'::numeric) AND (cs_quantity > 0))
+                                                               ->  Index Scan using date_dim_pkey on date_dim date_dim_1  (cost=0.29..0.33 rows=1 width=4)
+                                                                     Index Cond: (d_date_sk = cs.cs_sold_date_sk)
+                                                                     Filter: ((d_year = 1998) AND (d_moy = 11))
+               ->  Subquery Scan on "*SELECT* 3"  (cost=13372.27..13372.32 rows=1 width=84)
+                     Filter: (("*SELECT* 3".return_rank <= 10) OR ("*SELECT* 3".currency_rank <= 10))
+                     ->  WindowAgg  (cost=13372.27..13372.31 rows=1 width=116)
+                           ->  Sort  (cost=13372.27..13372.27 rows=1 width=76)
+                                 Sort Key: (((sum(COALESCE(sr.sr_return_quantity, 0)))::numeric(15,4) / (sum(COALESCE(sts.ss_quantity, 0)))::numeric(15,4)))
+                                 ->  WindowAgg  (cost=13372.22..13372.26 rows=1 width=76)
+                                       ->  Sort  (cost=13372.22..13372.22 rows=1 width=68)
+                                             Sort Key: (((sum(COALESCE(sr.sr_return_amt, '0'::numeric)))::numeric(15,4) / (sum(COALESCE(sts.ss_net_paid, '0'::numeric)))::numeric(15,4)))
+                                             ->  GroupAggregate  (cost=13372.16..13372.21 rows=1 width=68)
+                                                   Group Key: sts.ss_item_sk
+                                                   ->  Sort  (cost=13372.16..13372.16 rows=1 width=24)
+                                                         Sort Key: sts.ss_item_sk
+                                                         ->  Nested Loop  (cost=1000.72..13372.15 rows=1 width=24)
+                                                               ->  Gather  (cost=1000.43..13371.82 rows=1 width=28)
+                                                                     Workers Planned: 2
+                                                                     ->  Nested Loop  (cost=0.43..12371.72 rows=1 width=28)
+                                                                           ->  Parallel Seq Scan on store_returns sr  (cost=0.00..6288.47 rows=752 width=18)
+                                                                                 Filter: (sr_return_amt > '10000'::numeric)
+                                                                           ->  Index Scan using store_sales_pkey on store_sales sts  (cost=0.43..8.09 rows=1 width=22)
+                                                                                 Index Cond: ((ss_item_sk = sr.sr_item_sk) AND (ss_ticket_number = sr.sr_ticket_number))
+                                                                                 Filter: ((ss_net_profit > '1'::numeric) AND (ss_net_paid > '0'::numeric) AND (ss_quantity > 0))
+                                                               ->  Index Scan using date_dim_pkey on date_dim date_dim_2  (cost=0.29..0.32 rows=1 width=4)
+                                                                     Index Cond: (d_date_sk = sts.ss_sold_date_sk)
+                                                                     Filter: ((d_year = 1998) AND (d_moy = 11))
+(76 rows)
+
+ channel | item  |      return_ratio      | return_rank | currency_rank 
+---------+-------+------------------------+-------------+---------------
+ catalog | 16174 | 0.00000000000000000000 |           1 |             1
+ catalog | 13567 | 0.61458333333333333333 |           2 |             2
+ catalog |  5548 | 0.63541666666666666667 |           3 |             3
+ catalog |  3319 | 0.64285714285714285714 |           4 |             4
+ catalog | 15523 | 0.65656565656565656566 |           5 |             5
+ catalog |  9397 | 0.67368421052631578947 |           6 |             6
+ catalog | 11500 | 0.67708333333333333333 |           7 |             7
+ catalog | 13939 | 0.70129870129870129870 |           8 |             8
+ catalog |  8980 | 0.73195876288659793814 |           9 |             9
+ catalog | 10720 | 0.75280898876404494382 |          10 |            10
+ store   |   175 | 0.00000000000000000000 |           1 |            11
+ store   | 12470 | 0.72727272727272727273 |           2 |             1
+ store   | 14168 | 0.74468085106382978723 |           3 |             2
+ store   |  4951 | 0.74698795180722891566 |           4 |             3
+ store   |  1243 | 0.78750000000000000000 |           5 |            17
+ store   |   751 | 0.79545454545454545455 |           6 |             4
+ store   |  3661 | 0.80000000000000000000 |           7 |             5
+ store   | 11221 | 0.83908045977011494253 |           8 |            16
+ store   | 16120 | 0.88297872340425531915 |           9 |             6
+ store   | 16696 | 0.92500000000000000000 |          10 |             7
+ store   | 12212 | 0.92553191489361702128 |          11 |             8
+ store   |  5762 | 0.94623655913978494624 |          12 |             9
+ store   | 11605 | 0.95454545454545454545 |          13 |            10
+ web     |  3614 | 0.54639175257731958763 |           1 |             3
+ web     |  8204 | 0.57831325301204819277 |           2 |             1
+ web     |  1147 | 0.64367816091954022989 |           3 |             2
+ web     |  4000 | 0.67346938775510204082 |           4 |             4
+ web     |  9829 | 0.76086956521739130435 |           5 |             5
+ web     |  3556 | 0.80898876404494382022 |           6 |             6
+ web     | 15106 | 0.81818181818181818182 |           7 |            19
+ web     | 13630 | 0.82500000000000000000 |           8 |             7
+ web     | 10411 | 0.83000000000000000000 |           9 |             8
+ web     |   553 | 0.90243902439024390244 |          10 |             9
+ web     | 17450 | 0.91578947368421052632 |          11 |            10
+(34 rows)
+

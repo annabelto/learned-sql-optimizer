@@ -1,0 +1,10 @@
+ store_only | catalog_only | store_and_catalog 
+------------+--------------+-------------------
+     541140 |       286927 |               161
+(1 row)
+
+ store_only | catalog_only | store_and_catalog 
+------------+--------------+-------------------
+     541140 |       286927 |               161
+(1 row)
+

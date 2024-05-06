@@ -1,0 +1,44 @@
+                                                                                 QUERY PLAN                                                                                  
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=9879.69..9881.75 rows=1 width=434)
+   ->  GroupAggregate  (cost=9879.69..9881.75 rows=1 width=434)
+         Group Key: item.i_item_id, item.i_item_desc, store.s_state
+         ->  Nested Loop  (cost=9879.69..9881.69 rows=1 width=134)
+               ->  Nested Loop  (cost=9879.40..9881.37 rows=1 width=138)
+                     ->  Nested Loop  (cost=9879.10..9881.05 rows=1 width=142)
+                           ->  Gather Merge  (cost=9878.68..9878.80 rows=1 width=154)
+                                 Workers Planned: 2
+                                 ->  Sort  (cost=8878.65..8878.66 rows=1 width=154)
+                                       Sort Key: item.i_item_id, item.i_item_desc, store.s_state
+                                       ->  Nested Loop  (cost=1998.70..8878.64 rows=1 width=154)
+                                             ->  Nested Loop  (cost=1998.42..8878.34 rows=1 width=31)
+                                                   ->  Nested Loop  (cost=1998.28..8878.18 rows=1 width=32)
+                                                         ->  Parallel Hash Join  (cost=1997.85..8301.32 rows=432 width=16)
+                                                               Hash Cond: (store_returns.sr_returned_date_sk = d2.d_date_sk)
+                                                               ->  Parallel Seq Scan on store_returns  (cost=0.00..5988.98 rows=119798 width=20)
+                                                               ->  Parallel Hash  (cost=1995.84..1995.84 rows=161 width=4)
+                                                                     ->  Parallel Seq Scan on date_dim d2  (cost=0.00..1995.84 rows=161 width=4)
+                                                                           Filter: (d_quarter_name = ANY ('{2001Q1,2001Q2,2001Q3}'::bpchar[]))
+                                                         ->  Index Scan using store_sales_pkey on store_sales  (cost=0.43..1.33 rows=1 width=24)
+                                                               Index Cond: ((ss_item_sk = store_returns.sr_item_sk) AND (ss_ticket_number = store_returns.sr_ticket_number))
+                                                               Filter: (store_returns.sr_customer_sk = ss_customer_sk)
+                                                   ->  Index Scan using store_pkey on store  (cost=0.14..0.15 rows=1 width=7)
+                                                         Index Cond: (s_store_sk = store_sales.ss_store_sk)
+                                             ->  Index Scan using item_pkey on item  (cost=0.29..0.31 rows=1 width=123)
+                                                   Index Cond: (i_item_sk = store_sales.ss_item_sk)
+                           ->  Index Scan using catalog_sales_pkey on catalog_sales  (cost=0.43..2.25 rows=1 width=16)
+                                 Index Cond: (cs_item_sk = store_sales.ss_item_sk)
+                                 Filter: (store_sales.ss_customer_sk = cs_bill_customer_sk)
+                     ->  Index Scan using date_dim_pkey on date_dim d1  (cost=0.29..0.31 rows=1 width=4)
+                           Index Cond: (d_date_sk = store_sales.ss_sold_date_sk)
+                           Filter: (d_quarter_name = '2001Q1'::bpchar)
+               ->  Index Scan using date_dim_pkey on date_dim d3  (cost=0.29..0.32 rows=1 width=4)
+                     Index Cond: (d_date_sk = catalog_sales.cs_sold_date_sk)
+                     Filter: (d_quarter_name = ANY ('{2001Q1,2001Q2,2001Q3}'::bpchar[]))
+(35 rows)
+
+    i_item_id     |  i_item_desc   | s_state | store_sales_quantitycount | store_sales_quantityave | store_sales_quantitystdev | store_sales_quantitycov | store_returns_quantitycount | store_returns_quantityave | store_returns_quantitystdev | store_returns_quantitycov | catalog_sales_quantitycount | catalog_sales_quantityave | catalog_sales_quantitystdev | catalog_sales_quantitycov 
+------------------+----------------+---------+---------------------------+-------------------------+---------------------------+-------------------------+-----------------------------+---------------------------+-----------------------------+---------------------------+-----------------------------+---------------------------+-----------------------------+---------------------------
+ AAAAAAAAKPFEAAAA | Recently right | TN      |                         1 |     99.0000000000000000 |                           |                         |                           1 |       66.0000000000000000 |                             |                           |                           1 |       32.0000000000000000 |                             |                          
+(1 row)
+

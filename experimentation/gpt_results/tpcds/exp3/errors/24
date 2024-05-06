@@ -1,0 +1,3 @@
+ERROR:  relation "ssales" does not exist
+LINE 7:     ssales
+            ^

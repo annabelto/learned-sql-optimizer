@@ -1,0 +1,8 @@
+        supp_nation        |        cust_nation        | l_year |    revenue    
+---------------------------+---------------------------+--------+---------------
+ CANADA                    | MOZAMBIQUE                |   1995 | 56107203.6371
+ CANADA                    | MOZAMBIQUE                |   1996 | 56665127.0040
+ MOZAMBIQUE                | CANADA                    |   1995 | 57502458.0129
+ MOZAMBIQUE                | CANADA                    |   1996 | 54163955.0252
+(4 rows)
+

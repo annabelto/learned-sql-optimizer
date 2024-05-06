@@ -1,0 +1,37 @@
+                                                                     QUERY PLAN                                                                      
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=43960.87..43960.88 rows=1 width=32)
+   ->  Aggregate  (cost=43960.87..43960.88 rows=1 width=32)
+         ->  Hash Join  (cost=2455.63..43960.87 rows=1 width=6)
+               Hash Cond: (catalog_sales.cs_item_sk = item.i_item_sk)
+               Join Filter: (catalog_sales.cs_ext_discount_amt > (SubPlan 1))
+               ->  Gather  (cost=1000.43..42501.34 rows=1649 width=10)
+                     Workers Planned: 1
+                     ->  Nested Loop  (cost=0.43..41336.44 rows=970 width=10)
+                           ->  Parallel Seq Scan on date_dim  (cost=0.00..2049.55 rows=49 width=4)
+                                 Filter: ((d_date >= '2001-03-09'::date) AND (d_date <= '2001-06-07 00:00:00'::timestamp without time zone))
+                           ->  Index Scan using idx_catalog_sales_date_customer on catalog_sales  (cost=0.43..793.93 rows=784 width=14)
+                                 Index Cond: (cs_sold_date_sk = date_dim.d_date_sk)
+               ->  Hash  (cost=1455.00..1455.00 rows=16 width=4)
+                     ->  Seq Scan on item  (cost=0.00..1455.00 rows=16 width=4)
+                           Filter: (i_manufact_id = 722)
+               SubPlan 1
+                 ->  Aggregate  (cost=996.41..996.42 rows=1 width=32)
+                       ->  Nested Loop  (cost=5.41..996.41 rows=1 width=6)
+                             ->  Bitmap Heap Scan on catalog_sales catalog_sales_1  (cost=5.11..345.40 rows=88 width=10)
+                                   Recheck Cond: (cs_item_sk = item.i_item_sk)
+                                   ->  Bitmap Index Scan on catalog_sales_pkey  (cost=0.00..5.09 rows=88 width=0)
+                                         Index Cond: (cs_item_sk = item.i_item_sk)
+                             ->  Memoize  (cost=0.30..7.55 rows=1 width=4)
+                                   Cache Key: catalog_sales_1.cs_sold_date_sk
+                                   Cache Mode: logical
+                                   ->  Index Scan using date_dim_pkey on date_dim date_dim_1  (cost=0.29..7.54 rows=1 width=4)
+                                         Index Cond: (d_date_sk = catalog_sales_1.cs_sold_date_sk)
+                                         Filter: ((d_date >= '2001-03-09'::date) AND (d_date <= '2001-06-07 00:00:00'::timestamp without time zone))
+(28 rows)
+
+ excess discount amount 
+------------------------
+               19064.45
+(1 row)
+

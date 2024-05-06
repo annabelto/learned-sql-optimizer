@@ -1,0 +1,40 @@
+                                                                        QUERY PLAN                                                                         
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=27143.64..27143.64 rows=1 width=32)
+   ->  Sort  (cost=27143.64..27143.64 rows=1 width=32)
+         Sort Key: (sum(web_sales.ws_ext_discount_amt))
+         ->  Aggregate  (cost=27143.62..27143.63 rows=1 width=32)
+               ->  Hash Join  (cost=4505.39..27143.61 rows=1 width=6)
+                     Hash Cond: (web_sales.ws_item_sk = item.i_item_sk)
+                     Join Filter: (web_sales.ws_ext_discount_amt > (SubPlan 1))
+                     ->  Gather  (cost=3050.19..25686.19 rows=847 width=10)
+                           Workers Planned: 2
+                           ->  Parallel Hash Join  (cost=2050.19..24601.49 rows=353 width=10)
+                                 Hash Cond: (web_sales.ws_sold_date_sk = date_dim.d_date_sk)
+                                 ->  Parallel Seq Scan on web_sales  (cost=0.00..21764.43 rows=299743 width=14)
+                                 ->  Parallel Hash  (cost=2049.55..2049.55 rows=51 width=4)
+                                       ->  Parallel Seq Scan on date_dim  (cost=0.00..2049.55 rows=51 width=4)
+                                             Filter: ((d_date >= '2000-02-01'::date) AND (d_date <= '2000-05-01 00:00:00'::timestamp without time zone))
+                     ->  Hash  (cost=1455.00..1455.00 rows=16 width=4)
+                           ->  Seq Scan on item  (cost=0.00..1455.00 rows=16 width=4)
+                                 Filter: (i_manufact_id = 714)
+                     SubPlan 1
+                       ->  Aggregate  (cost=518.11..518.13 rows=1 width=32)
+                             ->  Nested Loop  (cost=5.07..518.11 rows=1 width=6)
+                                   ->  Bitmap Heap Scan on web_sales web_sales_1  (cost=4.77..174.92 rows=44 width=10)
+                                         Recheck Cond: (ws_item_sk = item.i_item_sk)
+                                         ->  Bitmap Index Scan on web_sales_pkey  (cost=0.00..4.75 rows=44 width=0)
+                                               Index Cond: (ws_item_sk = item.i_item_sk)
+                                   ->  Memoize  (cost=0.30..7.96 rows=1 width=4)
+                                         Cache Key: web_sales_1.ws_sold_date_sk
+                                         Cache Mode: logical
+                                         ->  Index Scan using date_dim_pkey on date_dim date_dim_1  (cost=0.29..7.95 rows=1 width=4)
+                                               Index Cond: (d_date_sk = web_sales_1.ws_sold_date_sk)
+                                               Filter: ((d_date >= '2000-02-01'::date) AND (d_date <= '2000-05-01 00:00:00'::timestamp without time zone))
+(31 rows)
+
+ Excess Discount Amount 
+------------------------
+                       
+(1 row)
+

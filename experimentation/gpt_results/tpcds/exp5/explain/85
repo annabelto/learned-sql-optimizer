@@ -1,0 +1,51 @@
+                                                                                                                                                                                                                                                                                                                                                     QUERY PLAN                                                                                                                                                                                                                                                                                                                                                      
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=23948.50..23948.51 rows=1 width=229)
+   ->  Sort  (cost=23948.50..23948.51 rows=1 width=229)
+         Sort Key: (substr((reason.r_reason_desc)::text, 1, 20)), (avg(web_sales.ws_quantity)), (avg(web_returns.wr_refunded_cash)), (avg(web_returns.wr_fee))
+         ->  Finalize GroupAggregate  (cost=23948.31..23948.49 rows=1 width=229)
+               Group Key: reason.r_reason_desc
+               ->  Gather Merge  (cost=23948.31..23948.46 rows=1 width=197)
+                     Workers Planned: 1
+                     ->  Partial GroupAggregate  (cost=22948.30..22948.33 rows=1 width=197)
+                           Group Key: reason.r_reason_desc
+                           ->  Sort  (cost=22948.30..22948.31 rows=1 width=117)
+                                 Sort Key: reason.r_reason_desc
+                                 ->  Nested Loop  (cost=1896.43..22948.29 rows=1 width=117)
+                                       Join Filter: ((cd2.cd_marital_status = cd1.cd_marital_status) AND (cd2.cd_education_status = cd1.cd_education_status) AND (((cd1.cd_marital_status = 'D'::bpchar) AND (cd1.cd_education_status = 'Primary'::bpchar) AND (web_sales.ws_sales_price >= 100.00) AND (web_sales.ws_sales_price <= 150.00)) OR ((cd1.cd_marital_status = 'S'::bpchar) AND (cd1.cd_education_status = 'College'::bpchar) AND (web_sales.ws_sales_price >= 50.00) AND (web_sales.ws_sales_price <= 100.00)) OR ((cd1.cd_marital_status = 'U'::bpchar) AND (cd1.cd_education_status = 'Advanced Degree'::bpchar) AND (web_sales.ws_sales_price >= 150.00) AND (web_sales.ws_sales_price <= 200.00))))
+                                       ->  Nested Loop  (cost=1896.00..22946.28 rows=1 width=150)
+                                             ->  Nested Loop  (cost=1895.57..22944.32 rows=1 width=131)
+                                                   ->  Nested Loop  (cost=1895.28..22943.83 rows=1 width=135)
+                                                         ->  Nested Loop  (cost=1895.14..22943.67 rows=1 width=139)
+                                                               Join Filter: (((customer_address.ca_state = ANY ('{NC,TX,IA}'::bpchar[])) AND (web_sales.ws_net_profit >= '100'::numeric) AND (web_sales.ws_net_profit <= '200'::numeric)) OR ((customer_address.ca_state = ANY ('{WI,WV,GA}'::bpchar[])) AND (web_sales.ws_net_profit >= '150'::numeric) AND (web_sales.ws_net_profit <= '300'::numeric)) OR ((customer_address.ca_state = ANY ('{OK,VA,KY}'::bpchar[])) AND (web_sales.ws_net_profit >= '50'::numeric) AND (web_sales.ws_net_profit <= '250'::numeric)))
+                                                               ->  Hash Join  (cost=1894.72..3789.21 rows=11284 width=132)
+                                                                     Hash Cond: (web_returns.wr_reason_sk = reason.r_reason_sk)
+                                                                     ->  Parallel Hash Join  (cost=1892.93..3752.89 rows=11793 width=35)
+                                                                           Hash Cond: (web_returns.wr_refunded_addr_sk = customer_address.ca_address_sk)
+                                                                           ->  Parallel Seq Scan on web_returns  (cost=0.00..1749.14 rows=42214 width=36)
+                                                                           ->  Parallel Hash  (cost=1785.53..1785.53 rows=8592 width=7)
+                                                                                 ->  Parallel Seq Scan on customer_address  (cost=0.00..1785.53 rows=8592 width=7)
+                                                                                       Filter: (((ca_country)::text = 'United States'::text) AND ((ca_state = ANY ('{NC,TX,IA}'::bpchar[])) OR (ca_state = ANY ('{WI,WV,GA}'::bpchar[])) OR (ca_state = ANY ('{OK,VA,KY}'::bpchar[]))))
+                                                                     ->  Hash  (cost=1.35..1.35 rows=35 width=105)
+                                                                           ->  Seq Scan on reason  (cost=0.00..1.35 rows=35 width=105)
+                                                               ->  Index Scan using web_sales_pkey on web_sales  (cost=0.42..1.66 rows=1 width=32)
+                                                                     Index Cond: ((ws_item_sk = web_returns.wr_item_sk) AND (ws_order_number = web_returns.wr_order_number))
+                                                                     Filter: ((((ws_sales_price >= 100.00) AND (ws_sales_price <= 150.00)) OR ((ws_sales_price >= 50.00) AND (ws_sales_price <= 100.00)) OR ((ws_sales_price >= 150.00) AND (ws_sales_price <= 200.00))) AND (((ws_net_profit >= '100'::numeric) AND (ws_net_profit <= '200'::numeric)) OR ((ws_net_profit >= '150'::numeric) AND (ws_net_profit <= '300'::numeric)) OR ((ws_net_profit >= '50'::numeric) AND (ws_net_profit <= '250'::numeric))))
+                                                         ->  Index Only Scan using web_page_pkey on web_page  (cost=0.14..0.16 rows=1 width=4)
+                                                               Index Cond: (wp_web_page_sk = web_sales.ws_web_page_sk)
+                                                   ->  Index Scan using date_dim_pkey on date_dim  (cost=0.29..0.50 rows=1 width=4)
+                                                         Index Cond: (d_date_sk = web_sales.ws_sold_date_sk)
+                                                         Filter: (d_year = 1998)
+                                             ->  Index Scan using customer_demographics_pkey on customer_demographics cd2  (cost=0.43..1.96 rows=1 width=27)
+                                                   Index Cond: (cd_demo_sk = web_returns.wr_returning_cdemo_sk)
+                                       ->  Index Scan using customer_demographics_pkey on customer_demographics cd1  (cost=0.43..1.97 rows=1 width=27)
+                                             Index Cond: (cd_demo_sk = web_returns.wr_refunded_cdemo_sk)
+                                             Filter: (((cd_marital_status = 'D'::bpchar) AND (cd_education_status = 'Primary'::bpchar)) OR ((cd_marital_status = 'S'::bpchar) AND (cd_education_status = 'College'::bpchar)) OR ((cd_marital_status = 'U'::bpchar) AND (cd_education_status = 'Advanced Degree'::bpchar)))
+(41 rows)
+
+        substr        |         avg         |          avg          |         avg         
+----------------------+---------------------+-----------------------+---------------------
+ No service location  | 90.0000000000000000 | 2069.4900000000000000 |  3.1700000000000000
+ Not the product that |  5.0000000000000000 |  156.1600000000000000 | 50.7700000000000000
+(2 rows)
+

@@ -1,0 +1,27 @@
+                                                                                      QUERY PLAN                                                                                      
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=5616.63..5619.83 rows=2 width=125)
+   ->  Group  (cost=5616.63..5619.83 rows=2 width=125)
+         Group Key: item.i_item_id, item.i_item_desc, item.i_current_price
+         ->  Nested Loop  (cost=5616.63..5619.17 rows=88 width=125)
+               ->  Gather Merge  (cost=5616.20..5616.32 rows=1 width=133)
+                     Workers Planned: 1
+                     ->  Sort  (cost=4616.19..4616.19 rows=1 width=133)
+                           Sort Key: item.i_item_id, item.i_item_desc, item.i_current_price
+                           ->  Nested Loop  (cost=0.43..4616.18 rows=1 width=133)
+                                 ->  Parallel Seq Scan on item  (cost=0.00..1441.76 rows=1 width=129)
+                                       Filter: ((i_current_price >= '29'::numeric) AND (i_current_price <= '59'::numeric) AND (i_manufact_id = ANY ('{705,742,777,944}'::integer[])))
+                                 ->  Nested Loop  (cost=0.43..3173.85 rows=56 width=4)
+                                       ->  Seq Scan on date_dim  (cost=0.00..2500.73 rows=56 width=4)
+                                             Filter: ((d_date >= '2002-03-29'::date) AND (d_date <= '2002-05-28 00:00:00'::timestamp without time zone))
+                                       ->  Index Scan using inventory_pkey on inventory  (cost=0.43..12.01 rows=1 width=8)
+                                             Index Cond: ((inv_date_sk = date_dim.d_date_sk) AND (inv_item_sk = item.i_item_sk))
+                                             Filter: ((inv_quantity_on_hand >= 100) AND (inv_quantity_on_hand <= 500))
+               ->  Index Only Scan using catalog_sales_pkey on catalog_sales  (cost=0.43..1.97 rows=88 width=4)
+                     Index Cond: (cs_item_sk = inventory.inv_item_sk)
+(19 rows)
+
+ i_item_id | i_item_desc | i_current_price 
+-----------+-------------+-----------------
+(0 rows)
+

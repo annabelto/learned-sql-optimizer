@@ -1,0 +1,37 @@
+                                                                                     QUERY PLAN                                                                                      
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=9419.15..9419.38 rows=1 width=125)
+   ->  GroupAggregate  (cost=9419.15..9419.38 rows=1 width=125)
+         Group Key: s.s_store_name, s.s_company_id, s.s_street_number, s.s_street_name, s.s_street_type, s.s_suite_number, s.s_city, s.s_county, s.s_state, s.s_zip
+         ->  Nested Loop  (cost=9419.15..9419.29 rows=1 width=93)
+               ->  Gather Merge  (cost=9418.86..9418.98 rows=1 width=93)
+                     Workers Planned: 2
+                     ->  Sort  (cost=8418.84..8418.84 rows=1 width=93)
+                           Sort Key: s.s_store_name, s.s_company_id, s.s_street_number, s.s_street_name, s.s_street_type, s.s_suite_number, s.s_city, s.s_county, s.s_state, s.s_zip
+                           ->  Nested Loop  (cost=2050.34..8418.83 rows=1 width=93)
+                                 ->  Nested Loop  (cost=2050.20..8418.67 rows=1 width=12)
+                                       ->  Parallel Hash Join  (cost=2049.78..8353.24 rows=49 width=16)
+                                             Hash Cond: (sr.sr_returned_date_sk = d2.d_date_sk)
+                                             ->  Parallel Seq Scan on store_returns sr  (cost=0.00..5988.98 rows=119798 width=16)
+                                             ->  Parallel Hash  (cost=2049.55..2049.55 rows=18 width=4)
+                                                   ->  Parallel Seq Scan on date_dim d2  (cost=0.00..2049.55 rows=18 width=4)
+                                                         Filter: ((d_year = 2001) AND (d_moy = 8))
+                                       ->  Index Scan using store_sales_pkey on store_sales ss  (cost=0.43..1.33 rows=1 width=20)
+                                             Index Cond: ((ss_item_sk = sr.sr_item_sk) AND (ss_ticket_number = sr.sr_ticket_number))
+                                             Filter: (sr.sr_customer_sk = ss_customer_sk)
+                                 ->  Index Scan using store_pkey on store s  (cost=0.14..0.15 rows=1 width=89)
+                                       Index Cond: (s_store_sk = ss.ss_store_sk)
+               ->  Index Only Scan using date_dim_pkey on date_dim d1  (cost=0.29..0.31 rows=1 width=4)
+                     Index Cond: (d_date_sk = ss.ss_sold_date_sk)
+(23 rows)
+
+ s_store_name | s_company_id | s_street_number | s_street_name |  s_street_type  | s_suite_number |  s_city  |     s_county      | s_state |   s_zip    | 30 days | 31-60 days | 61-90 days | 91-120 days | >120 days 
+--------------+--------------+-----------------+---------------+-----------------+----------------+----------+-------------------+---------+------------+---------+------------+------------+-------------+-----------
+ able         |            1 | 255             | Sycamore      | Dr.             | Suite 410      | Midway   | Williamson County | TN      | 31904      |      67 |         48 |         61 |          66 |        98
+ ation        |            1 | 811             | Lee           | Circle          | Suite T        | Midway   | Williamson County | TN      | 31904      |      70 |         51 |         50 |          61 |       109
+ bar          |            1 | 175             | 4th           | Court           | Suite C        | Midway   | Williamson County | TN      | 31904      |      96 |         53 |         55 |          76 |        86
+ eing         |            1 | 226             | 12th          | Lane            | Suite D        | Fairview | Williamson County | TN      | 35709      |      69 |         63 |         62 |          63 |       114
+ ese          |            1 | 27              | Lake          | Ln              | Suite 260      | Midway   | Williamson County | TN      | 31904      |      58 |         57 |         55 |          54 |       106
+ ought        |            1 | 767             | Spring        | Wy              | Suite 250      | Midway   | Williamson County | TN      | 31904      |      81 |         63 |         52 |          58 |       103
+(6 rows)
+

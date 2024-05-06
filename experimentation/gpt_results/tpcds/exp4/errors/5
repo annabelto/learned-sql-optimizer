@@ -1,0 +1,4 @@
+ERROR:  column "s_store_id" does not exist
+LINE 3:         s_store_id, 
+                ^
+HINT:  Perhaps you meant to reference the column "store_sales.ss_store_sk" or the column "store_returns.sr_store_sk".

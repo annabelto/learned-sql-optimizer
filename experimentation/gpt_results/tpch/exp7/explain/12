@@ -1,0 +1,12 @@
+ l_shipmode | high_line_count | low_line_count 
+------------+-----------------+----------------
+ RAIL       |            6252 |           9306
+ TRUCK      |            6284 |           9444
+(2 rows)
+
+ l_shipmode | high_line_count | low_line_count 
+------------+-----------------+----------------
+ RAIL       |            6252 |           9306
+ TRUCK      |            6284 |           9444
+(2 rows)
+

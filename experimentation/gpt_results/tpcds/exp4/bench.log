@@ -1,0 +1,193 @@
+2024-05-02 20:14:11 [1714698851] : running TPC-DS benchmark
+2024-05-02 20:14:11 [1714698851] : running queries defined in TPC-DS benchmark
+2024-05-02 20:14:11 [1714698851] :   running query 2
+2024-05-02 20:14:13 [1714698853] :     query 2 finished OK (1 seconds)
+2024-05-02 20:14:13 [1714698853] :   running query 3
+2024-05-02 20:14:14 [1714698854] :     query 3 finished OK (1 seconds)
+2024-05-02 20:14:14 [1714698854] :   running query 5
+2024-05-02 20:14:15 [1714698855] :     query 5 finished OK (1 seconds)
+2024-05-02 20:14:15 [1714698855] :   running query 6
+2024-05-02 20:14:16 [1714698856] :     query 6 finished OK (1 seconds)
+2024-05-02 20:14:16 [1714698856] :   running query 7
+2024-05-02 20:14:17 [1714698857] :     query 7 finished OK (1 seconds)
+2024-05-02 20:14:17 [1714698857] :   running query 8
+2024-05-02 20:14:19 [1714698859] :     query 8 finished OK (1 seconds)
+2024-05-02 20:14:19 [1714698859] :   running query 9
+2024-05-02 20:14:20 [1714698860] :     query 9 finished OK (1 seconds)
+2024-05-02 20:14:20 [1714698860] :   running query 10
+2024-05-02 20:14:27 [1714698867] :     query 10 finished OK (4 seconds)
+2024-05-02 20:14:27 [1714698867] :   running query 12
+2024-05-02 20:14:28 [1714698868] :     query 12 finished OK (1 seconds)
+2024-05-02 20:14:28 [1714698868] :   running query 13
+2024-05-02 20:14:30 [1714698870] :     query 13 finished OK (1 seconds)
+2024-05-02 20:14:30 [1714698870] :   running query 14
+2024-05-02 20:14:33 [1714698873] :     query 14 finished OK (2 seconds)
+2024-05-02 20:14:33 [1714698873] :   running query 15
+2024-05-02 20:14:34 [1714698874] :     query 15 finished OK (1 seconds)
+2024-05-02 20:14:34 [1714698874] :   running query 16
+2024-05-02 20:14:35 [1714698875] :     query 16 finished OK (1 seconds)
+2024-05-02 20:14:35 [1714698875] :   running query 17
+2024-05-02 20:14:39 [1714698879] :     query 17 finished OK (2 seconds)
+2024-05-02 20:14:39 [1714698879] :   running query 18
+2024-05-02 20:14:40 [1714698880] :     query 18 finished OK (1 seconds)
+2024-05-02 20:14:40 [1714698880] :   running query 19
+2024-05-02 20:14:41 [1714698881] :     query 19 finished OK (1 seconds)
+2024-05-02 20:14:41 [1714698881] :   running query 20
+2024-05-02 20:14:42 [1714698882] :     query 20 finished OK (1 seconds)
+2024-05-02 20:14:42 [1714698882] :   running query 21
+2024-05-02 20:14:44 [1714698884] :     query 21 finished OK (1 seconds)
+2024-05-02 20:14:44 [1714698884] :   running query 22
+2024-05-02 20:14:51 [1714698891] :     query 22 finished OK (4 seconds)
+2024-05-02 20:14:51 [1714698891] :   running query 23
+2024-05-02 20:14:55 [1714698895] :     query 23 finished OK (2 seconds)
+2024-05-02 20:14:55 [1714698895] :   running query 24
+2024-05-02 20:14:56 [1714698896] :     query 24 finished OK (1 seconds)
+2024-05-02 20:14:56 [1714698896] :   running query 25
+2024-05-02 20:14:59 [1714698899] :     query 25 finished OK (2 seconds)
+2024-05-02 20:14:59 [1714698899] :   running query 26
+2024-05-02 20:15:00 [1714698900] :     query 26 finished OK (1 seconds)
+2024-05-02 20:15:00 [1714698900] :   running query 27
+2024-05-02 20:15:02 [1714698902] :     query 27 finished OK (1 seconds)
+2024-05-02 20:15:02 [1714698902] :   running query 28
+2024-05-02 20:15:05 [1714698905] :     query 28 finished OK (2 seconds)
+2024-05-02 20:15:05 [1714698905] :   running query 29
+2024-05-02 20:15:07 [1714698907] :     query 29 finished OK (1 seconds)
+2024-05-02 20:15:07 [1714698907] :   running query 30
+2024-05-02 20:15:20 [1714698920] :     query 30 finished OK (7 seconds)
+2024-05-02 20:15:20 [1714698920] :   running query 31
+2024-05-02 20:15:22 [1714698922] :     query 31 finished OK (1 seconds)
+2024-05-02 20:15:22 [1714698922] :   running query 32
+2024-05-02 20:15:23 [1714698923] :     query 32 finished OK (1 seconds)
+2024-05-02 20:15:23 [1714698923] :   running query 33
+2024-05-02 20:15:25 [1714698925] :     query 33 finished OK (1 seconds)
+2024-05-02 20:15:25 [1714698925] :   running query 34
+2024-05-02 20:15:26 [1714698926] :     query 34 finished OK (1 seconds)
+2024-05-02 20:15:26 [1714698926] :   running query 35
+2024-05-02 20:15:28 [1714698928] :     query 35 finished OK (1 seconds)
+2024-05-02 20:15:28 [1714698928] :   running query 36
+2024-05-02 20:15:29 [1714698929] :     query 36 finished OK (1 seconds)
+2024-05-02 20:15:29 [1714698929] :   running query 37
+2024-05-02 20:15:30 [1714698930] :     query 37 finished OK (1 seconds)
+2024-05-02 20:15:30 [1714698930] :   running query 38
+2024-05-02 20:15:32 [1714698932] :     query 38 finished OK (1 seconds)
+2024-05-02 20:15:32 [1714698932] :   running query 39
+2024-05-02 20:15:35 [1714698935] :     query 39 finished OK (2 seconds)
+2024-05-02 20:15:35 [1714698935] :   running query 40
+2024-05-02 20:15:36 [1714698936] :     query 40 finished OK (1 seconds)
+2024-05-02 20:15:36 [1714698936] :   running query 41
+2024-05-02 20:15:37 [1714698937] :     query 41 finished OK (1 seconds)
+2024-05-02 20:15:37 [1714698937] :   running query 42
+2024-05-02 20:15:39 [1714698939] :     query 42 finished OK (1 seconds)
+2024-05-02 20:15:39 [1714698939] :   running query 43
+2024-05-02 20:15:40 [1714698940] :     query 43 finished OK (1 seconds)
+2024-05-02 20:15:40 [1714698940] :   running query 44
+2024-05-02 20:15:41 [1714698941] :     query 44 finished OK (1 seconds)
+2024-05-02 20:15:41 [1714698941] :   running query 45
+2024-05-02 20:15:42 [1714698942] :     query 45 finished OK (1 seconds)
+2024-05-02 20:15:42 [1714698942] :   running query 46
+2024-05-02 20:15:43 [1714698943] :     query 46 finished OK (1 seconds)
+2024-05-02 20:15:43 [1714698943] :   running query 47
+2024-05-02 20:15:47 [1714698947] :     query 47 finished OK (2 seconds)
+2024-05-02 20:15:47 [1714698947] :   running query 48
+2024-05-02 20:15:48 [1714698948] :     query 48 finished OK (1 seconds)
+2024-05-02 20:15:48 [1714698948] :   running query 49
+2024-05-02 20:15:49 [1714698949] :     query 49 finished OK (1 seconds)
+2024-05-02 20:15:49 [1714698949] :   running query 50
+2024-05-02 20:15:50 [1714698950] :     query 50 finished OK (1 seconds)
+2024-05-02 20:15:50 [1714698950] :   running query 51
+2024-05-02 20:15:52 [1714698952] :     query 51 finished OK (1 seconds)
+2024-05-02 20:15:52 [1714698952] :   running query 52
+2024-05-02 20:15:53 [1714698953] :     query 52 finished OK (1 seconds)
+2024-05-02 20:15:53 [1714698953] :   running query 53
+2024-05-02 20:15:54 [1714698954] :     query 53 finished OK (1 seconds)
+2024-05-02 20:15:54 [1714698954] :   running query 54
+2024-05-02 20:15:55 [1714698955] :     query 54 finished OK (1 seconds)
+2024-05-02 20:15:55 [1714698955] :   running query 55
+2024-05-02 20:15:57 [1714698957] :     query 55 finished OK (1 seconds)
+2024-05-02 20:15:57 [1714698957] :   running query 56
+2024-05-02 20:15:58 [1714698958] :     query 56 finished OK (1 seconds)
+2024-05-02 20:15:58 [1714698958] :   running query 57
+2024-05-02 20:16:00 [1714698960] :     query 57 finished OK (1 seconds)
+2024-05-02 20:16:00 [1714698960] :   running query 58
+2024-05-02 20:16:01 [1714698961] :     query 58 finished OK (1 seconds)
+2024-05-02 20:16:01 [1714698961] :   running query 59
+2024-05-02 20:16:02 [1714698962] :     query 59 finished OK (1 seconds)
+2024-05-02 20:16:02 [1714698962] :   running query 60
+2024-05-02 20:16:04 [1714698964] :     query 60 finished OK (1 seconds)
+2024-05-02 20:16:04 [1714698964] :   running query 61
+2024-05-02 20:16:05 [1714698965] :     query 61 finished OK (1 seconds)
+2024-05-02 20:16:05 [1714698965] :   running query 62
+2024-05-02 20:16:06 [1714698966] :     query 62 finished OK (1 seconds)
+2024-05-02 20:16:06 [1714698966] :   running query 63
+2024-05-02 20:16:07 [1714698967] :     query 63 finished OK (1 seconds)
+2024-05-02 20:16:07 [1714698967] :   running query 64
+2024-05-02 20:16:18 [1714698979] :     query 64 finished OK (6 seconds)
+2024-05-02 20:16:19 [1714698979] :   running query 65
+2024-05-02 20:16:20 [1714698980] :     query 65 finished OK (1 seconds)
+2024-05-02 20:16:20 [1714698980] :   running query 66
+2024-05-02 20:16:21 [1714698981] :     query 66 finished OK (1 seconds)
+2024-05-02 20:16:21 [1714698981] :   running query 67
+2024-05-02 20:16:23 [1714698983] :     query 67 finished OK (1 seconds)
+2024-05-02 20:16:23 [1714698983] :   running query 68
+2024-05-02 20:16:24 [1714698984] :     query 68 finished OK (1 seconds)
+2024-05-02 20:16:24 [1714698984] :   running query 69
+2024-05-02 20:16:25 [1714698985] :     query 69 finished OK (1 seconds)
+2024-05-02 20:16:25 [1714698985] :   running query 70
+2024-05-02 20:16:27 [1714698987] :     query 70 finished OK (1 seconds)
+2024-05-02 20:16:27 [1714698987] :   running query 71
+2024-05-02 20:16:28 [1714698988] :     query 71 finished OK (1 seconds)
+2024-05-02 20:16:28 [1714698988] :   running query 72
+2024-05-02 20:16:29 [1714698989] :     query 72 finished OK (1 seconds)
+2024-05-02 20:16:29 [1714698989] :   running query 73
+2024-05-02 20:16:30 [1714698990] :     query 73 finished OK (1 seconds)
+2024-05-02 20:16:30 [1714698990] :   running query 75
+2024-05-02 20:16:32 [1714698992] :     query 75 finished OK (1 seconds)
+2024-05-02 20:16:32 [1714698992] :   running query 76
+2024-05-02 20:16:33 [1714698993] :     query 76 finished OK (1 seconds)
+2024-05-02 20:16:33 [1714698993] :   running query 77
+2024-05-02 20:16:34 [1714698994] :     query 77 finished OK (1 seconds)
+2024-05-02 20:16:34 [1714698994] :   running query 78
+2024-05-02 20:16:38 [1714698998] :     query 78 finished OK (2 seconds)
+2024-05-02 20:16:38 [1714698998] :   running query 79
+2024-05-02 20:16:39 [1714698999] :     query 79 finished OK (1 seconds)
+2024-05-02 20:16:39 [1714698999] :   running query 80
+2024-05-02 20:16:41 [1714699001] :     query 80 finished OK (1 seconds)
+2024-05-02 20:16:41 [1714699001] :   running query 81
+2024-05-02 20:16:42 [1714699002] :     query 81 finished OK (1 seconds)
+2024-05-02 20:16:42 [1714699002] :   running query 82
+2024-05-02 20:16:43 [1714699003] :     query 82 finished OK (1 seconds)
+2024-05-02 20:16:43 [1714699003] :   running query 83
+2024-05-02 20:16:44 [1714699004] :     query 83 finished OK (1 seconds)
+2024-05-02 20:16:44 [1714699004] :   running query 84
+2024-05-02 20:16:45 [1714699005] :     query 84 finished OK (1 seconds)
+2024-05-02 20:16:45 [1714699005] :   running query 85
+2024-05-02 20:16:46 [1714699006] :     query 85 finished OK (1 seconds)
+2024-05-02 20:16:46 [1714699006] :   running query 86
+2024-05-02 20:16:47 [1714699007] :     query 86 finished OK (1 seconds)
+2024-05-02 20:16:47 [1714699007] :   running query 87
+2024-05-02 20:16:49 [1714699009] :     query 87 finished OK (1 seconds)
+2024-05-02 20:16:49 [1714699009] :   running query 88
+2024-05-02 20:16:50 [1714699010] :     query 88 finished OK (1 seconds)
+2024-05-02 20:16:50 [1714699010] :   running query 89
+2024-05-02 20:16:51 [1714699011] :     query 89 finished OK (1 seconds)
+2024-05-02 20:16:51 [1714699011] :   running query 90
+2024-05-02 20:16:52 [1714699012] :     query 90 finished OK (1 seconds)
+2024-05-02 20:16:52 [1714699012] :   running query 91
+2024-05-02 20:16:54 [1714699014] :     query 91 finished OK (1 seconds)
+2024-05-02 20:16:54 [1714699014] :   running query 92
+2024-05-02 20:16:55 [1714699015] :     query 92 finished OK (1 seconds)
+2024-05-02 20:16:55 [1714699015] :   running query 93
+2024-05-02 20:16:56 [1714699016] :     query 93 finished OK (1 seconds)
+2024-05-02 20:16:56 [1714699016] :   running query 94
+2024-05-02 20:16:57 [1714699017] :     query 94 finished OK (1 seconds)
+2024-05-02 20:16:57 [1714699017] :   running query 95
+2024-05-02 20:16:58 [1714699018] :     query 95 finished OK (1 seconds)
+2024-05-02 20:16:58 [1714699018] :   running query 96
+2024-05-02 20:16:59 [1714699019] :     query 96 finished OK (1 seconds)
+2024-05-02 20:16:59 [1714699019] :   running query 97
+2024-05-02 20:17:01 [1714699021] :     query 97 finished OK (1 seconds)
+2024-05-02 20:17:01 [1714699021] :   running query 98
+2024-05-02 20:17:02 [1714699022] :     query 98 finished OK (1 seconds)
+2024-05-02 20:17:02 [1714699022] :   running query 99
+2024-05-02 20:17:03 [1714699023] :     query 99 finished OK (1 seconds)
+2024-05-02 20:17:03 [1714699023] : finished TPC-DS benchmark

@@ -1,0 +1,15 @@
+ERROR:  missing FROM-clause entry for table "n2"
+LINE 13: ...pplier ON s_suppkey = l_suppkey AND s_nationkey = n2.n_natio...
+                                                              ^
+ERROR:  missing FROM-clause entry for table "n2"
+LINE 13: ...pplier ON s_suppkey = l_suppkey AND s_nationkey = n2.n_natio...
+                                                              ^
+ERROR:  syntax error at or near "explain"
+LINE 12: explain select ps_partkey, sum(ps_supplycost * ps_availqty) ...
+         ^
+ERROR:  syntax error at or near "explain"
+LINE 19: explain select 
+         ^
+ERROR:  syntax error at or near "explain"
+LINE 11: explain select cntrycode, count(*) as numcust, sum(c_acctbal...
+         ^

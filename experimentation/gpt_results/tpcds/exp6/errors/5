@@ -1,0 +1,4 @@
+ERROR:  column "wr_web_site_sk" does not exist
+LINE 72:         SELECT wr_web_site_sk AS wsr_web_site_sk, 
+                        ^
+HINT:  Perhaps you meant to reference the column "*SELECT* 1.wsr_web_site_sk".

@@ -1,0 +1,35 @@
+                                                                    QUERY PLAN                                                                     
+---------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=31207.57..31207.58 rows=1 width=72)
+   ->  Aggregate  (cost=31207.57..31207.58 rows=1 width=72)
+         ->  Nested Loop Semi Join  (cost=2467.27..31207.56 rows=1 width=16)
+               ->  Gather  (cost=2466.84..25811.46 rows=1 width=20)
+                     Workers Planned: 2
+                     ->  Nested Loop Anti Join  (cost=1466.84..24811.36 rows=1 width=20)
+                           ->  Nested Loop  (cost=1466.55..24443.61 rows=1 width=20)
+                                 ->  Hash Join  (cost=1466.26..24039.99 rows=1246 width=24)
+                                       Hash Cond: (ws1.ws_web_site_sk = web_site.web_site_sk)
+                                       ->  Parallel Hash Join  (cost=1463.82..24015.15 rows=7480 width=28)
+                                             Hash Cond: (ws1.ws_ship_addr_sk = customer_address.ca_address_sk)
+                                             ->  Parallel Seq Scan on web_sales ws1  (cost=0.00..21764.43 rows=299743 width=32)
+                                             ->  Parallel Hash  (cost=1454.65..1454.65 rows=734 width=4)
+                                                   ->  Parallel Seq Scan on customer_address  (cost=0.00..1454.65 rows=734 width=4)
+                                                         Filter: (ca_state = 'OK'::bpchar)
+                                       ->  Hash  (cost=2.38..2.38 rows=5 width=4)
+                                             ->  Seq Scan on web_site  (cost=0.00..2.38 rows=5 width=4)
+                                                   Filter: (web_company_name = 'pri'::bpchar)
+                                 ->  Index Scan using date_dim_pkey on date_dim  (cost=0.29..0.32 rows=1 width=4)
+                                       Index Cond: (d_date_sk = ws1.ws_ship_date_sk)
+                                       Filter: ((d_date >= '2002-05-01'::date) AND (d_date <= '2002-06-30 00:00:00'::timestamp without time zone))
+                           ->  Index Only Scan using web_returns_pkey on web_returns wr1  (cost=0.29..538.54 rows=2 width=4)
+                                 Index Cond: (wr_order_number = ws1.ws_order_number)
+               ->  Index Scan using web_sales_pkey on web_sales ws2  (cost=0.42..5396.09 rows=10 width=8)
+                     Index Cond: (ws_order_number = ws1.ws_order_number)
+                     Filter: (ws1.ws_warehouse_sk <> ws_warehouse_sk)
+(26 rows)
+
+ order count | total shipping cost | total net profit 
+-------------+---------------------+------------------
+           9 |            18130.71 |         -9444.12
+(1 row)
+
